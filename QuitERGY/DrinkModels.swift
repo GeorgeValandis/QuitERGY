@@ -73,24 +73,60 @@ final class DrinkLog {
 }
 
 @Model
+final class UserProfile {
+    @Attribute(.unique) var id: UUID
+    var baselineDrinksPerDay: Double
+    var targetDrinksPerWeek: Double
+    var drinkType: String
+    var pricePerDrink: Double
+    var sugarPerDrink: Double
+    var caffeinePerDrink: Double
+    var startDate: Date
+
+    init(
+        id: UUID = UUID(),
+        baselineDrinksPerDay: Double,
+        targetDrinksPerWeek: Double,
+        drinkType: String,
+        pricePerDrink: Double,
+        sugarPerDrink: Double,
+        caffeinePerDrink: Double,
+        startDate: Date
+    ) {
+        self.id = id
+        self.baselineDrinksPerDay = baselineDrinksPerDay
+        self.targetDrinksPerWeek = targetDrinksPerWeek
+        self.drinkType = drinkType
+        self.pricePerDrink = pricePerDrink
+        self.sugarPerDrink = sugarPerDrink
+        self.caffeinePerDrink = caffeinePerDrink
+        self.startDate = startDate
+    }
+}
+
+@Model
 final class UserSettings {
     @Attribute(.unique) var id: UUID
     var selectedProfile: DrinkProfile?
     var dailyTargetDrinks: Int?
     var reminderEnabled: Bool
     var reminderTime: Date?
+    var hasCompletedOnboarding: Bool = false
+    var userProfile: UserProfile?
 
     init(
         id: UUID = UUID(),
         selectedProfile: DrinkProfile? = nil,
         dailyTargetDrinks: Int? = nil,
         reminderEnabled: Bool = false,
-        reminderTime: Date? = nil
+        reminderTime: Date? = nil,
+        userProfile: UserProfile? = nil
     ) {
         self.id = id
         self.selectedProfile = selectedProfile
         self.dailyTargetDrinks = dailyTargetDrinks
         self.reminderEnabled = reminderEnabled
         self.reminderTime = reminderTime
+        self.userProfile = userProfile
     }
 }

@@ -17,7 +17,8 @@ struct QuitERGYApp: App {
         let schema = Schema([
             DrinkProfile.self,
             DrinkLog.self,
-            UserSettings.self
+            UserSettings.self,
+            UserProfile.self
         ])
         let configuration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 
@@ -32,7 +33,7 @@ struct QuitERGYApp: App {
 
     var body: some Scene {
         WindowGroup {
-            MainTabView()
+            RootView()
                 .environment(\.drinkPersistence, persistenceService)
                 .preferredColorScheme(.dark)
         }

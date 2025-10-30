@@ -511,7 +511,8 @@ private struct LegalDocumentView: View {
     let schema = Schema([
         DrinkProfile.self,
         DrinkLog.self,
-        UserSettings.self
+        UserSettings.self,
+        UserProfile.self
     ])
     let configuration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
     let container = try! ModelContainer(for: schema, configurations: [configuration])
