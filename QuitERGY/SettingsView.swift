@@ -37,9 +37,6 @@ struct SettingsView: View {
     private var appVersion: String {
         let info = Bundle.main.infoDictionary
         let version = info?["CFBundleShortVersionString"] as? String ?? "1.0"
-        if let build = info?["CFBundleVersion"] as? String {
-            return "\(version) (\(build))"
-        }
         return version
     }
 
@@ -95,7 +92,7 @@ struct SettingsView: View {
                     Toggle(isOn: $viewModel.reminderEnabled) {
                         Label("Ask me once per day", systemImage: "alarm.fill")
                     }
-                    .onChange(of: viewModel.reminderEnabled) { _, newValue in
+                    .onChange(of: viewModel.reminderEnabled, initial: false) { _, newValue in
                         if newValue {
                             withAnimation {
                                 isEditingReminderTime = true
