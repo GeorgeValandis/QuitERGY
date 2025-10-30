@@ -115,9 +115,13 @@ final class SettingsViewModel: ObservableObject {
     func updateReminderTime(_ time: Date) {
         reminderTime = time
         if reminderEnabled {
-            Task {
-                await persistReminderConfiguration()
-            }
+            reminderStatusMessage = "Tap OK to save changes."
+        }
+    }
+
+    func confirmReminderSelection() {
+        Task {
+            await persistReminderConfiguration()
         }
     }
 

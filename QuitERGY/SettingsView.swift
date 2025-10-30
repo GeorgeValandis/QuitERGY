@@ -13,6 +13,7 @@ struct SettingsView: View {
     @StateObject private var viewModel: SettingsViewModel
     @State private var isPresentingResetAlert = false
     @State private var isPresentingProfileForm = false
+    @State private var isEditingReminderTime = false
 
     private let supportEmail = "support@quitergy.app"
     private let legalDocuments: [LegalDocument] = [
@@ -95,18 +96,58 @@ struct SettingsView: View {
                         Label("Ask me once per day", systemImage: "alarm.fill")
                     }
                     .onChange(of: viewModel.reminderEnabled) { _, newValue in
+                        if newValue {
+                            withAnimation {
+                                isEditingReminderTime = true
+                            }
+                        } else {
+                            isEditingReminderTime = false
+                        }
                         viewModel.updateReminderEnabled(newValue)
                     }
 
                     if viewModel.reminderEnabled {
-                        DatePicker(
-                            "Reminder Time",
-                            selection: $viewModel.reminderTime,
-                            displayedComponents: .hourAndMinute
-                        )
-                        .datePickerStyle(.wheel)
-                        .onChange(of: viewModel.reminderTime) { _, newValue in
-                            viewModel.updateReminderTime(newValue)
+                        DisclosureGroup(isExpanded: $isEditingReminderTime) {
+                            DatePicker(
+                                "",
+                                selection: $viewModel.reminderTime,
+                                displayedComponents: .hourAndMinute
+                            )
+                            .datePickerStyle(.wheel)
+                            .labelsHidden()
+                            .onChange(of: viewModel.reminderTime) { _, newValue in
+                                viewModel.updateReminderTime(newValue)
+                            }
+                            .padding(.vertical, 4)
+
+                            HStack {
+                                Spacer()
+                                Button {
+                                    viewModel.confirmReminderSelection()
+                                    withAnimation {
+                                        isEditingReminderTime = false
+                                    }
+                                } label: {
+                                    Text("OK")
+                                        .font(.quitRounded(.semibold, size: 14))
+                                        .foregroundStyle(QuitERGYTheme.textPrimary)
+                                        .padding(.horizontal, 16)
+                                        .padding(.vertical, 8)
+                                        .background(
+                                            RoundedRectangle(cornerRadius: 12)
+                                                .fill(QuitERGYTheme.accent.opacity(0.2))
+                                        )
+                                }
+                                .buttonStyle(.plain)
+                            }
+                        } label: {
+                            HStack {
+                                Text("Reminder Time")
+                                Spacer()
+                                Text(reminderTimeLabel)
+                                    .font(.quitRounded(.medium, size: 14))
+                                    .foregroundStyle(QuitERGYTheme.textSecondary)
+                            }
                         }
                     }
 
@@ -251,6 +292,12 @@ struct SettingsView: View {
     private func contactSupport() {
         guard let url = URL(string: "mailto:\(supportEmail)") else { return }
         openURL(url)
+    }
+
+    private var reminderTimeLabel: String {
+        let formatter = DateFormatter()
+        formatter.timeStyle = .short
+        return formatter.string(from: viewModel.reminderTime)
     }
 }
 
