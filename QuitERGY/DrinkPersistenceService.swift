@@ -17,6 +17,11 @@ struct DrinkProfileInput {
     var price: Decimal
 }
 
+struct ReminderConfiguration: Equatable {
+    var isEnabled: Bool
+    var reminderTime: Date?
+}
+
 enum DrinkPersistenceError: LocalizedError {
     case missingProfile
     case invalidDateRange
@@ -46,6 +51,8 @@ protocol DrinkPersistenceProviding {
     func loadSelectedProfile() throws -> DrinkProfile?
     func logDrink(_ profile: DrinkProfile, date: Date) throws -> DrinkLog
     func fetchRecentLogs(in interval: DateInterval) throws -> [DrinkLog]
+    func loadReminderConfiguration() throws -> ReminderConfiguration
+    func updateReminderConfiguration(_ configuration: ReminderConfiguration) throws
 }
 
 @MainActor
@@ -133,6 +140,18 @@ final class DrinkPersistenceService: DrinkPersistenceProviding {
         modelContext.insert(settings)
         try saveContext()
         return settings
+    }
+
+    func loadReminderConfiguration() throws -> ReminderConfiguration {
+        let settings = try fetchOrCreateSettings()
+        return ReminderConfiguration(isEnabled: settings.reminderEnabled, reminderTime: settings.reminderTime)
+    }
+
+    func updateReminderConfiguration(_ configuration: ReminderConfiguration) throws {
+        let settings = try fetchOrCreateSettings()
+        settings.reminderEnabled = configuration.isEnabled
+        settings.reminderTime = configuration.reminderTime
+        try saveContext()
     }
 
     private func saveContext() throws {

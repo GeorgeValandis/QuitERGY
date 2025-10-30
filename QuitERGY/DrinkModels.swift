@@ -77,10 +77,20 @@ final class UserSettings {
     @Attribute(.unique) var id: UUID
     var selectedProfile: DrinkProfile?
     var dailyTargetDrinks: Int?
+    var reminderEnabled: Bool
+    var reminderTime: Date?
 
-    init(id: UUID = UUID(), selectedProfile: DrinkProfile? = nil, dailyTargetDrinks: Int? = nil) {
+    init(
+        id: UUID = UUID(),
+        selectedProfile: DrinkProfile? = nil,
+        dailyTargetDrinks: Int? = nil,
+        reminderEnabled: Bool = false,
+        reminderTime: Date? = nil
+    ) {
         self.id = id
         self.selectedProfile = selectedProfile
         self.dailyTargetDrinks = dailyTargetDrinks
+        self.reminderEnabled = reminderEnabled
+        self.reminderTime = reminderTime
     }
 }

@@ -20,18 +20,35 @@ final class SettingsViewModel: ObservableObject {
     @Published var caffeineInput: String = ""
     @Published var priceInput: String = ""
 
+    @Published var reminderEnabled: Bool = false
+    @Published var reminderTime: Date
+    @Published var reminderStatusMessage: String?
+
     @Published var errorMessage: String?
 
     private let persistence: DrinkPersistenceProviding
+    private let reminderScheduler: ReminderScheduling
+    private let calendar: Calendar
+    private let defaultReminderTime: Date
 
-    init(service: DrinkPersistenceProviding) {
+    init(service: DrinkPersistenceProviding, reminderScheduler: ReminderScheduling, calendar: Calendar = .current) {
         self.persistence = service
+        self.reminderScheduler = reminderScheduler
+        self.calendar = calendar
+        self.defaultReminderTime = calendar.date(bySettingHour: 9, minute: 0, second: 0, of: Date()) ?? Date()
+        self.reminderTime = defaultReminderTime
     }
 
     func loadData() {
         do {
             profiles = try persistence.loadProfiles()
             selectedProfile = try persistence.loadSelectedProfile()
+            let reminder = try persistence.loadReminderConfiguration()
+            reminderEnabled = reminder.isEnabled
+            reminderTime = reminder.reminderTime ?? defaultReminderTime
+            reminderStatusMessage = reminder.isEnabled
+                ? "Daily reminder scheduled at \(formattedTime(reminderTime))."
+                : nil
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -87,6 +104,49 @@ final class SettingsViewModel: ObservableObject {
         }
     }
 
+    func updateReminderEnabled(_ isEnabled: Bool) {
+        guard reminderEnabled != isEnabled else { return }
+        reminderEnabled = isEnabled
+        Task {
+            await persistReminderConfiguration()
+        }
+    }
+
+    func updateReminderTime(_ time: Date) {
+        reminderTime = time
+        if reminderEnabled {
+            Task {
+                await persistReminderConfiguration()
+            }
+        }
+    }
+
+    private func persistReminderConfiguration() async {
+        let config = ReminderConfiguration(
+            isEnabled: reminderEnabled,
+            reminderTime: reminderEnabled ? reminderTime : nil
+        )
+
+        do {
+            if reminderEnabled {
+                try await reminderScheduler.scheduleDailyReminder(at: reminderTime, profileName: selectedProfile?.name)
+                reminderStatusMessage = "Daily reminder scheduled at \(formattedTime(reminderTime))."
+            } else {
+                reminderScheduler.cancelScheduledReminder()
+                reminderStatusMessage = "Daily reminder disabled."
+            }
+            try persistence.updateReminderConfiguration(config)
+        } catch {
+            reminderScheduler.cancelScheduledReminder()
+            reminderEnabled = false
+            reminderStatusMessage = nil
+            if (try? persistence.updateReminderConfiguration(ReminderConfiguration(isEnabled: false, reminderTime: nil))) == nil {
+                // ignore persistence failure and surface original error below
+            }
+            errorMessage = error.localizedDescription
+        }
+    }
+
     private func buildInput() throws -> DrinkProfileInput {
         let trimmedName = nameInput.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmedName.isEmpty else {
@@ -118,7 +178,7 @@ final class SettingsViewModel: ObservableObject {
         let sanitized = value.replacingOccurrences(of: ",", with: ".").trimmingCharacters(in: .whitespaces)
         guard !sanitized.isEmpty else { return 0 }
         guard let number = Double(sanitized) else {
-            throw ValidationError(message: "\(label) muss eine Zahl sein.")
+            throw ValidationError(message: "\(label) must be a number.")
         }
         return number
     }
@@ -132,6 +192,12 @@ final class SettingsViewModel: ObservableObject {
             throw ValidationError(message: "\(label) must be a valid number.")
         }
         return decimal
+    }
+
+    private func formattedTime(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.timeStyle = .short
+        return formatter.string(from: date)
     }
 }
 

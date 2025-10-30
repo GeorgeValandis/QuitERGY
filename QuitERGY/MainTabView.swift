@@ -11,6 +11,7 @@ import SwiftData
 
 struct MainTabView: View {
     @Environment(\.drinkPersistence) private var persistence
+    private let reminderScheduler: ReminderScheduling = ReminderScheduler()
 
     init() {
         let appearance = UITabBarAppearance()
@@ -40,7 +41,7 @@ struct MainTabView: View {
                     Label("Stats", systemImage: "chart.bar.doc.horizontal.fill")
                 }
 
-            SettingsView(service: persistence)
+            SettingsView(service: persistence, reminderScheduler: reminderScheduler)
                 .tabItem {
                     Label("Settings", systemImage: "slider.horizontal.3")
                 }

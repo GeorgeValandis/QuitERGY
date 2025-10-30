@@ -47,4 +47,12 @@ struct UnimplementedDrinkPersistenceService: DrinkPersistenceProviding {
     func fetchRecentLogs(in interval: DateInterval) throws -> [DrinkLog] {
         fatalError("Drink persistence service not provided.")
     }
+
+    func loadReminderConfiguration() throws -> ReminderConfiguration {
+        fatalError("Drink persistence service not provided.")
+    }
+
+    func updateReminderConfiguration(_ configuration: ReminderConfiguration) throws {
+        fatalError("Drink persistence service not provided.")
+    }
 }

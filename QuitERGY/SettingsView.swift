@@ -42,8 +42,8 @@ struct SettingsView: View {
         return version
     }
 
-    init(service: DrinkPersistenceProviding) {
-        _viewModel = StateObject(wrappedValue: SettingsViewModel(service: service))
+    init(service: DrinkPersistenceProviding, reminderScheduler: ReminderScheduling = ReminderScheduler()) {
+        _viewModel = StateObject(wrappedValue: SettingsViewModel(service: service, reminderScheduler: reminderScheduler))
     }
 
     var body: some View {
@@ -87,6 +87,35 @@ struct SettingsView: View {
                     .buttonStyle(.plain)
                     .foregroundStyle(QuitERGYTheme.accent)
                     .padding(.top, 8)
+                }
+                .listRowBackground(QuitERGYTheme.surface)
+
+                Section("Daily Reminder") {
+                    Toggle(isOn: $viewModel.reminderEnabled) {
+                        Label("Ask me once per day", systemImage: "alarm.fill")
+                    }
+                    .onChange(of: viewModel.reminderEnabled) { _, newValue in
+                        viewModel.updateReminderEnabled(newValue)
+                    }
+
+                    if viewModel.reminderEnabled {
+                        DatePicker(
+                            "Reminder Time",
+                            selection: $viewModel.reminderTime,
+                            displayedComponents: .hourAndMinute
+                        )
+                        .datePickerStyle(.wheel)
+                        .onChange(of: viewModel.reminderTime) { _, newValue in
+                            viewModel.updateReminderTime(newValue)
+                        }
+                    }
+
+                    if let status = viewModel.reminderStatusMessage {
+                        Text(status)
+                            .font(.quitRounded(.medium, size: 12))
+                            .foregroundStyle(QuitERGYTheme.textSecondary)
+                            .padding(.top, 4)
+                    }
                 }
                 .listRowBackground(QuitERGYTheme.surface)
 
@@ -456,7 +485,13 @@ private struct LegalDocumentView: View {
     try? service.selectProfile(sample)
     try? container.mainContext.save()
 
-    return SettingsView(service: service)
+    struct PreviewReminderScheduler: ReminderScheduling {
+        func ensureAuthorization() async throws {}
+        func scheduleDailyReminder(at time: Date, profileName: String?) async throws {}
+        func cancelScheduledReminder() {}
+    }
+
+    return SettingsView(service: service, reminderScheduler: PreviewReminderScheduler())
         .environment(\.drinkPersistence, service)
         .modelContainer(container)
 }
