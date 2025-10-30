@@ -10,22 +10,30 @@ import SwiftData
 
 @main
 struct QuitERGYApp: App {
-    var sharedModelContainer: ModelContainer = {
+    let sharedModelContainer: ModelContainer
+    let persistenceService: DrinkPersistenceService
+
+    init() {
         let schema = Schema([
-            StreakRecord.self,
+            DrinkProfile.self,
+            DrinkLog.self,
+            UserSettings.self
         ])
-        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
+        let configuration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 
         do {
-            return try ModelContainer(for: schema, configurations: [modelConfiguration])
+            let container = try ModelContainer(for: schema, configurations: [configuration])
+            self.sharedModelContainer = container
+            self.persistenceService = DrinkPersistenceService(modelContext: container.mainContext)
         } catch {
             fatalError("Could not create ModelContainer: \(error)")
         }
-    }()
+    }
 
     var body: some Scene {
         WindowGroup {
             MainTabView()
+                .environment(\.drinkPersistence, persistenceService)
                 .preferredColorScheme(.dark)
         }
         .modelContainer(sharedModelContainer)

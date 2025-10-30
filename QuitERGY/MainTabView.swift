@@ -7,8 +7,11 @@
 
 import SwiftUI
 import UIKit
+import SwiftData
 
 struct MainTabView: View {
+    @Environment(\.drinkPersistence) private var persistence
+
     init() {
         let appearance = UITabBarAppearance()
         appearance.configureWithOpaqueBackground()
@@ -27,17 +30,17 @@ struct MainTabView: View {
 
     var body: some View {
         TabView {
-            HomeView()
+            HomeView(service: persistence)
                 .tabItem {
                     Label("Home", systemImage: "bolt.heart.fill")
                 }
 
-            StatsView()
+            StatsView(service: persistence)
                 .tabItem {
                     Label("Stats", systemImage: "chart.bar.doc.horizontal.fill")
                 }
 
-            SettingsView()
+            SettingsView(service: persistence)
                 .tabItem {
                     Label("Settings", systemImage: "slider.horizontal.3")
                 }
@@ -48,5 +51,15 @@ struct MainTabView: View {
 }
 
 #Preview {
-    MainTabView()
+    let schema = Schema([
+        DrinkProfile.self,
+        DrinkLog.self,
+        UserSettings.self
+    ])
+    let configuration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
+    let container = try! ModelContainer(for: schema, configurations: [configuration])
+    let service = DrinkPersistenceService(modelContext: container.mainContext)
+    return MainTabView()
+        .environment(\.drinkPersistence, service)
+        .modelContainer(container)
 }

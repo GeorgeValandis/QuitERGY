@@ -11,18 +11,55 @@ import SwiftUI
 
 @MainActor
 final class HomeViewModel: ObservableObject {
-    @Published var streakDays: Int = 17
-    @Published var lastDrinkDate: Date = Calendar.current.date(byAdding: .day, value: -17, to: .now) ?? .now
+    @Published var streakDays: Int = 0
+    @Published var lastDrinkDate: Date?
+    @Published var selectedProfile: DrinkProfile?
+    @Published var recentLogs: [DrinkLog] = []
     @Published var isShowingResetAlert = false
+    @Published var showMissingProfileAlert = false
+    @Published var errorMessage: String?
 
+    private let persistence: DrinkPersistenceProviding
+    private let calendar = Calendar.current
     private let streakGoal: Double = 30
+
+    init(service: DrinkPersistenceProviding) {
+        self.persistence = service
+    }
+
+    func loadData() {
+        do {
+            selectedProfile = try persistence.loadSelectedProfile()
+            let start = calendar.date(byAdding: .day, value: -365, to: Date()) ?? Date().addingTimeInterval(-365 * 24 * 60 * 60)
+            let interval = DateInterval(start: start, end: Date())
+            recentLogs = try persistence.fetchRecentLogs(in: interval)
+            updateMetrics()
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+
+    func addDrink() {
+        guard let profile = selectedProfile else {
+            showMissingProfileAlert = true
+            return
+        }
+
+        do {
+            _ = try persistence.logDrink(profile, date: Date())
+            isShowingResetAlert = false
+            loadData()
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
 
     var streakTitle: String {
         "⚡️ \(streakDays) DAYS CLEAN"
     }
 
     var streakSubtitle: String {
-        "since your last energy drink"
+        selectedProfile != nil ? "since your last energy drink" : "Set up a drink profile first"
     }
 
     var streakProgress: Double {
@@ -31,22 +68,25 @@ final class HomeViewModel: ObservableObject {
     }
 
     var timeSinceLastDrink: String {
-        let components = Calendar.current.dateComponents([.day, .hour], from: lastDrinkDate, to: .now)
+        guard let lastDrinkDate else {
+            return "No logs yet"
+        }
+        let components = calendar.dateComponents([.day, .hour], from: lastDrinkDate, to: Date())
         let days = components.day ?? 0
         let hours = components.hour ?? 0
         return "\(days)d \(hours)h"
     }
 
-    func addDrink() {
-        withAnimation(.easeInOut) {
-            streakDays = 0
-            lastDrinkDate = .now
-        }
+    private func updateMetrics() {
+        lastDrinkDate = recentLogs.sorted(by: { $0.timestamp > $1.timestamp }).first?.timestamp
+        streakDays = calculateStreakDays(from: lastDrinkDate)
     }
 
-    func simulateNewDay() {
-        withAnimation(.easeInOut) {
-            streakDays += 1
-        }
+    private func calculateStreakDays(from lastDrinkDate: Date?) -> Int {
+        guard let lastDrinkDate else { return 0 }
+        let startOfToday = calendar.startOfDay(for: Date())
+        let startOfLastLog = calendar.startOfDay(for: lastDrinkDate)
+        let components = calendar.dateComponents([.day], from: startOfLastLog, to: startOfToday)
+        return max(0, components.day ?? 0)
     }
 }

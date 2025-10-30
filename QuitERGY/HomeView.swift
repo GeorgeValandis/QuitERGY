@@ -6,30 +6,31 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct HomeView: View {
-    @StateObject private var viewModel = HomeViewModel()
+    @StateObject private var viewModel: HomeViewModel
     @State private var displayedProgress: Double = 0
+
+    init(service: DrinkPersistenceProviding) {
+        _viewModel = StateObject(wrappedValue: HomeViewModel(service: service))
+    }
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: 36) {
-                Spacer(minLength: 0)
-
+            VStack(spacing: 28) {
                 streakRing
-                    .padding(.top, 24)
+                    .padding(.top, 8)
 
                 sinceLastDrink
 
                 addDrinkButton
 
-                Spacer()
-
-                MotivationQuoteView(quote: "You’re taking back your energy.")
-                    .padding(.bottom, 16)
+                Spacer(minLength: 0)
             }
+            .padding(.top, 32)
             .padding(.horizontal, 24)
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             .background(QuitERGYTheme.background.ignoresSafeArea())
             .toolbar {
                 ToolbarItem(placement: .principal) {
@@ -39,7 +40,8 @@ struct HomeView: View {
                 }
             }
         }
-        .onAppear {
+        .task {
+            viewModel.loadData()
             withAnimation(.easeInOut(duration: 1.2)) {
                 displayedProgress = viewModel.streakProgress
             }
@@ -49,14 +51,31 @@ struct HomeView: View {
                 displayedProgress = newValue
             }
         }
-        .alert("Reset streak?", isPresented: $viewModel.isShowingResetAlert) {
-            Button("Reset", role: .destructive) {
+        .alert("Drink logged?", isPresented: $viewModel.isShowingResetAlert) {
+            Button("Confirm", role: .destructive) {
                 viewModel.addDrink()
             }
             Button("Cancel", role: .cancel) { }
         } message: {
-            Text("Logging a drink resets your current streak to zero.")
+            Text("Adding an energy drink will reset your current clean streak.")
         }
+        .alert("Profile needed", isPresented: $viewModel.showMissingProfileAlert) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            Text("Please create a drink profile in Settings first.")
+        }
+        .alert("Error", isPresented: errorBinding) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            Text(viewModel.errorMessage ?? "")
+        }
+    }
+
+    private var errorBinding: Binding<Bool> {
+        Binding(
+            get: { viewModel.errorMessage != nil },
+            set: { if !$0 { viewModel.errorMessage = nil } }
+        )
     }
 
     private var streakRing: some View {
@@ -92,6 +111,16 @@ struct HomeView: View {
             Text(viewModel.timeSinceLastDrink)
                 .font(.quitRounded(.semibold, size: 32))
                 .foregroundStyle(QuitERGYTheme.textPrimary)
+
+            if let profile = viewModel.selectedProfile {
+                Text("Profile: \(profile.name)")
+                    .font(.quitRounded(.medium, size: 14))
+                    .foregroundStyle(QuitERGYTheme.textSecondary.opacity(0.8))
+            } else {
+                Text("No profile selected")
+                    .font(.quitRounded(.medium, size: 14))
+                    .foregroundStyle(QuitERGYTheme.textSecondary.opacity(0.8))
+            }
         }
         .frame(maxWidth: .infinity)
         .padding(QuitERGYTheme.cardPadding)
@@ -101,9 +130,13 @@ struct HomeView: View {
 
     private var addDrinkButton: some View {
         Button {
-            viewModel.isShowingResetAlert = true
+            if viewModel.selectedProfile == nil {
+                viewModel.showMissingProfileAlert = true
+            } else {
+                viewModel.isShowingResetAlert = true
+            }
         } label: {
-            Text("Add Drink")
+            Text("Log Drink")
                 .font(.quitRounded(.semibold, size: 18))
                 .foregroundStyle(QuitERGYTheme.textPrimary)
                 .frame(maxWidth: .infinity)
@@ -123,5 +156,29 @@ struct HomeView: View {
 }
 
 #Preview {
-    HomeView()
+    let schema = Schema([
+        DrinkProfile.self,
+        DrinkLog.self,
+        UserSettings.self
+    ])
+    let configuration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
+    let container = try! ModelContainer(for: schema, configurations: [configuration])
+    let service = DrinkPersistenceService(modelContext: container.mainContext)
+
+    let profile = DrinkProfile(
+        name: "Noctra Energy",
+        brand: "Velocity Labs",
+        variant: .sugarFree,
+        sugarGrams: 0,
+        caffeineMg: 180,
+        price: Decimal(string: "2.49") ?? 2.49
+    )
+    container.mainContext.insert(profile)
+    try? service.selectProfile(profile)
+    try? service.logDrink(profile, date: Date().addingTimeInterval(-3600 * 24 * 5))
+    try? container.mainContext.save()
+
+    return HomeView(service: service)
+        .environment(\.drinkPersistence, service)
+        .modelContainer(container)
 }
