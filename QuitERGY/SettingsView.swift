@@ -14,6 +14,7 @@ struct SettingsView: View {
     @State private var isPresentingResetAlert = false
     @State private var isPresentingProfileForm = false
     @State private var isEditingReminderTime = false
+    @State private var hasInitializedReminder = false
 
     private let supportEmail = "support@quitergy.app"
     private let legalDocuments: [LegalDocument] = [
@@ -93,6 +94,7 @@ struct SettingsView: View {
                         Label("Ask me once per day", systemImage: "alarm.fill")
                     }
                     .onChange(of: viewModel.reminderEnabled, initial: false) { _, newValue in
+                        guard hasInitializedReminder else { return }
                         if newValue {
                             withAnimation {
                                 isEditingReminderTime = true
@@ -238,6 +240,8 @@ struct SettingsView: View {
             }
             .task {
                 viewModel.loadData()
+                hasInitializedReminder = true
+                isEditingReminderTime = false
             }
         }
     }
