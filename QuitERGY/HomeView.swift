@@ -5,8 +5,8 @@
 //  Created by Codex.
 //
 
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 struct HomeView: View {
     @StateObject private var viewModel: HomeViewModel
@@ -55,17 +55,17 @@ struct HomeView: View {
             Button("Confirm", role: .destructive) {
                 viewModel.addDrink()
             }
-            Button("Cancel", role: .cancel) { }
+            Button("Cancel", role: .cancel) {}
         } message: {
             Text("Adding an energy drink will reset your current clean streak.")
         }
         .alert("Profile needed", isPresented: $viewModel.showMissingProfileAlert) {
-            Button("OK", role: .cancel) { }
+            Button("OK", role: .cancel) {}
         } message: {
             Text("Please create a drink profile in Settings first.")
         }
         .alert("Error", isPresented: errorBinding) {
-            Button("OK", role: .cancel) { }
+            Button("OK", role: .cancel) {}
         } message: {
             Text(viewModel.errorMessage ?? "")
         }
@@ -155,7 +155,7 @@ struct HomeView: View {
         DrinkProfile.self,
         DrinkLog.self,
         UserSettings.self,
-        UserProfile.self
+        UserProfile.self,
     ])
     let configuration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
     let container = try! ModelContainer(for: schema, configurations: [configuration])

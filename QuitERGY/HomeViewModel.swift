@@ -5,8 +5,8 @@
 //  Created by Codex.
 //
 
-import Foundation
 import Combine
+import Foundation
 import SwiftUI
 
 @MainActor
@@ -22,26 +22,28 @@ final class HomeViewModel: ObservableObject {
     private let persistence: DrinkPersistenceProviding
     private let calendar = Calendar.current
     private let streakGoal: Double = 30
-#if DEBUG
-    private var simulationCancellable: AnyCancellable?
-#endif
+    #if DEBUG
+        private var simulationCancellable: AnyCancellable?
+    #endif
 
     init(service: DrinkPersistenceProviding) {
         self.persistence = service
 
-#if DEBUG
-        simulationCancellable = DebugSimulationController.shared.$simulatedCleanDays
-            .removeDuplicates()
-            .sink { [weak self] _ in
-                self?.updateMetrics()
-            }
-#endif
+        #if DEBUG
+            simulationCancellable = DebugSimulationController.shared.$simulatedCleanDays
+                .removeDuplicates()
+                .sink { [weak self] _ in
+                    self?.updateMetrics()
+                }
+        #endif
     }
 
     func loadData() {
         do {
             selectedProfile = try persistence.loadSelectedProfile()
-            let start = calendar.date(byAdding: .day, value: -365, to: Date()) ?? Date().addingTimeInterval(-365 * 24 * 60 * 60)
+            let start =
+                calendar.date(byAdding: .day, value: -365, to: Date())
+                ?? Date().addingTimeInterval(-365 * 24 * 60 * 60)
             let interval = DateInterval(start: start, end: Date())
             recentLogs = try persistence.fetchRecentLogs(in: interval)
             updateMetrics()
@@ -89,13 +91,13 @@ final class HomeViewModel: ObservableObject {
     }
 
     private func updateMetrics() {
-#if DEBUG
-        if let simulatedDays = DebugSimulationController.shared.simulatedCleanDays {
-            streakDays = simulatedDays
-            lastDrinkDate = calendar.date(byAdding: .day, value: -simulatedDays, to: Date())
-            return
-        }
-#endif
+        #if DEBUG
+            if let simulatedDays = DebugSimulationController.shared.simulatedCleanDays {
+                streakDays = simulatedDays
+                lastDrinkDate = calendar.date(byAdding: .day, value: -simulatedDays, to: Date())
+                return
+            }
+        #endif
         lastDrinkDate = recentLogs.sorted(by: { $0.timestamp > $1.timestamp }).first?.timestamp
         streakDays = calculateStreakDays(from: lastDrinkDate)
     }
