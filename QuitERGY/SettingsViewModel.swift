@@ -113,6 +113,7 @@ final class SettingsViewModel: ObservableObject {
     @Published var reminderStatusMessage: String?
 
     @Published var errorMessage: String?
+    @Published var generalStatusMessage: String?
 
     private let persistence: DrinkPersistenceProviding
     private let reminderScheduler: ReminderScheduling
@@ -141,6 +142,7 @@ final class SettingsViewModel: ObservableObject {
             reminderStatusMessage = reminder.isEnabled
                 ? "Daily reminder scheduled at \(formattedTime(reminderTime))."
                 : nil
+            generalStatusMessage = nil
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -225,6 +227,15 @@ final class SettingsViewModel: ObservableObject {
     func confirmReminderSelection() {
         Task {
             await persistReminderConfiguration()
+        }
+    }
+
+    func resetOnboardingFlow() {
+        do {
+            try persistence.updateOnboardingCompletion(to: false)
+            generalStatusMessage = "Onboarding reset. The intro will run again on the next launch."
+        } catch {
+            errorMessage = error.localizedDescription
         }
     }
 

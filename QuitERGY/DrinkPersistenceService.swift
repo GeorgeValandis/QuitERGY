@@ -54,6 +54,7 @@ protocol DrinkPersistenceProviding {
     func fetchRecentLogs(in interval: DateInterval) throws -> [DrinkLog]
     func loadReminderConfiguration() throws -> ReminderConfiguration
     func updateReminderConfiguration(_ configuration: ReminderConfiguration) throws
+    func updateOnboardingCompletion(to value: Bool) throws
 }
 
 @MainActor
@@ -156,6 +157,12 @@ final class DrinkPersistenceService: DrinkPersistenceProviding {
         let settings = try fetchOrCreateSettings()
         settings.reminderEnabled = configuration.isEnabled
         settings.reminderTime = configuration.reminderTime
+        try saveContext()
+    }
+
+    func updateOnboardingCompletion(to value: Bool) throws {
+        let settings = try fetchOrCreateSettings()
+        settings.hasCompletedOnboarding = value
         try saveContext()
     }
 

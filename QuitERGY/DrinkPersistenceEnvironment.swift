@@ -59,4 +59,8 @@ struct UnimplementedDrinkPersistenceService: DrinkPersistenceProviding {
     func updateReminderConfiguration(_ configuration: ReminderConfiguration) throws {
         fatalError("Drink persistence service not provided.")
     }
+
+    func updateOnboardingCompletion(to value: Bool) throws {
+        fatalError("Drink persistence service not provided.")
+    }
 }

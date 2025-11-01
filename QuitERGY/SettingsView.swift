@@ -12,6 +12,7 @@ struct SettingsView: View {
     @Environment(\.openURL) private var openURL
     @StateObject private var viewModel: SettingsViewModel
     @State private var isPresentingResetAlert = false
+    @State private var isPresentingOnboardingResetAlert = false
     @State private var isPresentingProfileForm = false
     @State private var isEditingReminderTime = false
     @State private var hasInitializedReminder = false
@@ -193,6 +194,25 @@ struct SettingsView: View {
                         )
                         .foregroundStyle(Color.red)
                     }
+
+                    Button {
+                        isPresentingOnboardingResetAlert = true
+                    } label: {
+                        SettingRow(
+                            icon: "sparkles",
+                            title: "Reset Onboarding",
+                            subtitle: "Run the intro again next launch",
+                            iconColor: QuitERGYTheme.accent
+                        )
+                    }
+                    .buttonStyle(.plain)
+
+                    if let generalStatus = viewModel.generalStatusMessage {
+                        Text(generalStatus)
+                            .font(.quitRounded(.medium, size: 12))
+                            .foregroundStyle(QuitERGYTheme.textSecondary)
+                            .padding(.top, 6)
+                    }
                 }
                 .listRowBackground(QuitERGYTheme.surface)
 
@@ -228,6 +248,14 @@ struct SettingsView: View {
                 Button("Cancel", role: .cancel) { }
             } message: {
                 Text("This will clear your streak and statistics. This action cannot be undone.")
+            }
+            .alert("Onboarding zurücksetzen?", isPresented: $isPresentingOnboardingResetAlert) {
+                Button("Reset", role: .destructive) {
+                    viewModel.resetOnboardingFlow()
+                }
+                Button("Cancel", role: .cancel) { }
+            } message: {
+                Text("The onboarding will start again the next time you open the app.")
             }
             .alert("Hinweis", isPresented: errorAlertBinding) {
                 Button("OK", role: .cancel) { }

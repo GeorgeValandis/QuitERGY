@@ -33,6 +33,29 @@ struct StatsView: View {
             .background(QuitERGYTheme.background.ignoresSafeArea())
             .navigationTitle("Stats")
             .toolbarTitleDisplayMode(.inline)
+#if DEBUG
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Menu {
+                        Button("3 Tage ohne Drinks") {
+                            viewModel.simulateNoDrinks(forDays: 3)
+                        }
+                        Button("7 Tage ohne Drinks") {
+                            viewModel.simulateNoDrinks(forDays: 7)
+                        }
+                        Button("14 Tage ohne Drinks") {
+                            viewModel.simulateNoDrinks(forDays: 14)
+                        }
+                        Divider()
+                        Button("Simulation zurücksetzen") {
+                            viewModel.clearSimulation()
+                        }
+                    } label: {
+                        Image(systemName: "timeline.selection")
+                    }
+                }
+            }
+#endif
             .task {
                 viewModel.loadData()
             }
