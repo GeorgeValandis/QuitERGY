@@ -311,6 +311,25 @@ private struct ProfileFormView: View {
     var body: some View {
         NavigationStack {
             Form {
+                if !SettingsViewModel.commonDrinkPresets.isEmpty {
+                    Section("Preset") {
+                        Menu {
+                            ForEach(SettingsViewModel.commonDrinkPresets) { preset in
+                                Button(preset.displayName) {
+                                    viewModel.selectPreset(preset)
+                                }
+                            }
+                        } label: {
+                            HStack {
+                                Text("Energy Drink")
+                                Spacer()
+                                Text(viewModel.selectedPreset?.displayName ?? "Choose")
+                                    .foregroundStyle(QuitERGYTheme.textSecondary)
+                            }
+                        }
+                    }
+                }
+
                 Section("Details") {
                     TextField("Name", text: $viewModel.nameInput)
                     TextField("Brand", text: $viewModel.brandInput)

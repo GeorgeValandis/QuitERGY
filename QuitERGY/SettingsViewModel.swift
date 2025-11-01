@@ -8,8 +8,95 @@
 import Foundation
 import Combine
 
+struct DrinkPreset: Identifiable, Hashable {
+    let id: String
+    let displayName: String
+    let brand: String?
+    let variant: DrinkVariant
+    let sugarGrams: Double
+    let caffeineMg: Double
+    let price: Decimal
+
+    init(
+        displayName: String,
+        brand: String? = nil,
+        variant: DrinkVariant,
+        sugarGrams: Double,
+        caffeineMg: Double,
+        price: Decimal,
+        id: String? = nil
+    ) {
+        self.displayName = displayName
+        self.brand = brand
+        self.variant = variant
+        self.sugarGrams = sugarGrams
+        self.caffeineMg = caffeineMg
+        self.price = price
+        self.id = id ?? "\(displayName)-\(variant.rawValue)"
+    }
+}
+
 @MainActor
 final class SettingsViewModel: ObservableObject {
+    static let commonDrinkPresets: [DrinkPreset] = [
+        DrinkPreset(
+            displayName: "Red Bull 250ml",
+            brand: "Red Bull GmbH",
+            variant: .classic,
+            sugarGrams: 27,
+            caffeineMg: 80,
+            price: Decimal(string: "1.59") ?? 0
+        ),
+        DrinkPreset(
+            displayName: "Red Bull Sugarfree 250ml",
+            brand: "Red Bull GmbH",
+            variant: .sugarFree,
+            sugarGrams: 0,
+            caffeineMg: 80,
+            price: Decimal(string: "1.59") ?? 0
+        ),
+        DrinkPreset(
+            displayName: "Monster Energy 500ml",
+            brand: "Monster Beverage",
+            variant: .classic,
+            sugarGrams: 54,
+            caffeineMg: 160,
+            price: Decimal(string: "1.99") ?? 0
+        ),
+        DrinkPreset(
+            displayName: "Monster Ultra 500ml",
+            brand: "Monster Beverage",
+            variant: .zero,
+            sugarGrams: 0,
+            caffeineMg: 150,
+            price: Decimal(string: "1.99") ?? 0
+        ),
+        DrinkPreset(
+            displayName: "Rockstar Original 500ml",
+            brand: "Rockstar Energy",
+            variant: .classic,
+            sugarGrams: 63,
+            caffeineMg: 160,
+            price: Decimal(string: "1.89") ?? 0
+        ),
+        DrinkPreset(
+            displayName: "Celsius 355ml",
+            brand: "Celsius Holdings",
+            variant: .zero,
+            sugarGrams: 0,
+            caffeineMg: 200,
+            price: Decimal(string: "2.29") ?? 0
+        ),
+        DrinkPreset(
+            displayName: "Bang 473ml",
+            brand: "Vital Pharmaceuticals",
+            variant: .highCaffeine,
+            sugarGrams: 0,
+            caffeineMg: 300,
+            price: Decimal(string: "2.49") ?? 0
+        )
+    ]
+
     @Published var profiles: [DrinkProfile] = []
     @Published var selectedProfile: DrinkProfile?
 
@@ -19,6 +106,7 @@ final class SettingsViewModel: ObservableObject {
     @Published var sugarInput: String = ""
     @Published var caffeineInput: String = ""
     @Published var priceInput: String = ""
+    @Published var selectedPreset: DrinkPreset?
 
     @Published var reminderEnabled: Bool = false
     @Published var reminderTime: Date
@@ -37,6 +125,10 @@ final class SettingsViewModel: ObservableObject {
         self.calendar = calendar
         self.defaultReminderTime = calendar.date(bySettingHour: 9, minute: 0, second: 0, of: Date()) ?? Date()
         self.reminderTime = defaultReminderTime
+        if let preset = SettingsViewModel.commonDrinkPresets.first {
+            applyPreset(preset)
+            selectedPreset = preset
+        }
     }
 
     func loadData() {
@@ -80,12 +172,18 @@ final class SettingsViewModel: ObservableObject {
     }
 
     func prepareNewProfile() {
-        nameInput = ""
-        brandInput = ""
-        variant = .classic
-        sugarInput = ""
-        caffeineInput = ""
-        priceInput = ""
+        if let preset = SettingsViewModel.commonDrinkPresets.first {
+            applyPreset(preset)
+            selectedPreset = preset
+        } else {
+            nameInput = ""
+            brandInput = ""
+            variant = .classic
+            sugarInput = ""
+            caffeineInput = ""
+            priceInput = ""
+            selectedPreset = nil
+        }
         errorMessage = nil
     }
 
@@ -110,6 +208,11 @@ final class SettingsViewModel: ObservableObject {
         Task {
             await persistReminderConfiguration()
         }
+    }
+
+    func selectPreset(_ preset: DrinkPreset) {
+        selectedPreset = preset
+        applyPreset(preset)
     }
 
     func updateReminderTime(_ time: Date) {
@@ -196,6 +299,26 @@ final class SettingsViewModel: ObservableObject {
             throw ValidationError(message: "\(label) must be a valid number.")
         }
         return decimal
+    }
+
+    private func applyPreset(_ preset: DrinkPreset) {
+        nameInput = preset.displayName
+        brandInput = preset.brand ?? ""
+        variant = preset.variant
+        sugarInput = formattedNumber(preset.sugarGrams)
+        caffeineInput = formattedNumber(preset.caffeineMg)
+        priceInput = formattedDecimal(preset.price)
+    }
+
+    private func formattedNumber(_ value: Double) -> String {
+        if value.truncatingRemainder(dividingBy: 1) == 0 {
+            return String(Int(value))
+        }
+        return String(format: "%.2f", value)
+    }
+
+    private func formattedDecimal(_ value: Decimal) -> String {
+        NSDecimalNumber(decimal: value).stringValue
     }
 
     private func formattedTime(_ date: Date) -> String {
