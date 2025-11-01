@@ -68,7 +68,7 @@ struct StatsView: View {
     private var metricsSection: some View {
         LazyVGrid(columns: [GridItem(.adaptive(minimum: 160), spacing: 16)], spacing: 16) {
             ForEach(viewModel.metrics) { metric in
-                StatCard(metric: metric)
+                MetricBarCard(metric: metric)
             }
         }
     }
@@ -114,8 +114,12 @@ struct StatsView: View {
     }
 }
 
-private struct StatCard: View {
+private struct MetricBarCard: View {
     let metric: StatsMetric
+
+    private var progressFraction: CGFloat {
+        CGFloat(min(max(progressValue, 0), 1))
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -127,12 +131,17 @@ private struct StatCard: View {
                 .font(.quitRounded(.semibold, size: 28))
                 .foregroundStyle(QuitERGYTheme.textPrimary)
 
-            ProgressView(value: progressValue)
-                .tint(QuitERGYTheme.accent)
-                .progressViewStyle(.linear)
-                .frame(height: 6)
-                .clipShape(Capsule())
-                .shadow(color: QuitERGYTheme.accent.opacity(0.4), radius: 8)
+            GeometryReader { geometry in
+                ZStack(alignment: .leading) {
+                    Capsule()
+                        .fill(QuitERGYTheme.surface.opacity(0.4))
+                    Capsule()
+                        .fill(QuitERGYTheme.accent)
+                        .frame(width: geometry.size.width * progressFraction)
+                        .shadow(color: QuitERGYTheme.accent.opacity(0.35), radius: 6, y: 2)
+                }
+            }
+            .frame(height: 10)
         }
         .padding(QuitERGYTheme.cardPadding)
         .cardBackground()
