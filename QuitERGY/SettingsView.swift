@@ -96,12 +96,10 @@ struct SettingsView: View {
                     .onChange(of: viewModel.reminderEnabled, initial: false) { oldValue, newValue in
                         guard hasInitializedReminder else { return }
                         guard oldValue != newValue else { return }
-                        if newValue {
+                        if !newValue {
                             withAnimation {
-                                isEditingReminderTime = true
+                                isEditingReminderTime = false
                             }
-                        } else {
-                            isEditingReminderTime = false
                         }
                         viewModel.updateReminderEnabled(newValue)
                     }
