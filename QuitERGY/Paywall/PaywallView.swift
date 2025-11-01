@@ -52,23 +52,23 @@ struct PaywallLayoutMetrics {
 
     var isUltraCompact: Bool { size.height <= 670 }
 
-    var horizontalPadding: CGFloat { scaledValue(18, minimum: 14, maximum: 22) }
-    var bodySpacing: CGFloat { scaledValue(22, minimum: 18, maximum: 28) }
-    var headerSpacing: CGFloat { scaledValue(12, minimum: 8, maximum: 16) }
+    var horizontalPadding: CGFloat { scaledValue(20, minimum: 16, maximum: 24) }
+    var bodySpacing: CGFloat { scaledValue(18, minimum: 14, maximum: 22) }
+    var headerSpacing: CGFloat { scaledValue(8, minimum: 6, maximum: 10) }
     var headerTopPadding: CGFloat {
-        isUltraCompact ? 18 : scaledValue(32, minimum: 24, maximum: 44)
+        isUltraCompact ? 12 : scaledValue(20, minimum: 16, maximum: 28)
     }
     var headerBottomPadding: CGFloat {
-        isUltraCompact ? 10 : scaledValue(18, minimum: 12, maximum: 24)
+        isUltraCompact ? 8 : scaledValue(14, minimum: 10, maximum: 18)
     }
-    var featureSpacing: CGFloat { scaledValue(14, minimum: 10, maximum: 18) }
-    var featureRowSpacing: CGFloat { scaledValue(12, minimum: 8, maximum: 16) }
-    var planSpacing: CGFloat { scaledValue(14, minimum: 10, maximum: 18) }
-    var footerSpacing: CGFloat { scaledValue(18, minimum: 12, maximum: 22) }
+    var featureSpacing: CGFloat { scaledValue(10, minimum: 8, maximum: 14) }
+    var featureRowSpacing: CGFloat { scaledValue(10, minimum: 8, maximum: 12) }
+    var planSpacing: CGFloat { scaledValue(12, minimum: 10, maximum: 16) }
+    var footerSpacing: CGFloat { scaledValue(16, minimum: 12, maximum: 20) }
 
     var contentBottomPadding: CGFloat { safeAreaInsets.bottom + scaledValue(32, minimum: 18, maximum: 42) }
 
-    func headerIconSize() -> CGFloat { scaledValue(92, minimum: 74, maximum: 108) }
+    func headerIconSize() -> CGFloat { scaledValue(70, minimum: 60, maximum: 80) }
     func headerBadgePadding() -> CGFloat { scaledValue(6, minimum: 4, maximum: 8) }
 
     func scaledValue(_ base: CGFloat, minimum: CGFloat? = nil, maximum: CGFloat? = nil) -> CGFloat {
@@ -170,27 +170,18 @@ struct PaywallView: View {
                     .shadow(color: QuitERGYPaywallBrand.accent.opacity(0.45), radius: 18, y: 10)
             }
 
-            Text("Unlock QuitERGY Premium")
-                .font(.quitRounded(.semibold, size: metrics.scaledValue(30, minimum: 24, maximum: 34)))
+            Text("QuitERGY Premium")
+                .font(.quitRounded(.semibold, size: metrics.scaledValue(24, minimum: 20, maximum: 28)))
                 .foregroundStyle(QuitERGYTheme.textPrimary)
                 .multilineTextAlignment(.center)
 
             Text("Stay clean longer, understand every craving, and celebrate progress with real insights.")
-                .font(.quitRounded(.medium, size: metrics.scaledValue(16, minimum: 14, maximum: 18)))
+                .font(.quitRounded(.medium, size: metrics.scaledValue(14, minimum: 12, maximum: 16)))
                 .foregroundStyle(QuitERGYTheme.textSecondary)
                 .multilineTextAlignment(.center)
-                .lineSpacing(4)
-                .padding(.horizontal, metrics.scaledValue(6, minimum: 0, maximum: 24))
+                .lineSpacing(3)
+                .padding(.horizontal, metrics.scaledValue(12, minimum: 8, maximum: 20))
 
-            Text("MOST POPULAR")
-                .font(.quitRounded(.semibold, size: metrics.scaledValue(12, minimum: 10, maximum: 14)))
-                .foregroundStyle(QuitERGYPaywallBrand.accent)
-                .padding(.horizontal, metrics.headerBadgePadding() * 2)
-                .padding(.vertical, metrics.headerBadgePadding())
-                .background(
-                    Capsule()
-                        .fill(QuitERGYPaywallBrand.accent.opacity(0.18))
-                )
         }
         .padding(.top, metrics.headerTopPadding)
         .padding(.bottom, metrics.headerBottomPadding)
@@ -199,41 +190,38 @@ struct PaywallView: View {
     // MARK: Benefits
     private func benefitsSection(metrics: PaywallLayoutMetrics) -> some View {
         let items = BenefitItem.sampleItems
-        return VStack(alignment: .leading, spacing: metrics.featureSpacing) {
-            Text("Why Premium")
-                .font(.quitRounded(.semibold, size: metrics.scaledValue(20, minimum: 18, maximum: 24)))
-                .foregroundStyle(QuitERGYTheme.textPrimary)
-
-            VStack(spacing: metrics.featureRowSpacing) {
-                ForEach(items) { item in
-                    BenefitRow(item: item, metrics: metrics)
-                }
+        return VStack(spacing: metrics.featureRowSpacing) {
+            ForEach(items) { item in
+                BenefitRow(item: item, metrics: metrics)
             }
-            .padding(QuitERGYTheme.cardPadding)
-            .cardBackground()
         }
+        .padding(metrics.scaledValue(16, minimum: 12, maximum: 20))
+        .background(
+            RoundedRectangle(cornerRadius: QuitERGYTheme.cardCornerRadius)
+                .fill(QuitERGYTheme.surface)
+                .shadow(color: QuitERGYTheme.cardShadowColor, radius: 18, x: 0, y: 12)
+        )
     }
 
     // MARK: Footer Links
     private func footerLinks(metrics: PaywallLayoutMetrics) -> some View {
-        VStack(spacing: metrics.footerSpacing) {
+        HStack(spacing: metrics.footerSpacing) {
             Button {
                 Task { try? await purchaseManager.restorePurchases() }
             } label: {
-                Text("Restore purchases")
-                    .font(.quitRounded(.medium, size: metrics.scaledValue(16, minimum: 14, maximum: 18)))
+                Text("Restore")
                     .underline()
             }
 
-            HStack(spacing: metrics.footerSpacing) {
-                Link("Terms", destination: URL(string: "https://quitergy.app/terms")!)
-                Link("Privacy", destination: URL(string: "https://quitergy.app/privacy")!)
-            }
-            .font(.quitRounded(.medium, size: metrics.scaledValue(13, minimum: 11, maximum: 15)))
-            .foregroundStyle(QuitERGYTheme.textSecondary)
+            Link("Terms", destination: URL(string: "https://quitergy.app/terms")!)
+                .underline()
+            
+            Link("Privacy", destination: URL(string: "https://quitergy.app/privacy")!)
+                .underline()
         }
+        .font(.quitRounded(.medium, size: metrics.scaledValue(13, minimum: 11, maximum: 15)))
+        .foregroundStyle(QuitERGYTheme.textSecondary)
         .frame(maxWidth: .infinity)
-        .multilineTextAlignment(.center)
     }
 
     // MARK: Dismiss Button
@@ -457,37 +445,31 @@ struct PlanSelectionSection: View {
         return Button {
             selectedPlan = plan
         } label: {
-            VStack(alignment: .leading, spacing: scaledValue(12, minimum: 10, maximum: 16)) {
-                HStack(alignment: .top) {
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text(plan == .weekly ? "Weekly Plan" : "Yearly Plan")
-                            .font(.quitRounded(.semibold, size: scaledValue(18, minimum: 16, maximum: 22)))
-                            .foregroundStyle(QuitERGYTheme.textPrimary)
-                        Text(subtitle)
-                            .font(.quitRounded(.medium, size: scaledValue(14, minimum: 12, maximum: 16)))
-                            .foregroundStyle(QuitERGYTheme.textSecondary)
-                    }
-                    Spacer(minLength: scaledValue(12, minimum: 8, maximum: 18))
-                    VStack(alignment: .trailing, spacing: 8) {
-                        Text(badge)
-                            .font(.quitRounded(.semibold, size: scaledValue(12, minimum: 10, maximum: 14)))
-                            .foregroundStyle(.white)
-                            .padding(.horizontal, 10)
-                            .padding(.vertical, 6)
-                            .background(isSelected ? planColor : Color.red)
-                            .clipShape(Capsule())
-                        Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
-                            .font(.system(size: scaledValue(20, minimum: 16, maximum: 22), weight: .semibold))
-                            .foregroundStyle(isSelected ? planColor : QuitERGYTheme.textSecondary)
-                    }
+            HStack(spacing: scaledValue(12, minimum: 10, maximum: 16)) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(plan == .weekly ? "Weekly Plan" : "Yearly Plan")
+                        .font(.quitRounded(.semibold, size: scaledValue(17, minimum: 15, maximum: 19)))
+                        .foregroundStyle(QuitERGYTheme.textPrimary)
+                    Text(priceDescription(for: plan))
+                        .font(.quitRounded(.semibold, size: scaledValue(18, minimum: 16, maximum: 20)))
+                        .foregroundStyle(QuitERGYTheme.textPrimary)
                 }
-
-                Text(priceDescription(for: plan))
-                    .font(.quitRounded(.semibold, size: scaledValue(16, minimum: 14, maximum: 18)))
-                    .foregroundStyle(QuitERGYTheme.textPrimary)
+                Spacer(minLength: scaledValue(8, minimum: 6, maximum: 12))
+                HStack(spacing: 8) {
+                    Text(badge)
+                        .font(.quitRounded(.semibold, size: scaledValue(11, minimum: 9, maximum: 13)))
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(isSelected ? planColor : Color.red)
+                        .clipShape(Capsule())
+                    Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+                        .font(.system(size: scaledValue(22, minimum: 18, maximum: 24), weight: .semibold))
+                        .foregroundStyle(isSelected ? planColor : QuitERGYTheme.textSecondary)
+                }
             }
-            .padding(.vertical, scaledValue(18, minimum: 14, maximum: 22))
-            .padding(.horizontal, scaledValue(18, minimum: 14, maximum: 22))
+            .padding(.vertical, scaledValue(14, minimum: 11, maximum: 16))
+            .padding(.horizontal, scaledValue(16, minimum: 13, maximum: 18))
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(
                 RoundedRectangle(cornerRadius: 18, style: .continuous)
