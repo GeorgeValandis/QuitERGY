@@ -16,6 +16,7 @@ struct SettingsView: View {
     @State private var isPresentingProfileForm = false
     @State private var isEditingReminderTime = false
     @State private var hasInitializedReminder = false
+    @State private var isPresentingPaywall = false
 
     private let supportEmail = "support@quitergy.app"
     private let legalDocuments: [LegalDocument] = [
@@ -56,6 +57,13 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack {
             List {
+                Section {
+                    premiumBanner
+                        .listRowInsets(EdgeInsets(top: 12, leading: 0, bottom: 12, trailing: 0))
+                        .listRowBackground(Color.clear)
+                }
+                .listRowBackground(Color.clear)
+
                 Section {
                     heroCard
                         .listRowInsets(EdgeInsets(top: 12, leading: 0, bottom: 16, trailing: 0))
@@ -275,6 +283,10 @@ struct SettingsView: View {
             .sheet(isPresented: $isPresentingProfileForm) {
                 ProfileFormView(isPresented: $isPresentingProfileForm, viewModel: viewModel)
             }
+            .sheet(isPresented: $isPresentingPaywall) {
+                PaywallView()
+                    .environmentObject(PurchaseManager.shared)
+            }
             .task {
                 viewModel.loadData()
                 hasInitializedReminder = true
@@ -285,6 +297,46 @@ struct SettingsView: View {
             hasInitializedReminder = false
             isEditingReminderTime = false
         }
+    }
+
+    private var premiumBanner: some View {
+        Button {
+            isPresentingPaywall = true
+        } label: {
+            HStack(spacing: 16) {
+                ZStack {
+                    Circle()
+                        .fill(QuitERGYTheme.accent.opacity(0.18))
+                        .frame(width: 56, height: 56)
+                    Image(systemName: "bolt.fill")
+                        .font(.system(size: 26, weight: .semibold))
+                        .foregroundStyle(QuitERGYTheme.accent)
+                }
+
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Unlock Premium")
+                        .font(.quitRounded(.semibold, size: 18))
+                        .foregroundStyle(QuitERGYTheme.textPrimary)
+                    Text("Track unlimited streaks, insights & more")
+                        .font(.quitRounded(.medium, size: 14))
+                        .foregroundStyle(QuitERGYTheme.textSecondary)
+                        .lineLimit(2)
+                }
+
+                Spacer(minLength: 8)
+
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundStyle(QuitERGYTheme.textSecondary.opacity(0.6))
+            }
+            .padding(18)
+            .cardBackground()
+            .overlay(
+                RoundedRectangle(cornerRadius: QuitERGYTheme.cardCornerRadius)
+                    .stroke(QuitERGYTheme.accent.opacity(0.25), lineWidth: 1.5)
+            )
+        }
+        .buttonStyle(.plain)
     }
 
     private var heroCard: some View {
