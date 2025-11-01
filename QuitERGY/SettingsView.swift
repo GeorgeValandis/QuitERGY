@@ -5,8 +5,8 @@
 //  Created by Codex.
 //
 
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 struct SettingsView: View {
     @Environment(\.openURL) private var openURL
@@ -22,18 +22,21 @@ struct SettingsView: View {
         LegalDocument(
             title: "Terms of Use",
             systemImage: "doc.text.fill",
-            body: "QuitERGY is designed to support your journey away from energy drinks. Review our Terms of Use to understand how we handle your data and what you can expect from the app."
+            body:
+                "QuitERGY is designed to support your journey away from energy drinks. Review our Terms of Use to understand how we handle your data and what you can expect from the app."
         ),
         LegalDocument(
             title: "Privacy Policy",
             systemImage: "hand.raised.fill",
-            body: "We respect your privacy. This placeholder policy explains which information we collect, how we process it, and how you remain in control of your data."
+            body:
+                "We respect your privacy. This placeholder policy explains which information we collect, how we process it, and how you remain in control of your data."
         ),
         LegalDocument(
             title: "Imprint",
             systemImage: "info.circle.fill",
-            body: "QuitERGY ⚡️\n\nThis is placeholder content for your legal imprint. Replace it with the official business address, registration details, and contact information."
-        )
+            body:
+                "QuitERGY ⚡️\n\nThis is placeholder content for your legal imprint. Replace it with the official business address, registration details, and contact information."
+        ),
     ]
 
     private var appVersion: String {
@@ -42,8 +45,12 @@ struct SettingsView: View {
         return version
     }
 
-    init(service: DrinkPersistenceProviding, reminderScheduler: ReminderScheduling = ReminderScheduler()) {
-        _viewModel = StateObject(wrappedValue: SettingsViewModel(service: service, reminderScheduler: reminderScheduler))
+    init(
+        service: DrinkPersistenceProviding,
+        reminderScheduler: ReminderScheduling = ReminderScheduler()
+    ) {
+        _viewModel = StateObject(
+            wrappedValue: SettingsViewModel(service: service, reminderScheduler: reminderScheduler))
     }
 
     var body: some View {
@@ -64,7 +71,10 @@ struct SettingsView: View {
                             .padding(.vertical, 4)
                     } else {
                         ForEach(viewModel.profiles) { profile in
-                            ProfileRow(profile: profile, isSelected: profile.id == viewModel.selectedProfile?.id) {
+                            ProfileRow(
+                                profile: profile,
+                                isSelected: profile.id == viewModel.selectedProfile?.id
+                            ) {
                                 viewModel.selectProfile(profile)
                             }
                             .swipeActions(edge: .trailing) {
@@ -244,21 +254,21 @@ struct SettingsView: View {
                 LegalDocumentView(document: document)
             }
             .alert("Reset all progress?", isPresented: $isPresentingResetAlert) {
-                Button("Reset", role: .destructive) { }
-                Button("Cancel", role: .cancel) { }
+                Button("Reset", role: .destructive) {}
+                Button("Cancel", role: .cancel) {}
             } message: {
                 Text("This will clear your streak and statistics. This action cannot be undone.")
             }
-            .alert("Onboarding zurücksetzen?", isPresented: $isPresentingOnboardingResetAlert) {
+            .alert("Reset onboarding?", isPresented: $isPresentingOnboardingResetAlert) {
                 Button("Reset", role: .destructive) {
                     viewModel.resetOnboardingFlow()
                 }
-                Button("Cancel", role: .cancel) { }
+                Button("Cancel", role: .cancel) {}
             } message: {
                 Text("The onboarding will start again the next time you open the app.")
             }
             .alert("Hinweis", isPresented: errorAlertBinding) {
-                Button("OK", role: .cancel) { }
+                Button("OK", role: .cancel) {}
             } message: {
                 Text(viewModel.errorMessage ?? "")
             }
@@ -416,7 +426,8 @@ private struct ProfileRow: View {
             HStack(spacing: 14) {
                 Image(systemName: isSelected ? "largecircle.fill.circle" : "circle")
                     .font(.system(size: 20, weight: .semibold))
-                    .foregroundStyle(isSelected ? QuitERGYTheme.accent : QuitERGYTheme.textSecondary)
+                    .foregroundStyle(
+                        isSelected ? QuitERGYTheme.accent : QuitERGYTheme.textSecondary)
                 VStack(alignment: .leading, spacing: 4) {
                     Text(profile.name)
                         .font(.quitRounded(.semibold, size: 16))
@@ -565,7 +576,7 @@ private struct LegalDocumentView: View {
         DrinkProfile.self,
         DrinkLog.self,
         UserSettings.self,
-        UserProfile.self
+        UserProfile.self,
     ])
     let configuration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
     let container = try! ModelContainer(for: schema, configurations: [configuration])
