@@ -59,6 +59,11 @@ final class HomeViewModel: ObservableObject {
         }
 
         do {
+            #if DEBUG
+            // Clear debug simulation when logging a real drink
+            DebugSimulationController.shared.simulatedCleanDays = nil
+            #endif
+            
             _ = try persistence.logDrink(profile, date: Date())
             isShowingResetAlert = false
             loadData()
@@ -106,6 +111,12 @@ final class HomeViewModel: ObservableObject {
         guard let lastDrinkDate else { return 0 }
         let startOfToday = calendar.startOfDay(for: Date())
         let startOfLastLog = calendar.startOfDay(for: lastDrinkDate)
+        
+        // If last drink was today, streak is 0
+        if startOfLastLog == startOfToday {
+            return 0
+        }
+        
         let components = calendar.dateComponents([.day], from: startOfLastLog, to: startOfToday)
         return max(0, components.day ?? 0)
     }
