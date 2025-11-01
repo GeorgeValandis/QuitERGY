@@ -37,6 +37,7 @@ final class StatsViewModel: ObservableObject {
     ]
     @Published var progress: [ProgressPoint] = []
     @Published var selectedProfile: DrinkProfile?
+    @Published var userProfile: UserProfile?
     @Published var errorMessage: String?
 
     private let persistence: DrinkPersistenceProviding
@@ -58,6 +59,7 @@ final class StatsViewModel: ObservableObject {
     func loadData() {
         do {
             selectedProfile = try persistence.loadSelectedProfile()
+            userProfile = try persistence.loadUserProfile()
             let endDate = Date()
             let startDate = calendar.date(byAdding: .day, value: -365, to: endDate) ?? endDate.addingTimeInterval(-365 * 24 * 60 * 60)
             let logs = try persistence.fetchRecentLogs(in: DateInterval(start: startDate, end: endDate))
@@ -70,21 +72,30 @@ final class StatsViewModel: ObservableObject {
     }
 
     private func computeMetrics(using logs: [DrinkLog]) {
-        guard let profile = selectedProfile else {
-            metrics = [
-                StatsMetric(type: .money, value: 0, formattedValue: "€0.00", unit: "€"),
-                StatsMetric(type: .sugar, value: 0, formattedValue: "0g", unit: "g"),
-                StatsMetric(type: .drinks, value: 0, formattedValue: "0", unit: "")
-            ]
-            return
-        }
-
         let lastLogDate = logs.max(by: { $0.timestamp < $1.timestamp })?.timestamp
         let streakDays = calculateStreakDays(from: lastLogDate)
         let avoidedDrinks = Double(streakDays)
 
-        let moneyValue = avoidedDrinks * priceValue(profile.price)
-        let sugarValue = avoidedDrinks * profile.sugarGrams
+        let pricePerDrink: Double
+        if let profile = userProfile {
+            pricePerDrink = profile.pricePerDrink
+        } else if let selectedProfile {
+            pricePerDrink = priceValue(selectedProfile.price)
+        } else {
+            pricePerDrink = 0
+        }
+
+        let sugarPerDrink: Double
+        if let profile = userProfile {
+            sugarPerDrink = profile.sugarPerDrink
+        } else if let selectedProfile {
+            sugarPerDrink = selectedProfile.sugarGrams
+        } else {
+            sugarPerDrink = 0
+        }
+
+        let moneyValue = avoidedDrinks * pricePerDrink
+        let sugarValue = avoidedDrinks * sugarPerDrink
         let drinksValue = avoidedDrinks
 
         metrics = [

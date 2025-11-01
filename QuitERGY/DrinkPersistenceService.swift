@@ -49,6 +49,7 @@ protocol DrinkPersistenceProviding {
     func deleteProfile(_ profile: DrinkProfile) throws
     func selectProfile(_ profile: DrinkProfile?) throws
     func loadSelectedProfile() throws -> DrinkProfile?
+    func loadUserProfile() throws -> UserProfile?
     func logDrink(_ profile: DrinkProfile, date: Date) throws -> DrinkLog
     func fetchRecentLogs(in interval: DateInterval) throws -> [DrinkLog]
     func loadReminderConfiguration() throws -> ReminderConfiguration
@@ -102,6 +103,10 @@ final class DrinkPersistenceService: DrinkPersistenceProviding {
 
     func loadSelectedProfile() throws -> DrinkProfile? {
         try fetchSettings()?.selectedProfile
+    }
+
+    func loadUserProfile() throws -> UserProfile? {
+        try fetchSettings()?.userProfile
     }
 
     func logDrink(_ profile: DrinkProfile, date: Date) throws -> DrinkLog {

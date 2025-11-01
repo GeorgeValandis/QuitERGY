@@ -93,8 +93,9 @@ struct SettingsView: View {
                     Toggle(isOn: $viewModel.reminderEnabled) {
                         Label("Ask me once per day", systemImage: "alarm.fill")
                     }
-                    .onChange(of: viewModel.reminderEnabled, initial: false) { _, newValue in
+                    .onChange(of: viewModel.reminderEnabled, initial: false) { oldValue, newValue in
                         guard hasInitializedReminder else { return }
+                        guard oldValue != newValue else { return }
                         if newValue {
                             withAnimation {
                                 isEditingReminderTime = true
@@ -244,6 +245,10 @@ struct SettingsView: View {
                 isEditingReminderTime = false
             }
         }
+        .onAppear {
+            hasInitializedReminder = false
+            isEditingReminderTime = false
+        }
     }
 
     private var heroCard: some View {
@@ -266,7 +271,6 @@ struct SettingsView: View {
         }
         .padding(20)
         .cardBackground()
-        .neonGlow(color: QuitERGYTheme.accent.opacity(0.45), lineWidth: 0.8)
     }
 
     private var versionFooter: some View {

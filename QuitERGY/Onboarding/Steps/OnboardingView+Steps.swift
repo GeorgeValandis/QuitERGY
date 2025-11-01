@@ -51,7 +51,7 @@ extension OnboardingView {
                 ForEach(DrinkType.allCases) { type in
                     OptionButton(
                         title: type.displayName,
-                        subtitle: "Sugar \(Int(type.defaultSugar)) g · \(Int(type.defaultCaffeine)) mg caffeine",
+                        subtitle: "Sugar \(Int(type.defaultSugar)) g\n\(Int(type.defaultCaffeine)) mg caffeine",
                         emoji: nil,
                         isSelected: form.drinkType == type
                     ) {
@@ -89,11 +89,7 @@ extension OnboardingView {
                 .padding(.vertical, 14)
                 .background(
                     RoundedRectangle(cornerRadius: QuitERGYTheme.cardCornerRadius - 8)
-                        .fill(QuitERGYTheme.surface.opacity(0.85))
-                )
-                .overlay(
-                    RoundedRectangle(cornerRadius: QuitERGYTheme.cardCornerRadius - 8)
-                        .stroke(QuitERGYTheme.accent.opacity(0.4), lineWidth: 1)
+                        .fill(QuitERGYTheme.surface.opacity(0.88))
                 )
             }
         }
@@ -178,11 +174,7 @@ extension OnboardingView {
                 .padding(18)
                 .background(
                     RoundedRectangle(cornerRadius: QuitERGYTheme.cardCornerRadius - 8)
-                        .fill(QuitERGYTheme.surface.opacity(0.85))
-                )
-                .overlay(
-                    RoundedRectangle(cornerRadius: QuitERGYTheme.cardCornerRadius - 8)
-                        .stroke(QuitERGYTheme.accent.opacity(0.35), lineWidth: 1)
+                        .fill(QuitERGYTheme.surface.opacity(0.88))
                 )
             }
         }
@@ -267,11 +259,7 @@ extension OnboardingView {
             .padding(.vertical, 14)
             .background(
                 RoundedRectangle(cornerRadius: QuitERGYTheme.cardCornerRadius - 8)
-                    .fill(QuitERGYTheme.surface.opacity(0.85))
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: QuitERGYTheme.cardCornerRadius - 8)
-                    .stroke(QuitERGYTheme.accent.opacity(0.35), lineWidth: 1)
+                    .fill(QuitERGYTheme.surface.opacity(0.88))
             )
         }
     }

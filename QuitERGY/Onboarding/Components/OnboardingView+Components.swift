@@ -31,10 +31,6 @@ extension OnboardingView {
                     .fill(QuitERGYTheme.surface)
                     .shadow(color: QuitERGYTheme.cardShadowColor, radius: 18, x: 0, y: 12)
             )
-            .overlay(
-                RoundedRectangle(cornerRadius: QuitERGYTheme.cardCornerRadius)
-                    .stroke(QuitERGYTheme.accent.opacity(0.55), lineWidth: 0.9)
-            )
         }
     }
 
@@ -68,9 +64,13 @@ extension OnboardingView {
                         Text(title)
                             .font(.quitRounded(.semibold, size: 18))
                             .foregroundStyle(QuitERGYTheme.textPrimary)
+                            .fixedSize(horizontal: false, vertical: true)
                         Text(subtitle)
                             .font(.quitRounded(.medium, size: 14))
                             .foregroundStyle(QuitERGYTheme.textSecondary)
+                            .lineSpacing(2)
+                            .multilineTextAlignment(.leading)
+                            .fixedSize(horizontal: false, vertical: true)
                     }
                     Spacer()
                     Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
@@ -85,11 +85,6 @@ extension OnboardingView {
             .background(
                 RoundedRectangle(cornerRadius: QuitERGYTheme.cardCornerRadius - 6)
                     .fill(QuitERGYTheme.surface.opacity(isSelected ? 0.9 : 0.7))
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: QuitERGYTheme.cardCornerRadius - 6)
-                    .stroke(isSelected ? QuitERGYTheme.accent : QuitERGYTheme.surface.opacity(0.2), lineWidth: 1.4)
-                    .shadow(color: isSelected ? QuitERGYTheme.accent.opacity(0.5) : .clear, radius: 10)
             )
         }
     }
@@ -123,11 +118,7 @@ extension OnboardingView {
             .padding(18)
             .background(
                 RoundedRectangle(cornerRadius: QuitERGYTheme.cardCornerRadius - 8)
-                    .fill(QuitERGYTheme.surface.opacity(0.8))
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: QuitERGYTheme.cardCornerRadius - 8)
-                    .stroke(QuitERGYTheme.accent.opacity(0.35), lineWidth: 1.1)
+                    .fill(QuitERGYTheme.surface.opacity(0.82))
             )
         }
     }
@@ -143,11 +134,6 @@ extension OnboardingView {
                     RoundedRectangle(cornerRadius: QuitERGYTheme.cardCornerRadius)
                         .fill(isDisabled ? QuitERGYTheme.accent.opacity(0.2) : QuitERGYTheme.accent.opacity(0.4))
                 )
-                .overlay(
-                    RoundedRectangle(cornerRadius: QuitERGYTheme.cardCornerRadius)
-                        .stroke(QuitERGYTheme.accent, lineWidth: 1.6)
-                        .shadow(color: QuitERGYTheme.accent.opacity(isDisabled ? 0.1 : 0.45), radius: 12, x: 0, y: 6)
-                )
         }
         .buttonStyle(.plain)
         .disabled(isDisabled)
@@ -162,7 +148,7 @@ extension OnboardingView {
                 .padding(.horizontal, 16)
                 .background(
                     RoundedRectangle(cornerRadius: QuitERGYTheme.cardCornerRadius)
-                        .stroke(QuitERGYTheme.textSecondary.opacity(0.4), lineWidth: 1)
+                        .fill(QuitERGYTheme.surface.opacity(0.6))
                 )
         }
         .buttonStyle(.plain)

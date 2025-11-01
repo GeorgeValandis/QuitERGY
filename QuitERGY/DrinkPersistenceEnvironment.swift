@@ -40,6 +40,10 @@ struct UnimplementedDrinkPersistenceService: DrinkPersistenceProviding {
         fatalError("Drink persistence service not provided.")
     }
 
+    func loadUserProfile() throws -> UserProfile? {
+        fatalError("Drink persistence service not provided.")
+    }
+
     func logDrink(_ profile: DrinkProfile, date: Date) throws -> DrinkLog {
         fatalError("Drink persistence service not provided.")
     }

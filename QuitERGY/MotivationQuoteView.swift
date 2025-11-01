@@ -19,7 +19,6 @@ struct MotivationQuoteView: View {
             .padding(.vertical, 16)
             .frame(maxWidth: .infinity)
             .cardBackground()
-            .neonGlow(color: QuitERGYTheme.accent.opacity(0.4), lineWidth: 0.6)
     }
 }
 

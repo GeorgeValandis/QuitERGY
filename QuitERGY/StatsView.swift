@@ -63,7 +63,6 @@ struct StatsView: View {
         }
         .padding(20)
         .cardBackground()
-        .neonGlow(color: QuitERGYTheme.accent.opacity(0.35), lineWidth: 0.7)
     }
 
     private var metricsSection: some View {
@@ -111,7 +110,6 @@ struct StatsView: View {
             }
             .padding()
             .cardBackground()
-            .neonGlow(color: QuitERGYTheme.accent.opacity(0.45), lineWidth: 0.8)
         }
     }
 }
@@ -138,7 +136,6 @@ private struct StatCard: View {
         }
         .padding(QuitERGYTheme.cardPadding)
         .cardBackground()
-        .neonGlow()
     }
 
     private var iconName: String {

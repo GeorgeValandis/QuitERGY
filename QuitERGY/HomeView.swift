@@ -125,7 +125,6 @@ struct HomeView: View {
         .frame(maxWidth: .infinity)
         .padding(QuitERGYTheme.cardPadding)
         .cardBackground()
-        .neonGlow(color: QuitERGYTheme.accent.opacity(0.4), lineWidth: 0.6)
     }
 
     private var addDrinkButton: some View {
@@ -143,11 +142,7 @@ struct HomeView: View {
                 .padding(.vertical, 18)
                 .background(
                     RoundedRectangle(cornerRadius: QuitERGYTheme.cardCornerRadius)
-                        .fill(QuitERGYTheme.accent.opacity(0.1))
-                )
-                .overlay(
-                    RoundedRectangle(cornerRadius: QuitERGYTheme.cardCornerRadius)
-                        .stroke(QuitERGYTheme.accent, lineWidth: 1.5)
+                        .fill(QuitERGYTheme.accent.opacity(0.2))
                 )
         }
         .tint(QuitERGYTheme.accent)
