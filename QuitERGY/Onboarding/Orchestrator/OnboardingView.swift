@@ -10,6 +10,7 @@ import SwiftData
 
 struct OnboardingView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.drinkPersistence) private var persistence
 
     let onCompleted: () -> Void
 
@@ -176,6 +177,18 @@ struct OnboardingView: View {
         profile.sugarPerDrink = form.sugarPerDrink
         profile.caffeinePerDrink = form.caffeinePerDrink
         profile.startDate = form.startDate
+
+        // Create DrinkProfile using the same mechanism as Settings
+        let input = DrinkProfileInput(
+            name: form.drinkType.displayName,
+            brand: form.drinkType.brandName,
+            variant: form.drinkType.variant,
+            sugarGrams: form.sugarPerDrink,
+            caffeineMg: form.caffeinePerDrink,
+            price: Decimal(form.pricePerDrink)
+        )
+        let drinkProfile = try persistence.createProfile(input: input)
+        try persistence.selectProfile(drinkProfile)
 
         let settings = try fetchOrCreateSettings()
         settings.hasCompletedOnboarding = true

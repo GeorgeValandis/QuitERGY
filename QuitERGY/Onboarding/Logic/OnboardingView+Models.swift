@@ -110,6 +110,24 @@ extension OnboardingView {
             case .other: return 2.10
             }
         }
+
+        var brandName: String? {
+            switch self {
+            case .redBull: return "Red Bull GmbH"
+            case .monster: return "Monster Beverage"
+            case .rockstar: return "Rockstar Energy"
+            case .other: return nil
+            }
+        }
+
+        var variant: DrinkVariant {
+            switch self {
+            case .redBull: return .classic
+            case .monster: return .classic
+            case .rockstar: return .classic
+            case .other: return .classic
+            }
+        }
     }
 
     enum GoalType: String, CaseIterable, Identifiable {
