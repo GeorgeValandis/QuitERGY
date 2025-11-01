@@ -80,7 +80,7 @@ extension OnboardingView {
             case .redBull: return "Red Bull"
             case .monster: return "Monster"
             case .rockstar: return "Rockstar"
-            case .other: return "Something else"
+            case .other: return "Other drink"
             }
         }
 

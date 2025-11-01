@@ -13,9 +13,11 @@ extension OnboardingView {
         let spacing: CGFloat
         @ViewBuilder var content: () -> Content
 
-        init(alignment: HorizontalAlignment = .leading,
-             spacing: CGFloat = 20,
-             @ViewBuilder content: @escaping () -> Content) {
+        init(
+            alignment: HorizontalAlignment = .leading,
+            spacing: CGFloat = 20,
+            @ViewBuilder content: @escaping () -> Content
+        ) {
             self.alignment = alignment
             self.spacing = spacing
             self.content = content
@@ -41,11 +43,13 @@ extension OnboardingView {
         let isSelected: Bool
         let action: () -> Void
 
-        init(title: String,
-             subtitle: String,
-             emoji: String? = nil,
-             isSelected: Bool,
-             action: @escaping () -> Void) {
+        init(
+            title: String,
+            subtitle: String,
+            emoji: String? = nil,
+            isSelected: Bool,
+            action: @escaping () -> Void
+        ) {
             self.title = title
             self.subtitle = subtitle
             self.emoji = emoji
@@ -64,7 +68,10 @@ extension OnboardingView {
                         Text(title)
                             .font(.quitRounded(.semibold, size: 18))
                             .foregroundStyle(QuitERGYTheme.textPrimary)
-                            .fixedSize(horizontal: false, vertical: true)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.85)
+                            .allowsTightening(true)
+                            .layoutPriority(1)
                         Text(subtitle)
                             .font(.quitRounded(.medium, size: 14))
                             .foregroundStyle(QuitERGYTheme.textSecondary)
@@ -72,10 +79,14 @@ extension OnboardingView {
                             .multilineTextAlignment(.leading)
                             .fixedSize(horizontal: false, vertical: true)
                     }
-                    Spacer()
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .overlay(alignment: .trailing) {
                     Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
                         .font(.system(size: 22, weight: .semibold))
-                        .foregroundStyle(isSelected ? QuitERGYTheme.accent : QuitERGYTheme.textSecondary.opacity(0.5))
+                        .foregroundStyle(
+                            isSelected
+                                ? QuitERGYTheme.accent : QuitERGYTheme.textSecondary.opacity(0.5))
                 }
                 .padding(18)
                 .contentShape(Rectangle())
@@ -132,7 +143,10 @@ extension OnboardingView {
                 .padding(.vertical, 18)
                 .background(
                     RoundedRectangle(cornerRadius: QuitERGYTheme.cardCornerRadius)
-                        .fill(isDisabled ? QuitERGYTheme.accent.opacity(0.2) : QuitERGYTheme.accent.opacity(0.4))
+                        .fill(
+                            isDisabled
+                                ? QuitERGYTheme.accent.opacity(0.2)
+                                : QuitERGYTheme.accent.opacity(0.4))
                 )
         }
         .buttonStyle(.plain)
@@ -164,7 +178,7 @@ extension OnboardingView {
                         LinearGradient(
                             colors: [
                                 QuitERGYTheme.accent.opacity(0.6),
-                                QuitERGYTheme.accent
+                                QuitERGYTheme.accent,
                             ],
                             startPoint: .leading,
                             endPoint: .trailing

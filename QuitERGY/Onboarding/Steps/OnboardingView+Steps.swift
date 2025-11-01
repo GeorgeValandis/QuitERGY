@@ -51,7 +51,8 @@ extension OnboardingView {
                 ForEach(DrinkType.allCases) { type in
                     OptionButton(
                         title: type.displayName,
-                        subtitle: "Sugar \(Int(type.defaultSugar)) g\n\(Int(type.defaultCaffeine)) mg caffeine",
+                        subtitle:
+                            "\(Int(type.defaultSugar)) g sugar\n\(Int(type.defaultCaffeine)) mg caffeine",
                         emoji: nil,
                         isSelected: form.drinkType == type
                     ) {
@@ -68,19 +69,22 @@ extension OnboardingView {
                     .foregroundStyle(QuitERGYTheme.textSecondary)
 
                 HStack {
-                    TextField("Price", value: $form.pricePerDrink, format: .number.precision(.fractionLength(0...2)))
-                        .font(.quitRounded(.semibold, size: 18))
-                        .foregroundStyle(QuitERGYTheme.textPrimary)
-                        .keyboardType(.decimalPad)
-                        .focused($focusedField, equals: .price)
-                        .onChange(of: form.pricePerDrink) { _, newValue in
-                            if newValue < 0 {
-                                form.pricePerDrink = 0
-                            }
-                            if focusedField == .price {
-                                form.hasCustomizedPrice = true
-                            }
+                    TextField(
+                        "Price", value: $form.pricePerDrink,
+                        format: .number.precision(.fractionLength(0...2))
+                    )
+                    .font(.quitRounded(.semibold, size: 18))
+                    .foregroundStyle(QuitERGYTheme.textPrimary)
+                    .keyboardType(.decimalPad)
+                    .focused($focusedField, equals: .price)
+                    .onChange(of: form.pricePerDrink) { _, newValue in
+                        if newValue < 0 {
+                            form.pricePerDrink = 0
                         }
+                        if focusedField == .price {
+                            form.hasCustomizedPrice = true
+                        }
+                    }
                     Text("€")
                         .font(.quitRounded(.medium, size: 18))
                         .foregroundStyle(QuitERGYTheme.textSecondary)
@@ -167,9 +171,11 @@ extension OnboardingView {
                     .labelsHidden()
                     .padding(.vertical, 4)
 
-                    Text("From \(formatDrinks(normalizedBaselinePerWeek)) down to \(formatDrinks(binding.wrappedValue)) per week.")
-                        .font(.quitRounded(.medium, size: 14))
-                        .foregroundStyle(QuitERGYTheme.textSecondary)
+                    Text(
+                        "From \(formatDrinks(normalizedBaselinePerWeek)) down to \(formatDrinks(binding.wrappedValue)) per week."
+                    )
+                    .font(.quitRounded(.medium, size: 14))
+                    .foregroundStyle(QuitERGYTheme.textSecondary)
                 }
                 .padding(18)
                 .background(
@@ -227,11 +233,13 @@ extension OnboardingView {
         }
     }
 
-    private func valueCard(title: String,
-                           unit: String,
-                           value: Binding<Double>,
-                           focus: FocusField,
-                           onEdit: @escaping () -> Void) -> some View {
+    private func valueCard(
+        title: String,
+        unit: String,
+        value: Binding<Double>,
+        focus: FocusField,
+        onEdit: @escaping () -> Void
+    ) -> some View {
         VStack(alignment: .leading, spacing: 12) {
             Text(title)
                 .font(.quitRounded(.medium, size: 15))
