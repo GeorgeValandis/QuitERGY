@@ -418,7 +418,13 @@ struct PlanSelectionSection: View {
                 .foregroundStyle(.white)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, scaledValue(18, minimum: 14, maximum: 22))
-                .background(planColor)
+                .background(
+                    LinearGradient(
+                        colors: [planColor.opacity(0.85), planColor.opacity(0.75)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
                 .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
             }
             .disabled(isProcessing || isLoading)
@@ -461,7 +467,7 @@ struct PlanSelectionSection: View {
                         .foregroundStyle(.white)
                         .padding(.horizontal, 8)
                         .padding(.vertical, 4)
-                        .background(isSelected ? planColor : Color.red)
+                        .background(isSelected ? planColor.opacity(0.9) : Color.red.opacity(0.85))
                         .clipShape(Capsule())
                     Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
                         .font(.system(size: scaledValue(22, minimum: 18, maximum: 24), weight: .semibold))
