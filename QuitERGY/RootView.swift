@@ -14,6 +14,7 @@ struct RootView: View {
     @Query var settings: [UserSettings]
     @State private var hasEnsuredSettings = false
     @State private var ensureError: String?
+    @State private var showPaywall = false
 
     init() {
         _settings = Query(FetchDescriptor<UserSettings>())
@@ -46,11 +47,16 @@ struct RootView: View {
                 MainTabView()
             } else {
                 OnboardingView {
-                    // The @Query will update automatically after persistence.
+                    showPaywall = true
                 }
             }
         }
         .background(QuitERGYTheme.background.ignoresSafeArea())
+        .sheet(isPresented: $showPaywall) {
+            PaywallView()
+                .environmentObject(PurchaseManager.shared)
+                .interactiveDismissDisabled()
+        }
         .task {
             await ensureSettingsRecord()
         }
