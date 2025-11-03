@@ -331,10 +331,6 @@ struct SettingsView: View {
             }
             .padding(18)
             .cardBackground()
-            .overlay(
-                RoundedRectangle(cornerRadius: QuitERGYTheme.cardCornerRadius)
-                    .stroke(QuitERGYTheme.accent.opacity(0.25), lineWidth: 1.5)
-            )
         }
         .buttonStyle(.plain)
     }
