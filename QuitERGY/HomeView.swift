@@ -18,25 +18,44 @@ struct HomeView: View {
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: 28) {
-                streakRing
-                    .padding(.top, 8)
+            ScrollView(showsIndicators: false) {
+                VStack(spacing: 32) {
+                    streakRing
+                        .padding(.top, 40)
 
-                sinceLastDrink
+                    motivationalSection
 
-                addDrinkButton
-
-                Spacer(minLength: 0)
+                    Spacer(minLength: 0)
+                }
+                .padding(.horizontal, 24)
+                .padding(.bottom, 40)
             }
-            .padding(.top, 32)
-            .padding(.horizontal, 24)
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-            .background(QuitERGYTheme.background.ignoresSafeArea())
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(
+                LinearGradient(
+                    colors: [
+                        Color(red: 0.05, green: 0.08, blue: 0.15),
+                        Color(red: 0.02, green: 0.05, blue: 0.12)
+                    ],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                .ignoresSafeArea()
+            )
             .toolbar {
-                ToolbarItem(placement: .principal) {
+                ToolbarItem(placement: .navigationBarLeading) {
                     Text("QuitERGY")
-                        .font(.quitRounded(.semibold, size: 20))
-                        .foregroundStyle(QuitERGYTheme.textPrimary)
+                        .font(.system(size: 24, weight: .bold, design: .rounded))
+                        .foregroundStyle(.white)
+                }
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button {
+                        // Share action
+                    } label: {
+                        Image(systemName: "square.and.arrow.up")
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundStyle(.white.opacity(0.7))
+                    }
                 }
             }
         }
@@ -80,73 +99,148 @@ struct HomeView: View {
 
     private var streakRing: some View {
         ZStack {
+            // Background circle
             Circle()
-                .stroke(QuitERGYTheme.accent.opacity(0.15), lineWidth: 18)
+                .stroke(
+                    Color.white.opacity(0.1),
+                    lineWidth: 28
+                )
 
+            // Progress circle with gradient
             Circle()
                 .trim(from: 0, to: displayedProgress)
-                .stroke(style: StrokeStyle(lineWidth: 18, lineCap: .round))
-                .foregroundStyle(QuitERGYTheme.accent)
-                .shadow(color: QuitERGYTheme.accent.opacity(0.7), radius: 18)
-                .rotationEffect(.degrees(-90))
-
-            VStack(spacing: 8) {
-                Text(viewModel.streakTitle)
-                    .font(.quitRounded(.semibold, size: 22))
-                    .foregroundStyle(QuitERGYTheme.textPrimary)
-                Text(viewModel.streakSubtitle)
-                    .font(.quitRounded(.medium, size: 16))
-                    .foregroundStyle(QuitERGYTheme.textSecondary)
-            }
-        }
-        .frame(width: 260, height: 260)
-    }
-
-    private var sinceLastDrink: some View {
-        VStack(spacing: 12) {
-            Text("Since last drink")
-                .font(.quitRounded(.medium, size: 16))
-                .foregroundStyle(QuitERGYTheme.textSecondary)
-
-            Text(viewModel.timeSinceLastDrink)
-                .font(.quitRounded(.semibold, size: 32))
-                .foregroundStyle(QuitERGYTheme.textPrimary)
-
-            if let profile = viewModel.selectedProfile {
-                Text("Profile: \(profile.name)")
-                    .font(.quitRounded(.medium, size: 14))
-                    .foregroundStyle(QuitERGYTheme.textSecondary.opacity(0.8))
-            } else {
-                Text("No profile selected")
-                    .font(.quitRounded(.medium, size: 14))
-                    .foregroundStyle(QuitERGYTheme.textSecondary.opacity(0.8))
-            }
-        }
-        .frame(maxWidth: .infinity)
-        .padding(QuitERGYTheme.cardPadding)
-        .cardBackground()
-    }
-
-    private var addDrinkButton: some View {
-        Button {
-            if viewModel.selectedProfile == nil {
-                viewModel.showMissingProfileAlert = true
-            } else {
-                viewModel.isShowingResetAlert = true
-            }
-        } label: {
-            Text("Log Drink")
-                .font(.quitRounded(.semibold, size: 18))
-                .foregroundStyle(QuitERGYTheme.textPrimary)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 18)
-                .background(
-                    RoundedRectangle(cornerRadius: QuitERGYTheme.cardCornerRadius)
-                        .fill(QuitERGYTheme.accent.opacity(0.2))
+                .stroke(
+                    LinearGradient(
+                        colors: [
+                            Color(red: 0.4, green: 0.95, blue: 0.8),
+                            Color(red: 0.3, green: 0.85, blue: 0.7)
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    style: StrokeStyle(lineWidth: 28, lineCap: .round)
                 )
+                .rotationEffect(.degrees(-90))
+                .shadow(color: Color(red: 0.4, green: 0.95, blue: 0.8).opacity(0.6), radius: 20)
+
+            // Inner content
+            VStack(spacing: 12) {
+                Text("RECOVERY")
+                    .font(.system(size: 13, weight: .semibold, design: .rounded))
+                    .foregroundStyle(.white.opacity(0.6))
+                    .tracking(2)
+
+                Text("\(Int(displayedProgress * 100))%")
+                    .font(.system(size: 72, weight: .bold, design: .rounded))
+                    .foregroundStyle(.white)
+
+                Text("\(viewModel.streakDays)D STREAK")
+                    .font(.system(size: 15, weight: .semibold, design: .rounded))
+                    .foregroundStyle(.white.opacity(0.7))
+                    .tracking(1)
+            }
         }
-        .tint(QuitERGYTheme.accent)
-        .buttonStyle(.plain)
+        .frame(width: 300, height: 300)
+    }
+
+    private var motivationalSection: some View {
+        VStack(spacing: 24) {
+            // Target date section
+            VStack(spacing: 8) {
+                Text("You're on track to quit energy drinks by:")
+                    .font(.system(size: 15, weight: .medium, design: .rounded))
+                    .foregroundStyle(.white.opacity(0.7))
+                    .multilineTextAlignment(.center)
+
+                Text(targetDate)
+                    .font(.system(size: 16, weight: .semibold, design: .rounded))
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 10)
+                    .background(
+                        RoundedRectangle(cornerRadius: 12)
+                            .fill(.white.opacity(0.1))
+                    )
+            }
+
+            // Motivational message
+            Text(motivationalMessage)
+                .font(.system(size: 15, weight: .regular, design: .rounded))
+                .foregroundStyle(.white.opacity(0.8))
+                .multilineTextAlignment(.center)
+                .lineSpacing(4)
+                .padding(.horizontal, 8)
+
+            // Log drink button
+            Button {
+                if viewModel.selectedProfile == nil {
+                    viewModel.showMissingProfileAlert = true
+                } else {
+                    viewModel.isShowingResetAlert = true
+                }
+            } label: {
+                Text("Log Drink")
+                    .font(.system(size: 18, weight: .semibold, design: .rounded))
+                    .foregroundStyle(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 18)
+                    .background(
+                        LinearGradient(
+                            colors: [
+                                Color(red: 0.4, green: 0.95, blue: 0.8).opacity(0.3),
+                                Color(red: 0.3, green: 0.85, blue: 0.7).opacity(0.2)
+                            ],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .clipShape(RoundedRectangle(cornerRadius: 16))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 16)
+                            .stroke(
+                                LinearGradient(
+                                    colors: [
+                                        Color(red: 0.4, green: 0.95, blue: 0.8).opacity(0.5),
+                                        Color(red: 0.3, green: 0.85, blue: 0.7).opacity(0.3)
+                                    ],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                ),
+                                lineWidth: 1.5
+                            )
+                    )
+            }
+            .buttonStyle(.plain)
+        }
+    }
+
+    private var targetDate: String {
+        let calendar = Calendar.current
+        let targetDays = 90 - viewModel.streakDays
+        if targetDays > 0 {
+            let targetDate = calendar.date(byAdding: .day, value: targetDays, to: Date()) ?? Date()
+            let formatter = DateFormatter()
+            formatter.dateFormat = "MMM d, yyyy"
+            return formatter.string(from: targetDate)
+        }
+        return "Goal achieved!"
+    }
+
+    private var motivationalMessage: String {
+        let days = viewModel.streakDays
+        if days == 0 {
+            return "Every journey begins with a single step. You've got this!"
+        } else if days < 7 {
+            return "Great start! The first week is the hardest, but you're already making progress."
+        } else if days < 14 {
+            return "You're building momentum! Your body is starting to adjust to life without energy drinks."
+        } else if days < 30 {
+            return "Impressive progress! You're breaking the habit and forming healthier patterns."
+        } else if days < 60 {
+            return "You're over \(days) days in! The cravings may still come, but your mind is stronger, and your willpower is greater. Stay the course and trust the process."
+        } else {
+            return "Outstanding achievement! You've proven your strength and commitment. Keep going!"
+        }
     }
 }
 
