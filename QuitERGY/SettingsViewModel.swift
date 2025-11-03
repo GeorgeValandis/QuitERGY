@@ -207,8 +207,41 @@ final class SettingsViewModel: ObservableObject {
     func updateReminderEnabled(_ isEnabled: Bool) {
         guard reminderEnabled != isEnabled else { return }
         reminderEnabled = isEnabled
-        Task {
-            await persistReminderConfiguration()
+        
+        if isEnabled {
+            // Request notification permission immediately when toggle is enabled
+            Task {
+                await requestNotificationPermission()
+            }
+        } else {
+            // Disable reminder immediately when toggle is off
+            Task {
+                await persistReminderConfiguration()
+            }
+        }
+    }
+    
+    private func requestNotificationPermission() async {
+        do {
+            // Request permission first
+            try await reminderScheduler.scheduleDailyReminder(at: reminderTime, profileName: selectedProfile?.name)
+            reminderStatusMessage = "Daily reminder scheduled at \(formattedTime(reminderTime))."
+            
+            // Save configuration
+            let config = ReminderConfiguration(
+                isEnabled: true,
+                reminderTime: reminderTime
+            )
+            try persistence.updateReminderConfiguration(config)
+        } catch {
+            // If permission denied or error, revert toggle
+            reminderScheduler.cancelScheduledReminder()
+            reminderEnabled = false
+            reminderStatusMessage = nil
+            if (try? persistence.updateReminderConfiguration(ReminderConfiguration(isEnabled: false, reminderTime: nil))) == nil {
+                // ignore persistence failure
+            }
+            errorMessage = error.localizedDescription
         }
     }
 
@@ -220,13 +253,36 @@ final class SettingsViewModel: ObservableObject {
     func updateReminderTime(_ time: Date) {
         reminderTime = time
         if reminderEnabled {
-            reminderStatusMessage = "Tap OK to save changes."
+            // Update the scheduled reminder with new time
+            Task {
+                await updateScheduledReminder()
+            }
         }
     }
 
     func confirmReminderSelection() {
-        Task {
-            await persistReminderConfiguration()
+        // Just close the time picker, reminder is already scheduled
+        if reminderEnabled {
+            reminderStatusMessage = "Daily reminder scheduled at \(formattedTime(reminderTime))."
+        }
+    }
+    
+    private func updateScheduledReminder() async {
+        guard reminderEnabled else { return }
+        
+        do {
+            // Update the scheduled reminder with new time
+            try await reminderScheduler.scheduleDailyReminder(at: reminderTime, profileName: selectedProfile?.name)
+            reminderStatusMessage = "Daily reminder scheduled at \(formattedTime(reminderTime))."
+            
+            // Save configuration
+            let config = ReminderConfiguration(
+                isEnabled: true,
+                reminderTime: reminderTime
+            )
+            try persistence.updateReminderConfiguration(config)
+        } catch {
+            errorMessage = error.localizedDescription
         }
     }
 

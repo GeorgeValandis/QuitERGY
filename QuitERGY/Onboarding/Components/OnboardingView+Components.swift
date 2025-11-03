@@ -112,21 +112,21 @@ extension OnboardingView {
         }
 
         var body: some View {
-            VStack(alignment: .leading, spacing: 8) {
+            VStack(alignment: .leading, spacing: 6) {
                 Text(title.uppercased())
-                    .font(.quitRounded(.medium, size: 12))
+                    .font(.quitRounded(.medium, size: 10))
                     .foregroundStyle(QuitERGYTheme.textSecondary.opacity(0.8))
                 Text(value)
-                    .font(.quitRounded(.semibold, size: 22))
+                    .font(.quitRounded(.semibold, size: 18))
                     .foregroundStyle(QuitERGYTheme.textPrimary)
                 if let caption {
                     Text(caption)
-                        .font(.quitRounded(.medium, size: 13))
+                        .font(.quitRounded(.medium, size: 11))
                         .foregroundStyle(QuitERGYTheme.textSecondary)
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(18)
+            .padding(14)
             .background(
                 RoundedRectangle(cornerRadius: QuitERGYTheme.cardCornerRadius - 8)
                     .fill(QuitERGYTheme.surface.opacity(0.82))

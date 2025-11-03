@@ -106,22 +106,15 @@ struct HomeView: View {
                     lineWidth: 28
                 )
 
-            // Progress circle with gradient
+            // Progress circle with accent color
             Circle()
                 .trim(from: 0, to: displayedProgress)
                 .stroke(
-                    LinearGradient(
-                        colors: [
-                            Color(red: 0.4, green: 0.95, blue: 0.8),
-                            Color(red: 0.3, green: 0.85, blue: 0.7)
-                        ],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    ),
+                    Color(red: 0, green: 255 / 255, blue: 157 / 255),
                     style: StrokeStyle(lineWidth: 28, lineCap: .round)
                 )
                 .rotationEffect(.degrees(-90))
-                .shadow(color: Color(red: 0.4, green: 0.95, blue: 0.8).opacity(0.6), radius: 20)
+                .shadow(color: Color(red: 0, green: 255 / 255, blue: 157 / 255).opacity(0.6), radius: 20)
 
             // Inner content
             VStack(spacing: 12) {
