@@ -5,9 +5,9 @@
 //  Created by Codex.
 //
 
-import SwiftUI
 import Charts
 import SwiftData
+import SwiftUI
 
 struct StatsView: View {
     @StateObject private var viewModel: StatsViewModel
@@ -34,34 +34,34 @@ struct StatsView: View {
             .background(QuitERGYTheme.background.ignoresSafeArea())
             .navigationTitle("Stats")
             .toolbarTitleDisplayMode(.inline)
-#if DEBUG
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Menu {
-                        Button("3 Tage ohne Drinks") {
-                            viewModel.simulateNoDrinks(forDays: 3)
+            #if DEBUG
+                .toolbar {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Menu {
+                            Button("3 Tage ohne Drinks") {
+                                viewModel.simulateNoDrinks(forDays: 3)
+                            }
+                            Button("7 Tage ohne Drinks") {
+                                viewModel.simulateNoDrinks(forDays: 7)
+                            }
+                            Button("14 Tage ohne Drinks") {
+                                viewModel.simulateNoDrinks(forDays: 14)
+                            }
+                            Divider()
+                            Button("Simulation zurücksetzen") {
+                                viewModel.clearSimulation()
+                            }
+                        } label: {
+                            Image(systemName: "timeline.selection")
                         }
-                        Button("7 Tage ohne Drinks") {
-                            viewModel.simulateNoDrinks(forDays: 7)
-                        }
-                        Button("14 Tage ohne Drinks") {
-                            viewModel.simulateNoDrinks(forDays: 14)
-                        }
-                        Divider()
-                        Button("Simulation zurücksetzen") {
-                            viewModel.clearSimulation()
-                        }
-                    } label: {
-                        Image(systemName: "timeline.selection")
                     }
                 }
-            }
-#endif
+            #endif
             .task {
                 viewModel.loadData()
             }
             .alert("Fehler", isPresented: errorBinding) {
-                Button("Okay", role: .cancel) { }
+                Button("Okay", role: .cancel) {}
             } message: {
                 Text(viewModel.errorMessage ?? "")
             }
@@ -90,10 +90,16 @@ struct StatsView: View {
     }
 
     private var metricsSection: some View {
-        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
+        LazyVGrid(
+            columns: [
+                GridItem(.flexible(minimum: 150, maximum: 200), spacing: 16),
+                GridItem(.flexible(minimum: 150, maximum: 200), spacing: 16)
+            ],
+            spacing: 16
+        ) {
             ForEach(viewModel.metrics) { metric in
                 MetricBarCard(metric: metric)
-                    .frame(height: 140)
+                    .frame(height: 80)
             }
         }
     }
@@ -105,9 +111,9 @@ struct StatsView: View {
                 Text(dateRangeText)
                     .font(.quitRounded(.semibold, size: 15))
                     .foregroundStyle(QuitERGYTheme.textPrimary)
-                
+
                 Spacer()
-                
+
                 Picker("Period", selection: $viewModel.selectedPeriod) {
                     Text("Weekly").tag(TimePeriod.weekly)
                     Text("Monthly").tag(TimePeriod.monthly)
@@ -121,18 +127,18 @@ struct StatsView: View {
             .padding(.horizontal, 20)
             .padding(.top, 20)
             .padding(.bottom, 16)
-            
+
             // Statistik-Bereich
             VStack(alignment: .leading, spacing: 8) {
                 Text("\(totalDrinks) Drinks")
                     .font(.quitRounded(.bold, size: 32))
                     .foregroundStyle(QuitERGYTheme.textPrimary)
-                
+
                 HStack(spacing: 16) {
                     Label("\(drinksDifference) drinks less than last month", systemImage: "clock")
                         .font(.quitRounded(.medium, size: 13))
                         .foregroundStyle(QuitERGYTheme.textSecondary)
-                    
+
                     Label("Under weekly target", systemImage: "info.circle")
                         .font(.quitRounded(.medium, size: 13))
                         .foregroundStyle(QuitERGYTheme.textSecondary)
@@ -140,7 +146,7 @@ struct StatsView: View {
             }
             .padding(.horizontal, 20)
             .padding(.bottom, 20)
-            
+
             // Area Chart
             Chart(viewModel.progress) { point in
                 AreaMark(
@@ -152,13 +158,13 @@ struct StatsView: View {
                         colors: [
                             Color.blue.opacity(0.4),
                             Color.blue.opacity(0.2),
-                            Color.blue.opacity(0.05)
+                            Color.blue.opacity(0.05),
                         ],
                         startPoint: .top,
                         endPoint: .bottom
                     )
                 )
-                
+
                 LineMark(
                     x: .value("Day", point.label),
                     y: .value("Drinks", point.value)
@@ -168,7 +174,8 @@ struct StatsView: View {
             }
             .frame(height: 200)
             .chartXAxis {
-                AxisMarks(values: .stride(by: viewModel.selectedPeriod == .weekly ? 1 : 7)) { value in
+                AxisMarks(values: .stride(by: viewModel.selectedPeriod == .weekly ? 1 : 7)) {
+                    value in
                     if let label = value.as(String.self) {
                         AxisValueLabel {
                             VStack(spacing: 4) {
@@ -186,7 +193,7 @@ struct StatsView: View {
             .chartYAxis(.hidden)
             .padding(.horizontal, 20)
             .padding(.bottom, 20)
-            
+
             // Action Buttons
             HStack(spacing: 12) {
                 Button(action: {}) {
@@ -199,7 +206,7 @@ struct StatsView: View {
                                 .fill(QuitERGYTheme.surface)
                         )
                 }
-                
+
                 Button(action: {}) {
                     Text("Insight")
                         .font(.quitRounded(.semibold, size: 16))
@@ -211,7 +218,7 @@ struct StatsView: View {
                                 .fill(QuitERGYTheme.surface)
                         )
                 }
-                
+
                 Button(action: {}) {
                     Text("Log Your Drink")
                         .font(.quitRounded(.semibold, size: 16))
@@ -232,22 +239,23 @@ struct StatsView: View {
                 .fill(QuitERGYTheme.surface.opacity(0.3))
         )
     }
-    
+
     private var dateRangeText: String {
         let formatter = DateFormatter()
         formatter.dateFormat = "MMM d"
         let daysBack = viewModel.selectedPeriod == .weekly ? -6 : -29
         let start = Calendar.current.date(byAdding: .day, value: daysBack, to: Date()) ?? Date()
         let end = Date()
-        return "\(formatter.string(from: start).uppercased()) - \(formatter.string(from: end).uppercased())"
+        return
+            "\(formatter.string(from: start).uppercased()) - \(formatter.string(from: end).uppercased())"
     }
-    
+
     private var totalDrinks: Int {
         Int(viewModel.progress.reduce(0) { $0 + $1.value })
     }
-    
+
     private var drinksDifference: Int {
-        6 // Placeholder - sollte aus ViewModel kommen
+        6  // Placeholder - sollte aus ViewModel kommen
     }
 }
 
@@ -259,16 +267,17 @@ private struct MetricBarCard: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 6) {
             Label(metric.type.rawValue, systemImage: iconName)
-                .font(.quitRounded(.medium, size: 14))
+                .font(.quitRounded(.medium, size: 12))
                 .foregroundStyle(QuitERGYTheme.textSecondary)
-                .lineLimit(2)
-                .fixedSize(horizontal: false, vertical: true)
+                .lineLimit(1)
 
             Text(metric.formattedValue)
-                .font(.quitRounded(.semibold, size: 28))
+                .font(.quitRounded(.semibold, size: 22))
                 .foregroundStyle(QuitERGYTheme.textPrimary)
+
+            Spacer(minLength: 4)
 
             GeometryReader { geometry in
                 ZStack(alignment: .leading) {
@@ -277,12 +286,13 @@ private struct MetricBarCard: View {
                     Capsule()
                         .fill(QuitERGYTheme.accent)
                         .frame(width: geometry.size.width * progressFraction)
-                        .shadow(color: QuitERGYTheme.accent.opacity(0.35), radius: 6, y: 2)
+                        .shadow(color: QuitERGYTheme.accent.opacity(0.35), radius: 4, y: 1)
                 }
             }
-            .frame(height: 10)
+            .frame(height: 6)
         }
-        .padding(QuitERGYTheme.cardPadding)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .padding(12)
         .cardBackground()
     }
 
@@ -311,7 +321,7 @@ private struct MetricBarCard: View {
         DrinkProfile.self,
         DrinkLog.self,
         UserSettings.self,
-        UserProfile.self
+        UserProfile.self,
     ])
     let configuration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
     let container = try! ModelContainer(for: schema, configurations: [configuration])
