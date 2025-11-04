@@ -157,9 +157,9 @@ struct StatsView: View {
                 .foregroundStyle(
                     LinearGradient(
                         colors: [
-                            Color.blue.opacity(0.4),
-                            Color.blue.opacity(0.2),
-                            Color.blue.opacity(0.05),
+                            QuitERGYTheme.accent.opacity(0.4),
+                            QuitERGYTheme.accent.opacity(0.2),
+                            QuitERGYTheme.accent.opacity(0.05),
                         ],
                         startPoint: .top,
                         endPoint: .bottom
@@ -170,7 +170,7 @@ struct StatsView: View {
                     x: .value("Day", point.label),
                     y: .value("Drinks", point.value)
                 )
-                .foregroundStyle(Color.blue.opacity(0.7))
+                .foregroundStyle(QuitERGYTheme.accent)
                 .lineStyle(StrokeStyle(lineWidth: 2.5))
             }
             .frame(height: 200)
@@ -181,7 +181,7 @@ struct StatsView: View {
                         AxisValueLabel {
                             VStack(spacing: 4) {
                                 Circle()
-                                    .fill(Color.green)
+                                    .fill(QuitERGYTheme.accent)
                                     .frame(width: 8, height: 8)
                                 Text(label)
                                     .font(.quitRounded(.medium, size: 11))
