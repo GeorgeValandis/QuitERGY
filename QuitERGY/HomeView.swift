@@ -21,17 +21,17 @@ struct HomeView: View {
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 32) {
                     streakRing
-                        .padding(.top, 40)
+                        .padding(.top, 20)
                     
                     activityGrid
-                        .padding(.top, 8)
+                        .padding(.top, -16)
 
                     motivationalSection
 
                     Spacer(minLength: 0)
                 }
                 .padding(.horizontal, 24)
-                .padding(.bottom, 40)
+                .padding(.bottom, 120)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(
