@@ -172,40 +172,21 @@ struct HomeView: View {
                     viewModel.isShowingResetAlert = true
                 }
             } label: {
-                HStack(spacing: 12) {
+                HStack(spacing: 10) {
                     Image(systemName: "waterbottle.fill")
-                        .font(.system(size: 24, weight: .semibold))
+                        .font(.system(size: 20, weight: .semibold))
                     Text("Log Drink")
-                        .font(.system(size: 18, weight: .semibold, design: .rounded))
+                        .font(.system(size: 16, weight: .semibold, design: .rounded))
                 }
                 .foregroundStyle(.white)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 18)
-                    .background(
-                        LinearGradient(
-                            colors: [
-                                Color(red: 0.4, green: 0.95, blue: 0.8).opacity(0.3),
-                                Color(red: 0.3, green: 0.85, blue: 0.7).opacity(0.2)
-                            ],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-                    .clipShape(RoundedRectangle(cornerRadius: 16))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 16)
-                            .stroke(
-                                LinearGradient(
-                                    colors: [
-                                        Color(red: 0.4, green: 0.95, blue: 0.8).opacity(0.5),
-                                        Color(red: 0.3, green: 0.85, blue: 0.7).opacity(0.3)
-                                    ],
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                ),
-                                lineWidth: 1.5
-                            )
-                    )
+                .padding(.horizontal, 24)
+                .padding(.vertical, 14)
+                .background(
+                    Color(red: 0.0, green: 1.0, blue: 0.6)
+                        .shadow(.inner(color: Color(red: 0.0, green: 0.8, blue: 0.5).opacity(0.5), radius: 8))
+                )
+                .clipShape(Capsule())
+                .shadow(color: Color(red: 0.0, green: 1.0, blue: 0.6).opacity(0.6), radius: 16, y: 4)
             }
             .buttonStyle(.plain)
         }
