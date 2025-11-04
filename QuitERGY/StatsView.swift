@@ -130,12 +130,12 @@ struct StatsView: View {
 
             // Statistik-Bereich
             VStack(alignment: .leading, spacing: 8) {
-                Text("\(totalDrinks) Drinks")
+                Text("\(totalDrinks) \(totalDrinks == 1 ? "Drink" : "Drinks")")
                     .font(.quitRounded(.bold, size: 32))
                     .foregroundStyle(QuitERGYTheme.textPrimary)
 
                 HStack(spacing: 16) {
-                    Label("\(drinksDifference) drinks less than last month", systemImage: "clock")
+                    Label("\(drinksDifference) \(drinksDifference == 1 ? "drink" : "drinks") less than last month", systemImage: "clock")
                         .font(.quitRounded(.medium, size: 13))
                         .foregroundStyle(QuitERGYTheme.textSecondary)
 
