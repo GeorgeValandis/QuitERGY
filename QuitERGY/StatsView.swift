@@ -98,43 +98,151 @@ struct StatsView: View {
     }
 
     private var chartSection: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Text("Weekly Drinks Logged")
-                .font(.quitRounded(.semibold, size: 18))
-                .foregroundStyle(QuitERGYTheme.textPrimary)
-
+        VStack(alignment: .leading, spacing: 0) {
+            // Header mit Datumsbereich und Segmented Control
+            HStack {
+                Text(dateRangeText)
+                    .font(.quitRounded(.semibold, size: 15))
+                    .foregroundStyle(QuitERGYTheme.textPrimary)
+                
+                Spacer()
+                
+                Picker("Period", selection: .constant(0)) {
+                    Text("Weekly").tag(0)
+                    Text("Monthly").tag(1)
+                }
+                .pickerStyle(.segmented)
+                .frame(width: 180)
+            }
+            .padding(.horizontal, 20)
+            .padding(.top, 20)
+            .padding(.bottom, 16)
+            
+            // Statistik-Bereich
+            VStack(alignment: .leading, spacing: 8) {
+                Text("\(totalDrinks) Drinks")
+                    .font(.quitRounded(.bold, size: 32))
+                    .foregroundStyle(QuitERGYTheme.textPrimary)
+                
+                HStack(spacing: 16) {
+                    Label("\(drinksDifference) drinks less than last month", systemImage: "clock")
+                        .font(.quitRounded(.medium, size: 13))
+                        .foregroundStyle(QuitERGYTheme.textSecondary)
+                    
+                    Label("Under weekly target", systemImage: "info.circle")
+                        .font(.quitRounded(.medium, size: 13))
+                        .foregroundStyle(QuitERGYTheme.textSecondary)
+                }
+            }
+            .padding(.horizontal, 20)
+            .padding(.bottom, 20)
+            
+            // Area Chart
             Chart(viewModel.progress) { point in
-                BarMark(
+                AreaMark(
                     x: .value("Day", point.label),
                     y: .value("Drinks", point.value)
                 )
-                .foregroundStyle(QuitERGYTheme.accent)
-                .cornerRadius(8)
-                .annotation(position: .top, alignment: .center) {
-                    if point.value > 0 {
-                        Text("\(Int(point.value))")
-                            .font(.quitRounded(.medium, size: 12))
-                            .foregroundStyle(QuitERGYTheme.textSecondary)
+                .foregroundStyle(
+                    LinearGradient(
+                        colors: [
+                            Color.blue.opacity(0.4),
+                            Color.blue.opacity(0.2),
+                            Color.blue.opacity(0.05)
+                        ],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                )
+                
+                LineMark(
+                    x: .value("Day", point.label),
+                    y: .value("Drinks", point.value)
+                )
+                .foregroundStyle(Color.blue.opacity(0.7))
+                .lineStyle(StrokeStyle(lineWidth: 2.5))
+            }
+            .frame(height: 200)
+            .chartXAxis {
+                AxisMarks(values: .stride(by: 7)) { value in
+                    if let label = value.as(String.self) {
+                        AxisValueLabel {
+                            VStack(spacing: 4) {
+                                Circle()
+                                    .fill(Color.green)
+                                    .frame(width: 8, height: 8)
+                                Text(label)
+                                    .font(.quitRounded(.medium, size: 11))
+                                    .foregroundStyle(QuitERGYTheme.textSecondary)
+                            }
+                        }
                     }
                 }
             }
-            .frame(height: 220)
-            .chartXAxis {
-                AxisMarks(values: viewModel.progress.map(\.label)) { value in
-                    AxisValueLabel()
-                        .foregroundStyle(QuitERGYTheme.textSecondary)
+            .chartYAxis(.hidden)
+            .padding(.horizontal, 20)
+            .padding(.bottom, 20)
+            
+            // Action Buttons
+            HStack(spacing: 12) {
+                Button(action: {}) {
+                    Image(systemName: "slider.horizontal.3")
+                        .font(.system(size: 18))
+                        .foregroundStyle(QuitERGYTheme.textPrimary)
+                        .frame(width: 50, height: 50)
+                        .background(
+                            Circle()
+                                .fill(QuitERGYTheme.surface)
+                        )
+                }
+                
+                Button(action: {}) {
+                    Text("Insight")
+                        .font(.quitRounded(.semibold, size: 16))
+                        .foregroundStyle(QuitERGYTheme.textPrimary)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 50)
+                        .background(
+                            Capsule()
+                                .fill(QuitERGYTheme.surface)
+                        )
+                }
+                
+                Button(action: {}) {
+                    Text("Log Your Drink")
+                        .font(.quitRounded(.semibold, size: 16))
+                        .foregroundStyle(.white)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 50)
+                        .background(
+                            Capsule()
+                                .fill(Color.blue.opacity(0.9))
+                        )
                 }
             }
-            .chartYAxis {
-                AxisMarks(position: .leading) { value in
-                    AxisGridLine().foregroundStyle(QuitERGYTheme.accent.opacity(0.1))
-                    AxisValueLabel()
-                        .foregroundStyle(QuitERGYTheme.textSecondary)
-                }
-            }
-            .padding()
-            .cardBackground()
+            .padding(.horizontal, 20)
+            .padding(.bottom, 20)
         }
+        .background(
+            RoundedRectangle(cornerRadius: QuitERGYTheme.cardCornerRadius)
+                .fill(QuitERGYTheme.surface.opacity(0.3))
+        )
+    }
+    
+    private var dateRangeText: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMM d"
+        let start = Calendar.current.date(byAdding: .day, value: -30, to: Date()) ?? Date()
+        let end = Date()
+        return "\(formatter.string(from: start).uppercased()) - \(formatter.string(from: end).uppercased())"
+    }
+    
+    private var totalDrinks: Int {
+        Int(viewModel.progress.reduce(0) { $0 + $1.value })
+    }
+    
+    private var drinksDifference: Int {
+        6 // Placeholder - sollte aus ViewModel kommen
     }
 }
 
