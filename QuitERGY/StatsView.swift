@@ -24,11 +24,12 @@ struct StatsView: View {
                         missingProfileCard
                     }
 
-                    metricsSection
                     chartSection
+                    metricsSection
                 }
                 .padding(.horizontal, 24)
-                .padding(.vertical, 32)
+                .padding(.top, 8)
+                .padding(.bottom, 32)
             }
             .background(QuitERGYTheme.background.ignoresSafeArea())
             .navigationTitle("Stats")
