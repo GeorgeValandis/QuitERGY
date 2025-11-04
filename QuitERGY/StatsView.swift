@@ -134,7 +134,7 @@ struct StatsView: View {
                     .font(.quitRounded(.bold, size: 32))
                     .foregroundStyle(QuitERGYTheme.textPrimary)
 
-                HStack(spacing: 16) {
+                HStack(alignment: .center, spacing: 16) {
                     Label("\(drinksDifference) \(drinksDifference == 1 ? "drink" : "drinks") less than last month", systemImage: "clock")
                         .font(.quitRounded(.medium, size: 13))
                         .foregroundStyle(QuitERGYTheme.textSecondary)
@@ -143,6 +143,7 @@ struct StatsView: View {
                         .font(.quitRounded(.medium, size: 13))
                         .foregroundStyle(QuitERGYTheme.textSecondary)
                 }
+                .alignmentGuide(.firstTextBaseline) { d in d[.firstTextBaseline] }
             }
             .padding(.horizontal, 20)
             .padding(.bottom, 20)
