@@ -108,12 +108,15 @@ struct StatsView: View {
                 
                 Spacer()
                 
-                Picker("Period", selection: .constant(0)) {
-                    Text("Weekly").tag(0)
-                    Text("Monthly").tag(1)
+                Picker("Period", selection: $viewModel.selectedPeriod) {
+                    Text("Weekly").tag(TimePeriod.weekly)
+                    Text("Monthly").tag(TimePeriod.monthly)
                 }
                 .pickerStyle(.segmented)
                 .frame(width: 180)
+                .onChange(of: viewModel.selectedPeriod) { _, _ in
+                    viewModel.loadData()
+                }
             }
             .padding(.horizontal, 20)
             .padding(.top, 20)
@@ -165,7 +168,7 @@ struct StatsView: View {
             }
             .frame(height: 200)
             .chartXAxis {
-                AxisMarks(values: .stride(by: 7)) { value in
+                AxisMarks(values: .stride(by: viewModel.selectedPeriod == .weekly ? 1 : 7)) { value in
                     if let label = value.as(String.self) {
                         AxisValueLabel {
                             VStack(spacing: 4) {
@@ -233,7 +236,8 @@ struct StatsView: View {
     private var dateRangeText: String {
         let formatter = DateFormatter()
         formatter.dateFormat = "MMM d"
-        let start = Calendar.current.date(byAdding: .day, value: -30, to: Date()) ?? Date()
+        let daysBack = viewModel.selectedPeriod == .weekly ? -6 : -29
+        let start = Calendar.current.date(byAdding: .day, value: daysBack, to: Date()) ?? Date()
         let end = Date()
         return "\(formatter.string(from: start).uppercased()) - \(formatter.string(from: end).uppercased())"
     }

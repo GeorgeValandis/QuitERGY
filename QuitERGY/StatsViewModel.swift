@@ -28,6 +28,11 @@ struct ProgressPoint: Identifiable {
     let value: Double
 }
 
+enum TimePeriod: Int {
+    case weekly = 0
+    case monthly = 1
+}
+
 @MainActor
 final class StatsViewModel: ObservableObject {
     @Published var metrics: [StatsMetric] = [
@@ -39,6 +44,7 @@ final class StatsViewModel: ObservableObject {
     @Published var selectedProfile: DrinkProfile?
     @Published var userProfile: UserProfile?
     @Published var errorMessage: String?
+    @Published var selectedPeriod: TimePeriod = .weekly
 
     private let persistence: DrinkPersistenceProviding
     private let calendar = Calendar.current
@@ -156,6 +162,15 @@ final class StatsViewModel: ObservableObject {
     }
 
     private func computeProgress(using logs: [DrinkLog]) {
+        switch selectedPeriod {
+        case .weekly:
+            computeWeeklyProgress(using: logs)
+        case .monthly:
+            computeMonthlyProgress(using: logs)
+        }
+    }
+    
+    private func computeWeeklyProgress(using logs: [DrinkLog]) {
         let formatter = DateFormatter()
         formatter.locale = Locale.current
         formatter.dateFormat = "EEE"
@@ -173,6 +188,33 @@ final class StatsViewModel: ObservableObject {
 
         var points: [ProgressPoint] = []
         for offset in 0...6 {
+            if let day = calendar.date(byAdding: .day, value: offset, to: start) {
+                let label = formatter.string(from: day)
+                let value = Double(counts[day, default: 0])
+                points.append(ProgressPoint(label: label, value: value))
+            }
+        }
+        progress = points
+    }
+    
+    private func computeMonthlyProgress(using logs: [DrinkLog]) {
+        let formatter = DateFormatter()
+        formatter.locale = Locale.current
+        formatter.dateFormat = "d"
+
+        let today = calendar.startOfDay(for: Date())
+        let start = calendar.date(byAdding: .day, value: -29, to: today) ?? today
+
+        var counts: [Date: Int] = [:]
+        for log in logs {
+            let day = calendar.startOfDay(for: log.timestamp)
+            if day >= start && day <= today {
+                counts[day, default: 0] += 1
+            }
+        }
+
+        var points: [ProgressPoint] = []
+        for offset in 0...29 {
             if let day = calendar.date(byAdding: .day, value: offset, to: start) {
                 let label = formatter.string(from: day)
                 let value = Double(counts[day, default: 0])
