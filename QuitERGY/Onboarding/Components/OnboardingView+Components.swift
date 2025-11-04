@@ -125,7 +125,7 @@ extension OnboardingView {
                         .foregroundStyle(QuitERGYTheme.textSecondary)
                 }
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
             .padding(14)
             .background(
                 RoundedRectangle(cornerRadius: QuitERGYTheme.cardCornerRadius - 8)

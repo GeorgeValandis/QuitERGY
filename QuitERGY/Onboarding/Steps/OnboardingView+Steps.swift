@@ -200,30 +200,34 @@ extension OnboardingView {
                 .foregroundStyle(QuitERGYTheme.textSecondary)
                 .fixedSize(horizontal: false, vertical: true)
 
-            HStack(spacing: 16) {
+            HStack(alignment: .top, spacing: 16) {
                 MetricTile(
                     title: "Weekly baseline",
                     value: "\(formatDrinks(snapshot.weeklyBaseline)) drinks",
                     caption: "Current routine"
                 )
+                .frame(height: 85)
                 MetricTile(
                     title: "Weekly goal",
                     value: "\(formatDrinks(snapshot.weeklyTarget)) drinks",
                     caption: "A new target"
                 )
+                .frame(height: 85)
             }
 
-            HStack(spacing: 16) {
+            HStack(alignment: .top, spacing: 16) {
                 MetricTile(
                     title: "Monthly savings",
                     value: formatCurrency(snapshot.monthlyMoneySavings),
                     caption: "\(formatDrinks(snapshot.monthlyDrinkSavings)) drinks avoided"
                 )
+                .frame(height: 85)
                 MetricTile(
                     title: "Less sugar",
                     value: "\(formatNumber(snapshot.monthlySugarSavings)) g",
                     caption: "\(formatNumber(snapshot.monthlyCaffeineSavings)) mg caffeine"
                 )
+                .frame(height: 85)
             }
 
             Text("Ready to reclaim your energy?")

@@ -89,9 +89,10 @@ struct StatsView: View {
     }
 
     private var metricsSection: some View {
-        LazyVGrid(columns: [GridItem(.adaptive(minimum: 160), spacing: 16)], spacing: 16) {
+        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
             ForEach(viewModel.metrics) { metric in
                 MetricBarCard(metric: metric)
+                    .frame(height: 140)
             }
         }
     }
@@ -147,8 +148,10 @@ private struct MetricBarCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             Label(metric.type.rawValue, systemImage: iconName)
-                .font(.quitRounded(.medium, size: 16))
+                .font(.quitRounded(.medium, size: 14))
                 .foregroundStyle(QuitERGYTheme.textSecondary)
+                .lineLimit(2)
+                .fixedSize(horizontal: false, vertical: true)
 
             Text(metric.formattedValue)
                 .font(.quitRounded(.semibold, size: 28))
