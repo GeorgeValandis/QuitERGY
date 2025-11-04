@@ -103,7 +103,7 @@ struct HomeView: View {
             Circle()
                 .stroke(
                     Color.white.opacity(0.1),
-                    lineWidth: 28
+                    lineWidth: 20
                 )
 
             // Progress circle with accent color
@@ -111,29 +111,29 @@ struct HomeView: View {
                 .trim(from: 0, to: displayedProgress)
                 .stroke(
                     Color(red: 0, green: 255 / 255, blue: 157 / 255),
-                    style: StrokeStyle(lineWidth: 28, lineCap: .round)
+                    style: StrokeStyle(lineWidth: 20, lineCap: .round)
                 )
                 .rotationEffect(.degrees(-90))
                 .shadow(color: Color(red: 0, green: 255 / 255, blue: 157 / 255).opacity(0.6), radius: 20)
 
             // Inner content
-            VStack(spacing: 12) {
+            VStack(spacing: 8) {
                 Text("RECOVERY")
-                    .font(.system(size: 13, weight: .semibold, design: .rounded))
+                    .font(.system(size: 11, weight: .semibold, design: .rounded))
                     .foregroundStyle(.white.opacity(0.6))
-                    .tracking(2)
+                    .tracking(1.5)
 
                 Text("\(Int(displayedProgress * 100))%")
-                    .font(.system(size: 72, weight: .bold, design: .rounded))
+                    .font(.system(size: 52, weight: .bold, design: .rounded))
                     .foregroundStyle(.white)
 
                 Text("\(viewModel.streakDays)D STREAK")
-                    .font(.system(size: 15, weight: .semibold, design: .rounded))
+                    .font(.system(size: 13, weight: .semibold, design: .rounded))
                     .foregroundStyle(.white.opacity(0.7))
-                    .tracking(1)
+                    .tracking(0.8)
             }
         }
-        .frame(width: 300, height: 300)
+        .frame(width: 240, height: 240)
     }
 
     private var motivationalSection: some View {
@@ -189,7 +189,41 @@ struct HomeView: View {
                 .shadow(color: Color(red: 0.0, green: 1.0, blue: 0.6).opacity(0.6), radius: 16, y: 4)
             }
             .buttonStyle(.plain)
+            
+            // Activity Grid (GitHub-style)
+            activityGrid
+                .padding(.top, 24)
         }
+    }
+    
+    private var activityGrid: some View {
+        VStack(spacing: 12) {
+            Text("Activity")
+                .font(.system(size: 15, weight: .semibold, design: .rounded))
+                .foregroundStyle(.white.opacity(0.7))
+                .frame(maxWidth: .infinity, alignment: .leading)
+            
+            ScrollView(.horizontal, showsIndicators: false) {
+                LazyHGrid(rows: Array(repeating: GridItem(.fixed(18), spacing: 6), count: 7), spacing: 6) {
+                    ForEach(0..<84, id: \.self) { index in
+                        let daysAgo = 83 - index
+                        let date = Calendar.current.date(byAdding: .day, value: -daysAgo, to: Date()) ?? Date()
+                        let hasDrink = viewModel.hasDrinkOn(date: date)
+                        
+                        RoundedRectangle(cornerRadius: 4)
+                            .fill(hasDrink ? Color.red.opacity(0.8) : Color(red: 0.0, green: 1.0, blue: 0.6).opacity(0.3))
+                            .frame(width: 18, height: 18)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 4)
+                                    .stroke(hasDrink ? Color.red.opacity(0.4) : Color(red: 0.0, green: 1.0, blue: 0.6).opacity(0.2), lineWidth: 1)
+                            )
+                    }
+                }
+                .padding(.vertical, 8)
+                .padding(.horizontal, 20)
+            }
+        }
+        .padding(.horizontal, 20)
     }
 
     private var targetDate: String {

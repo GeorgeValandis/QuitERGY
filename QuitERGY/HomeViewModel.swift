@@ -120,4 +120,11 @@ final class HomeViewModel: ObservableObject {
         let components = calendar.dateComponents([.day], from: startOfLastLog, to: startOfToday)
         return max(0, components.day ?? 0)
     }
+    
+    func hasDrinkOn(date: Date) -> Bool {
+        let startOfDay = calendar.startOfDay(for: date)
+        return recentLogs.contains { log in
+            calendar.startOfDay(for: log.timestamp) == startOfDay
+        }
+    }
 }
