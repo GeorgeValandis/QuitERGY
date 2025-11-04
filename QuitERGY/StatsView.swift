@@ -28,7 +28,7 @@ struct StatsView: View {
                     metricsSection
                 }
                 .padding(.horizontal, 24)
-                .padding(.top, 8)
+                .padding(.top, 0)
                 .padding(.bottom, 32)
             }
             .background(QuitERGYTheme.background.ignoresSafeArea())
@@ -191,46 +191,6 @@ struct StatsView: View {
                 }
             }
             .chartYAxis(.hidden)
-            .padding(.horizontal, 20)
-            .padding(.bottom, 20)
-
-            // Action Buttons
-            HStack(spacing: 12) {
-                Button(action: {}) {
-                    Image(systemName: "slider.horizontal.3")
-                        .font(.system(size: 18))
-                        .foregroundStyle(QuitERGYTheme.textPrimary)
-                        .frame(width: 50, height: 50)
-                        .background(
-                            Circle()
-                                .fill(QuitERGYTheme.surface)
-                        )
-                }
-
-                Button(action: {}) {
-                    Text("Insight")
-                        .font(.quitRounded(.semibold, size: 16))
-                        .foregroundStyle(QuitERGYTheme.textPrimary)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 50)
-                        .background(
-                            Capsule()
-                                .fill(QuitERGYTheme.surface)
-                        )
-                }
-
-                Button(action: {}) {
-                    Text("Log Your Drink")
-                        .font(.quitRounded(.semibold, size: 16))
-                        .foregroundStyle(.white)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 50)
-                        .background(
-                            Capsule()
-                                .fill(Color.blue.opacity(0.9))
-                        )
-                }
-            }
             .padding(.horizontal, 20)
             .padding(.bottom, 20)
         }
