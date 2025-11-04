@@ -166,8 +166,8 @@ struct PaywallView: View {
                         Image("PaywallIcon")
                             .resizable()
                             .scaledToFit()
-                            .frame(width: metrics.headerIconSize() * 0.7, height: metrics.headerIconSize() * 0.7)
-                            .clipShape(RoundedRectangle(cornerRadius: metrics.headerIconSize() * 0.15))
+                            .frame(width: metrics.headerIconSize() * 0.85, height: metrics.headerIconSize() * 0.85)
+                            .clipShape(Circle())
                     }
                     .shadow(color: QuitERGYPaywallBrand.accent.opacity(0.45), radius: 18, y: 10)
             }
