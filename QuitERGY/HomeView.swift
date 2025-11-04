@@ -22,6 +22,9 @@ struct HomeView: View {
                 VStack(spacing: 32) {
                     streakRing
                         .padding(.top, 40)
+                    
+                    activityGrid
+                        .padding(.top, 8)
 
                     motivationalSection
 
@@ -156,14 +159,6 @@ struct HomeView: View {
                     )
             }
 
-            // Motivational message
-            Text(motivationalMessage)
-                .font(.system(size: 15, weight: .regular, design: .rounded))
-                .foregroundStyle(.white.opacity(0.8))
-                .multilineTextAlignment(.center)
-                .lineSpacing(4)
-                .padding(.horizontal, 8)
-
             // Log drink button
             Button {
                 if viewModel.selectedProfile == nil {
@@ -189,10 +184,6 @@ struct HomeView: View {
                 .shadow(color: Color(red: 0.0, green: 1.0, blue: 0.6).opacity(0.6), radius: 16, y: 4)
             }
             .buttonStyle(.plain)
-            
-            // Activity Grid (GitHub-style)
-            activityGrid
-                .padding(.top, 24)
         }
     }
     
