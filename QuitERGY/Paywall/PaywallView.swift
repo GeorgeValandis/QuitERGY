@@ -163,9 +163,11 @@ struct PaywallView: View {
                     .fill(QuitERGYPaywallBrand.surface)
                     .frame(width: metrics.headerIconSize(), height: metrics.headerIconSize())
                     .overlay {
-                        Image(systemName: "bolt.fill")
-                            .font(.system(size: metrics.headerIconSize() * 0.42, weight: .semibold))
-                            .foregroundStyle(QuitERGYPaywallBrand.accent)
+                        Image("PaywallIcon")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: metrics.headerIconSize() * 0.7, height: metrics.headerIconSize() * 0.7)
+                            .clipShape(RoundedRectangle(cornerRadius: metrics.headerIconSize() * 0.15))
                     }
                     .shadow(color: QuitERGYPaywallBrand.accent.opacity(0.45), radius: 18, y: 10)
             }
