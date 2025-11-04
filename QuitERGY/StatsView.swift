@@ -92,10 +92,10 @@ struct StatsView: View {
     private var metricsSection: some View {
         LazyVGrid(
             columns: [
-                GridItem(.flexible(minimum: 150, maximum: 200), spacing: 16),
-                GridItem(.flexible(minimum: 150, maximum: 200), spacing: 16)
+                GridItem(.flexible(minimum: 150, maximum: 200), spacing: 12),
+                GridItem(.flexible(minimum: 150, maximum: 200), spacing: 12),
             ],
-            spacing: 16
+            spacing: 25
         ) {
             ForEach(viewModel.metrics) { metric in
                 MetricBarCard(metric: metric)
@@ -277,7 +277,7 @@ private struct MetricBarCard: View {
                 .font(.quitRounded(.semibold, size: 22))
                 .foregroundStyle(QuitERGYTheme.textPrimary)
 
-            Spacer(minLength: 4)
+            Spacer(minLength: 2)
 
             GeometryReader { geometry in
                 ZStack(alignment: .leading) {
