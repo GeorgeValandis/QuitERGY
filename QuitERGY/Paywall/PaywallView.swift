@@ -159,16 +159,11 @@ struct PaywallView: View {
             ZStack {
                 QuitERGYPaywallBrand.blurGlow(radius: 68)
                     .frame(width: metrics.headerIconSize() * 1.6)
-                Circle()
-                    .fill(QuitERGYPaywallBrand.surface)
+                Image("PaywallIcon")
+                    .resizable()
+                    .scaledToFit()
                     .frame(width: metrics.headerIconSize(), height: metrics.headerIconSize())
-                    .overlay {
-                        Image("PaywallIcon")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: metrics.headerIconSize() * 0.85, height: metrics.headerIconSize() * 0.85)
-                            .clipShape(Circle())
-                    }
+                    .clipShape(Circle())
                     .shadow(color: QuitERGYPaywallBrand.accent.opacity(0.45), radius: 18, y: 10)
             }
 
