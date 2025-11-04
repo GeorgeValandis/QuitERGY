@@ -177,11 +177,11 @@ struct HomeView: View {
                 .padding(.horizontal, 24)
                 .padding(.vertical, 14)
                 .background(
-                    Color(red: 0.0, green: 1.0, blue: 0.6)
-                        .shadow(.inner(color: Color(red: 0.0, green: 0.8, blue: 0.5).opacity(0.5), radius: 8))
+                    QuitERGYTheme.accent
+                        .shadow(.inner(color: QuitERGYTheme.accent.opacity(0.5), radius: 8))
                 )
                 .clipShape(Capsule())
-                .shadow(color: Color(red: 0.0, green: 1.0, blue: 0.6).opacity(0.6), radius: 16, y: 4)
+                .shadow(color: QuitERGYTheme.accent.opacity(0.6), radius: 16, y: 4)
             }
             .buttonStyle(.plain)
         }
@@ -202,12 +202,13 @@ struct HomeView: View {
                         let hasDrink = viewModel.hasDrinkOn(date: date)
                         
                         RoundedRectangle(cornerRadius: 4)
-                            .fill(hasDrink ? Color.red.opacity(0.8) : Color(red: 0.0, green: 1.0, blue: 0.6).opacity(0.3))
+                            .fill(hasDrink ? QuitERGYTheme.accent : Color.white.opacity(0.1))
                             .frame(width: 18, height: 18)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 4)
-                                    .stroke(hasDrink ? Color.red.opacity(0.4) : Color(red: 0.0, green: 1.0, blue: 0.6).opacity(0.2), lineWidth: 1)
+                                    .stroke(hasDrink ? QuitERGYTheme.accent.opacity(0.5) : Color.white.opacity(0.15), lineWidth: 1)
                             )
+                            .shadow(color: hasDrink ? QuitERGYTheme.accent.opacity(0.6) : Color.clear, radius: 4)
                     }
                 }
                 .padding(.vertical, 8)
