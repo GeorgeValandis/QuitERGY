@@ -210,12 +210,12 @@ final class SettingsViewModel: ObservableObject {
         
         if isEnabled {
             // Request notification permission immediately when toggle is enabled
-            Task {
+            Task { @MainActor in
                 await requestNotificationPermission()
             }
         } else {
             // Disable reminder immediately when toggle is off
-            Task {
+            Task { @MainActor in
                 await persistReminderConfiguration()
             }
         }
