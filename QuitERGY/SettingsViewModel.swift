@@ -204,20 +204,13 @@ final class SettingsViewModel: ObservableObject {
         }
     }
 
-    func updateReminderEnabled(_ isEnabled: Bool) {
-        guard reminderEnabled != isEnabled else { return }
-        reminderEnabled = isEnabled
-        
+    func handleReminderToggle(_ isEnabled: Bool) async {
         if isEnabled {
-            // Request notification permission immediately when toggle is enabled
-            Task { @MainActor in
-                await requestNotificationPermission()
-            }
+            // Request notification permission
+            await requestNotificationPermission()
         } else {
-            // Disable reminder immediately when toggle is off
-            Task { @MainActor in
-                await persistReminderConfiguration()
-            }
+            // Disable reminder
+            await persistReminderConfiguration()
         }
     }
     
@@ -225,7 +218,11 @@ final class SettingsViewModel: ObservableObject {
         do {
             // Request permission first
             try await reminderScheduler.scheduleDailyReminder(at: reminderTime, profileName: selectedProfile?.name)
-            reminderStatusMessage = "Daily reminder scheduled at \(formattedTime(reminderTime))."
+            
+            // Update status message on main thread
+            await MainActor.run {
+                reminderStatusMessage = "Daily reminder scheduled at \(formattedTime(reminderTime))."
+            }
             
             // Save configuration
             let config = ReminderConfiguration(
@@ -236,12 +233,17 @@ final class SettingsViewModel: ObservableObject {
         } catch {
             // If permission denied or error, revert toggle
             reminderScheduler.cancelScheduledReminder()
-            reminderEnabled = false
-            reminderStatusMessage = nil
+            
+            // Update UI on main thread - revert the toggle
+            await MainActor.run {
+                reminderEnabled = false
+                reminderStatusMessage = nil
+                errorMessage = error.localizedDescription
+            }
+            
             if (try? persistence.updateReminderConfiguration(ReminderConfiguration(isEnabled: false, reminderTime: nil))) == nil {
                 // ignore persistence failure
             }
-            errorMessage = error.localizedDescription
         }
     }
 

@@ -115,12 +115,17 @@ struct SettingsView: View {
                     .onChange(of: viewModel.reminderEnabled, initial: false) { oldValue, newValue in
                         guard hasInitializedReminder else { return }
                         guard oldValue != newValue else { return }
+                        
                         if !newValue {
                             withAnimation {
                                 isEditingReminderTime = false
                             }
                         }
-                        viewModel.updateReminderEnabled(newValue)
+                        
+                        // Handle permission request asynchronously without blocking UI
+                        Task {
+                            await viewModel.handleReminderToggle(newValue)
+                        }
                     }
 
                     if viewModel.reminderEnabled {

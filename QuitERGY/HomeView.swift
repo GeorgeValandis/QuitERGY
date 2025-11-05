@@ -45,22 +45,8 @@ struct HomeView: View {
                 )
                 .ignoresSafeArea()
             )
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Text("QuitERGY")
-                        .font(.system(size: 24, weight: .bold, design: .rounded))
-                        .foregroundStyle(.white)
-                }
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button {
-                        // Share action
-                    } label: {
-                        Image(systemName: "square.and.arrow.up")
-                            .font(.system(size: 16, weight: .semibold))
-                            .foregroundStyle(.white.opacity(0.7))
-                    }
-                }
-            }
+            .navigationTitle("Overview")
+            .navigationBarTitleDisplayMode(.inline)
         }
         .task {
             viewModel.loadData()
