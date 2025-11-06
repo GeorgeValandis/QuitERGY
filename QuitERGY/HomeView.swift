@@ -257,8 +257,8 @@ struct HomeView: View {
         switch status {
         case .noDrink:
             return Color.green
-        case .hadDrink:
-            return Color.red
+        case .hadDrinks(let count):
+            return redColor(for: count)
         case .noEntry:
             return Color.white.opacity(0.1)
         }
@@ -268,8 +268,8 @@ struct HomeView: View {
         switch status {
         case .noDrink:
             return Color.green.opacity(0.5)
-        case .hadDrink:
-            return Color.red.opacity(0.5)
+        case .hadDrinks(let count):
+            return redColor(for: count).opacity(0.5)
         case .noEntry:
             return Color.white.opacity(0.15)
         }
@@ -279,10 +279,26 @@ struct HomeView: View {
         switch status {
         case .noDrink:
             return Color.green.opacity(0.6)
-        case .hadDrink:
-            return Color.red.opacity(0.6)
+        case .hadDrinks(let count):
+            return redColor(for: count).opacity(0.6)
         case .noEntry:
             return Color.clear
+        }
+    }
+    
+    private func redColor(for drinkCount: Int) -> Color {
+        // Gradient from light red (1 drink) to dark red (5+ drinks)
+        switch drinkCount {
+        case 1:
+            return Color(red: 1.0, green: 0.4, blue: 0.4)  // Light red
+        case 2:
+            return Color(red: 0.95, green: 0.3, blue: 0.3) // Medium-light red
+        case 3:
+            return Color(red: 0.9, green: 0.2, blue: 0.2)  // Medium red
+        case 4:
+            return Color(red: 0.8, green: 0.15, blue: 0.15) // Medium-dark red
+        default: // 5+
+            return Color(red: 0.7, green: 0.1, blue: 0.1)  // Dark red
         }
     }
 

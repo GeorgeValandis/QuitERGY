@@ -208,9 +208,9 @@ final class HomeViewModel: ObservableObject {
     }
     
     enum DayStatus {
-        case noDrink    // Green - user logged "No Drink"
-        case hadDrink   // Red - user logged a drink
-        case noEntry    // Gray - no entry for this day
+        case noDrink           // Green - user logged "No Drink"
+        case hadDrinks(Int)    // Red - user logged drinks (with count)
+        case noEntry           // Gray - no entry for this day
     }
     
     func getDayStatus(for date: Date) -> DayStatus {
@@ -219,9 +219,11 @@ final class HomeViewModel: ObservableObject {
             calendar.startOfDay(for: log.timestamp) == startOfDay
         }
         
-        // If there's any drink log (isNoDrink = false), show red
-        if logsForDay.contains(where: { !$0.isNoDrink }) {
-            return .hadDrink
+        // Count drink logs (isNoDrink = false)
+        let drinkCount = logsForDay.filter { !$0.isNoDrink }.count
+        
+        if drinkCount > 0 {
+            return .hadDrinks(drinkCount)
         }
         
         // If there's a "no drink" log (isNoDrink = true), show green
