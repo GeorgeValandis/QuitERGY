@@ -34,17 +34,7 @@ struct HomeView: View {
                 .padding(.bottom, 120)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(
-                LinearGradient(
-                    colors: [
-                        Color(red: 0.05, green: 0.08, blue: 0.15),
-                        Color(red: 0.02, green: 0.05, blue: 0.12),
-                    ],
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
-                .ignoresSafeArea()
-            )
+            .background(QuitERGYTheme.background.ignoresSafeArea())
             .navigationTitle("Overview")
             .navigationBarTitleDisplayMode(.inline)
         }
