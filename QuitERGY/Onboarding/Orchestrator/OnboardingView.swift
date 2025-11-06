@@ -178,7 +178,7 @@ struct OnboardingView: View {
         profile.caffeinePerDrink = form.caffeinePerDrink
         profile.startDate = form.startDate
 
-        // Create DrinkProfile using the same mechanism as Settings
+        // Find or create DrinkProfile - avoid duplicates
         let input = DrinkProfileInput(
             name: form.drinkType.displayName,
             brand: form.drinkType.brandName,
@@ -187,7 +187,7 @@ struct OnboardingView: View {
             caffeineMg: form.caffeinePerDrink,
             price: Decimal(form.pricePerDrink)
         )
-        let drinkProfile = try persistence.createProfile(input: input)
+        let drinkProfile = try persistence.findOrCreateProfile(input: input)
         try persistence.selectProfile(drinkProfile)
 
         let settings = try fetchOrCreateSettings()

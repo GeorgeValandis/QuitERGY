@@ -46,6 +46,7 @@ enum DrinkPersistenceError: LocalizedError {
 protocol DrinkPersistenceProviding {
     func loadProfiles() throws -> [DrinkProfile]
     func createProfile(input: DrinkProfileInput) throws -> DrinkProfile
+    func findOrCreateProfile(input: DrinkProfileInput) throws -> DrinkProfile
     func deleteProfile(_ profile: DrinkProfile) throws
     func selectProfile(_ profile: DrinkProfile?) throws
     func loadSelectedProfile() throws -> DrinkProfile?
@@ -87,6 +88,24 @@ final class DrinkPersistenceService: DrinkPersistenceProviding {
         modelContext.insert(profile)
         try saveContext()
         return profile
+    }
+    
+    func findOrCreateProfile(input: DrinkProfileInput) throws -> DrinkProfile {
+        // Check if an identical profile already exists
+        let profiles = try loadProfiles()
+        if let existing = profiles.first(where: { profile in
+            profile.name == input.name &&
+            profile.brand == input.brand &&
+            profile.variant == input.variant &&
+            profile.sugarGrams == input.sugarGrams &&
+            profile.caffeineMg == input.caffeineMg &&
+            profile.price == input.price
+        }) {
+            return existing
+        }
+        
+        // No matching profile found, create a new one
+        return try createProfile(input: input)
     }
 
     func deleteProfile(_ profile: DrinkProfile) throws {

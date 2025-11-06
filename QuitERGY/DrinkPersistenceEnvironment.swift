@@ -27,6 +27,10 @@ struct UnimplementedDrinkPersistenceService: DrinkPersistenceProviding {
     func createProfile(input: DrinkProfileInput) throws -> DrinkProfile {
         fatalError("Drink persistence service not provided.")
     }
+    
+    func findOrCreateProfile(input: DrinkProfileInput) throws -> DrinkProfile {
+        fatalError("Drink persistence service not provided.")
+    }
 
     func deleteProfile(_ profile: DrinkProfile) throws {
         fatalError("Drink persistence service not provided.")
