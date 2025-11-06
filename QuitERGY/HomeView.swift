@@ -22,7 +22,7 @@ struct HomeView: View {
                 VStack(spacing: 32) {
                     streakRing
                         .padding(.top, 20)
-                    
+
                     activityGrid
                         .padding(.top, -16)
 
@@ -38,7 +38,7 @@ struct HomeView: View {
                 LinearGradient(
                     colors: [
                         Color(red: 0.05, green: 0.08, blue: 0.15),
-                        Color(red: 0.02, green: 0.05, blue: 0.12)
+                        Color(red: 0.02, green: 0.05, blue: 0.12),
                     ],
                     startPoint: .top,
                     endPoint: .bottom
@@ -83,7 +83,9 @@ struct HomeView: View {
                 viewModel.confirmLogNoDrink()
             }
         } message: {
-            Text("You already logged drinks today. Do you want to change to 'No Drink'? This will delete all drink logs for today.")
+            Text(
+                "You already logged drinks today. Do you want to change to 'No Drink'? This will delete all drink logs for today."
+            )
         }
         .alert("Change to Drink?", isPresented: $viewModel.showChangeToDrinkAlert) {
             Button("Cancel", role: .cancel) {}
@@ -91,7 +93,9 @@ struct HomeView: View {
                 viewModel.confirmAddDrink()
             }
         } message: {
-            Text("You already logged 'No Drink' today. Do you want to change and log a drink instead?")
+            Text(
+                "You already logged 'No Drink' today. Do you want to change and log a drink instead?"
+            )
         }
     }
 
@@ -119,7 +123,9 @@ struct HomeView: View {
                     style: StrokeStyle(lineWidth: 20, lineCap: .round)
                 )
                 .rotationEffect(.degrees(-90))
-                .shadow(color: Color(red: 0, green: 255 / 255, blue: 157 / 255).opacity(0.6), radius: 20)
+                .shadow(
+                    color: Color(red: 0, green: 255 / 255, blue: 157 / 255).opacity(0.6), radius: 20
+                )
 
             // Inner content
             VStack(spacing: 8) {
@@ -145,7 +151,7 @@ struct HomeView: View {
         VStack(spacing: 24) {
             // Target date section
             VStack(spacing: 8) {
-                Text("You're on track to quit energy drinks by:")
+                Text(streakMessage)
                     .font(.system(size: 15, weight: .medium, design: .rounded))
                     .foregroundStyle(.white.opacity(0.7))
                     .multilineTextAlignment(.center)
@@ -189,7 +195,7 @@ struct HomeView: View {
                     .shadow(color: Color.red.opacity(0.6), radius: 16, y: 4)
                 }
                 .buttonStyle(.plain)
-                
+
                 // No Drink button (green)
                 Button {
                     if viewModel.selectedProfile == nil {
@@ -220,7 +226,7 @@ struct HomeView: View {
             .padding(.horizontal, 20)
         }
     }
-    
+
     private var activityGrid: some View {
         VStack(spacing: 12) {
             Text("Activity")
@@ -228,14 +234,18 @@ struct HomeView: View {
                 .foregroundStyle(.white.opacity(0.7))
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.leading, 20)
-            
+
             ScrollView(.horizontal, showsIndicators: false) {
-                LazyHGrid(rows: Array(repeating: GridItem(.fixed(18), spacing: 6), count: 7), spacing: 6) {
+                LazyHGrid(
+                    rows: Array(repeating: GridItem(.fixed(18), spacing: 6), count: 7), spacing: 6
+                ) {
                     ForEach(0..<84, id: \.self) { index in
                         let daysAgo = 83 - index
-                        let date = Calendar.current.date(byAdding: .day, value: -daysAgo, to: Date()) ?? Date()
+                        let date =
+                            Calendar.current.date(byAdding: .day, value: -daysAgo, to: Date())
+                            ?? Date()
                         let dayStatus = viewModel.getDayStatus(for: date)
-                        
+
                         RoundedRectangle(cornerRadius: 4)
                             .fill(fillColor(for: dayStatus))
                             .frame(width: 18, height: 18)
@@ -263,7 +273,7 @@ struct HomeView: View {
             return Color.white.opacity(0.1)
         }
     }
-    
+
     private func strokeColor(for status: HomeViewModel.DayStatus) -> Color {
         switch status {
         case .noDrink:
@@ -274,7 +284,7 @@ struct HomeView: View {
             return Color.white.opacity(0.15)
         }
     }
-    
+
     private func shadowColor(for status: HomeViewModel.DayStatus) -> Color {
         switch status {
         case .noDrink:
@@ -285,20 +295,34 @@ struct HomeView: View {
             return Color.clear
         }
     }
-    
+
     private func redColor(for drinkCount: Int) -> Color {
         // Gradient from light red (1 drink) to dark red (5+ drinks)
         switch drinkCount {
         case 1:
             return Color(red: 1.0, green: 0.4, blue: 0.4)  // Light red
         case 2:
-            return Color(red: 0.95, green: 0.3, blue: 0.3) // Medium-light red
+            return Color(red: 0.95, green: 0.3, blue: 0.3)  // Medium-light red
         case 3:
             return Color(red: 0.9, green: 0.2, blue: 0.2)  // Medium red
         case 4:
-            return Color(red: 0.8, green: 0.15, blue: 0.15) // Medium-dark red
-        default: // 5+
+            return Color(red: 0.8, green: 0.15, blue: 0.15)  // Medium-dark red
+        default:  // 5+
             return Color(red: 0.7, green: 0.1, blue: 0.1)  // Dark red
+        }
+    }
+
+    private var streakMessage: String {
+        // Check if user logged a drink today
+        let today = Calendar.current.startOfDay(for: Date())
+        let hasDrinkToday = viewModel.recentLogs.contains { log in
+            Calendar.current.startOfDay(for: log.timestamp) == today && !log.isNoDrink
+        }
+
+        if hasDrinkToday {
+            return "Your 90-day goal has been adjusted to:"
+        } else {
+            return "You're on track to reach your 90-day goal by:"
         }
     }
 
@@ -321,13 +345,16 @@ struct HomeView: View {
         } else if days < 7 {
             return "Great start! The first week is the hardest, but you're already making progress."
         } else if days < 14 {
-            return "You're building momentum! Your body is starting to adjust to life without energy drinks."
+            return
+                "You're building momentum! Your body is starting to adjust to life without energy drinks."
         } else if days < 30 {
             return "Impressive progress! You're breaking the habit and forming healthier patterns."
         } else if days < 60 {
-            return "You're over \(days) days in! The cravings may still come, but your mind is stronger, and your willpower is greater. Stay the course and trust the process."
+            return
+                "You're over \(days) days in! The cravings may still come, but your mind is stronger, and your willpower is greater. Stay the course and trust the process."
         } else {
-            return "Outstanding achievement! You've proven your strength and commitment. Keep going!"
+            return
+                "Outstanding achievement! You've proven your strength and commitment. Keep going!"
         }
     }
 }
