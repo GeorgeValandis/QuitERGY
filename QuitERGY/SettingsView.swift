@@ -23,20 +23,17 @@ struct SettingsView: View {
         LegalDocument(
             title: "Terms of Use",
             systemImage: "doc.text.fill",
-            body:
-                "QuitERGY is designed to support your journey away from energy drinks. Review our Terms of Use to understand how we handle your data and what you can expect from the app."
+            fileName: "terms of use"
         ),
         LegalDocument(
             title: "Privacy Policy",
             systemImage: "hand.raised.fill",
-            body:
-                "We respect your privacy. This placeholder policy explains which information we collect, how we process it, and how you remain in control of your data."
+            fileName: "privacy policy"
         ),
         LegalDocument(
             title: "Imprint",
             systemImage: "info.circle.fill",
-            body:
-                "QuitERGY ⚡️\n\nThis is placeholder content for your legal imprint. Replace it with the official business address, registration details, and contact information."
+            fileName: "legal notice"
         ),
     ]
 
@@ -604,23 +601,49 @@ private struct LegalDocument: Identifiable, Hashable {
     let id = UUID()
     let title: String
     let systemImage: String
-    let body: String
+    let fileName: String
 }
 
 private struct LegalDocumentView: View {
     let document: LegalDocument
+    @State private var content: String = ""
+    @State private var isLoading: Bool = true
 
     var body: some View {
         ScrollView {
-            Text(document.body)
-                .font(.quitRounded(.medium, size: 15))
-                .foregroundStyle(QuitERGYTheme.textSecondary)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(24)
+            if isLoading {
+                ProgressView()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .padding()
+            } else {
+                Text(content)
+                    .font(.quitRounded(.medium, size: 15))
+                    .foregroundStyle(QuitERGYTheme.textSecondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(24)
+            }
         }
         .background(QuitERGYTheme.background.ignoresSafeArea())
         .navigationTitle(document.title)
         .navigationBarTitleDisplayMode(.inline)
+        .task {
+            await loadContent()
+        }
+    }
+    
+    private func loadContent() async {
+        guard let fileURL = Bundle.main.url(forResource: document.fileName, withExtension: "txt") else {
+            content = "Error: File not found (\(document.fileName).txt)"
+            isLoading = false
+            return
+        }
+        
+        do {
+            content = try String(contentsOf: fileURL, encoding: .utf8)
+        } catch {
+            content = "Error loading file: \(error.localizedDescription)"
+        }
+        isLoading = false
     }
 }
 
