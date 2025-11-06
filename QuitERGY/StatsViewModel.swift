@@ -25,6 +25,7 @@ struct StatsMetric: Identifiable {
 struct ProgressPoint: Identifiable {
     let id = UUID()
     let label: String
+    let sublabel: String?
     let value: Double
 }
 
@@ -171,9 +172,13 @@ final class StatsViewModel: ObservableObject {
     }
     
     private func computeWeeklyProgress(using logs: [DrinkLog]) {
-        let formatter = DateFormatter()
-        formatter.locale = Locale.current
-        formatter.dateFormat = "EEE"
+        let dayFormatter = DateFormatter()
+        dayFormatter.locale = Locale(identifier: "en_US")
+        dayFormatter.dateFormat = "EEE"  // Mon, Tue, Wed
+        
+        let dateFormatter = DateFormatter()
+        dateFormatter.locale = Locale(identifier: "en_US")
+        dateFormatter.dateFormat = "d"   // Day number
 
         let today = calendar.startOfDay(for: Date())
         let start = calendar.date(byAdding: .day, value: -6, to: today) ?? today
@@ -189,19 +194,16 @@ final class StatsViewModel: ObservableObject {
         var points: [ProgressPoint] = []
         for offset in 0...6 {
             if let day = calendar.date(byAdding: .day, value: offset, to: start) {
-                let label = formatter.string(from: day)
+                let dayName = dayFormatter.string(from: day)  // Mon, Tue, etc.
+                let dayNumber = dateFormatter.string(from: day)  // 1, 2, etc.
                 let value = Double(counts[day, default: 0])
-                points.append(ProgressPoint(label: label, value: value))
+                points.append(ProgressPoint(label: dayName, sublabel: dayNumber, value: value))
             }
         }
         progress = points
     }
     
     private func computeMonthlyProgress(using logs: [DrinkLog]) {
-        let formatter = DateFormatter()
-        formatter.locale = Locale.current
-        formatter.dateFormat = "d"
-
         let today = calendar.startOfDay(for: Date())
         let start = calendar.date(byAdding: .day, value: -29, to: today) ?? today
 
@@ -216,9 +218,11 @@ final class StatsViewModel: ObservableObject {
         var points: [ProgressPoint] = []
         for offset in 0...29 {
             if let day = calendar.date(byAdding: .day, value: offset, to: start) {
-                let label = formatter.string(from: day)
+                // Show week labels: Week 1, Week 2, etc.
+                let weekNumber = (offset / 7) + 1
+                let label = "W\(weekNumber)"  // W1, W2, W3, W4
                 let value = Double(counts[day, default: 0])
-                points.append(ProgressPoint(label: label, value: value))
+                points.append(ProgressPoint(label: label, sublabel: nil, value: value))
             }
         }
         progress = points
@@ -292,7 +296,7 @@ final class StatsViewModel: ObservableObject {
         for offset in 0...6 {
             if let day = calendar.date(byAdding: .day, value: offset, to: start) {
                 let label = formatter.string(from: day)
-                points.append(ProgressPoint(label: label, value: 0))
+                points.append(ProgressPoint(label: label, sublabel: nil, value: 0))
             }
         }
         progress = points

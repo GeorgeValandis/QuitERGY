@@ -174,17 +174,24 @@ struct StatsView: View {
             }
             .frame(height: 200)
             .chartXAxis {
-                AxisMarks(values: .stride(by: viewModel.selectedPeriod == .weekly ? 1 : 7)) {
-                    value in
-                    if let label = value.as(String.self) {
+                AxisMarks(preset: .aligned) { value in
+                    if let label = value.as(String.self),
+                       let point = viewModel.progress.first(where: { $0.label == label }) {
                         AxisValueLabel {
-                            VStack(spacing: 4) {
+                            VStack(spacing: 2) {
                                 Circle()
                                     .fill(QuitERGYTheme.accent)
                                     .frame(width: 8, height: 8)
                                 Text(label)
                                     .font(.quitRounded(.medium, size: 11))
                                     .foregroundStyle(QuitERGYTheme.textSecondary)
+                                
+                                // Show sublabel if available (day number for weekly view)
+                                if let sublabel = point.sublabel {
+                                    Text(sublabel)
+                                        .font(.quitRounded(.medium, size: 9))
+                                        .foregroundStyle(QuitERGYTheme.textSecondary.opacity(0.5))
+                                }
                             }
                         }
                     }
