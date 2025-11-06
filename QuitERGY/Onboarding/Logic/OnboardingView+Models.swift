@@ -46,7 +46,7 @@ extension OnboardingView {
 
         var emoji: String {
             switch self {
-            case .onePerWeek: return "☕️"
+            case .onePerWeek: return "🥤"
             case .twoToThreePerWeek: return "⚡️"
             case .onePerDay: return "🔋"
             case .twoOrMorePerDay: return "🚀"
