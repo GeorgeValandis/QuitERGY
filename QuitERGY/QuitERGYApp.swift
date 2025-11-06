@@ -25,8 +25,8 @@ struct QuitERGYApp: App {
         let appSupportURL = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
         try? FileManager.default.createDirectory(at: appSupportURL, withIntermediateDirectories: true)
         
-        let storeURL = appSupportURL.appendingPathComponent("QuitERGY.sqlite")
-        let configuration = ModelConfiguration(url: storeURL)
+        let storeURL = appSupportURL.appendingPathComponent("QuitERGY.store")
+        let configuration = ModelConfiguration(schema: schema, url: storeURL)
 
         do {
             let container = try ModelContainer(for: schema, configurations: [configuration])

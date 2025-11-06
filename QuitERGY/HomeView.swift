@@ -179,6 +179,7 @@ struct HomeView: View {
                 .font(.system(size: 15, weight: .semibold, design: .rounded))
                 .foregroundStyle(.white.opacity(0.7))
                 .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.leading, 20)
             
             ScrollView(.horizontal, showsIndicators: false) {
                 LazyHGrid(rows: Array(repeating: GridItem(.fixed(18), spacing: 6), count: 7), spacing: 6) {

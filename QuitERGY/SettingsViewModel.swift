@@ -208,6 +208,9 @@ final class SettingsViewModel: ObservableObject {
         if isEnabled {
             // Request notification permission
             await requestNotificationPermission()
+            await MainActor.run {
+                reminderEnabled = true
+            }
         } else {
             // Disable reminder
             await persistReminderConfiguration()
