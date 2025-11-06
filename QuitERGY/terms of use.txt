@@ -1,0 +1,112 @@
+Terms of Use for the QuitERGY App
+Effective Date: October 20, 2025
+Version: 1.0
+
+Company: George Valandis Einzelunternehmen
+Owner: Georgios Andi Avenidis
+Registered in Germany as a sole proprietorship (“Einzelunternehmen”)
+Business address: Berliner Straße 235, 65205 Wiesbaden, Germany
+Contact: support@georgevalandis.com
+
+These Terms of Use (“Terms”) govern your access to and use of all applications and services provided by George Valandis Einzelunternehmen (referred to as “we,” “us,” or “our”), including mobile applications available on iOS and Android, and any related web services (collectively, the “Service”).
+By using the Service, you agree to these Terms. If you do not agree, please do not use the Service.
+
+1. Acceptance of Terms
+By accessing or using the Service, you confirm that you have read, understood, and agree to be bound by these Terms.
+We may update or modify these Terms at any time. Material changes will be communicated, for example, by posting a notice within the app or updating the “Effective Date.”
+Your continued use of the Service after any changes constitutes your acceptance of the revised Terms.
+These Terms are entered into between you and George Valandis Einzelunternehmen only, not with Apple Inc. or Google LLC.
+
+2. Definitions
+For the purposes of these Terms:
+- “Application” means the QuitERGY mobile app provided by us on iOS and Android.
+- “Application Store” means Apple App Store or Google Play Store where the Application has been downloaded.
+- “Affiliate” means an entity that controls, is controlled by, or is under common control with a party.
+- “Country” refers to: Hessen, Germany.
+- “Company” refers to George Valandis Einzelunternehmen, Berliner Straße 235, 65205 Wiesbaden, Germany.
+- “Device” means any device that can access the Service, such as a smartphone or tablet.
+- “Service” refers to the QuitERGY Application and related content.
+- “Terms” means this agreement between you and the Company.
+- “Third-party Service” means any services or content provided by a third party that may be displayed or linked within the Service.
+- “You” means the individual using the Service.
+
+3. Privacy Policy
+Your privacy is important to us. Please review our Privacy Policy at:
+https://georgevalandis.com/privacy-statement-quitergy-app/
+Our Privacy Policy is an integral part of these Terms. By using the Service, you also agree to the Privacy Policy.
+
+4. Age Restrictions
+The Service is intended for users aged 16 and above.
+Users under 16 should use the app only under parental supervision.
+
+5. Dispute Resolution
+If you have a dispute or complaint regarding the Service, please contact us first at support@georgevalandis.com to resolve the issue informally.
+We do not participate in the EU’s Online Dispute Resolution (ODR) platform.
+We encourage users to reach out directly to us for resolution.
+
+6. Payment Terms
+If the Service includes paid features or subscriptions:
+- Payments are processed through third-party providers such as Apple App Store or Google Play.
+- All billing, refunds, and cancellations are handled directly by these platforms according to their terms of service.
+- We do not collect or store any payment data on our servers.
+- You may cancel your subscription at any time through your App Store or Google Play account settings.
+Right of Withdrawal (EU Users):
+Purchases made via the Apple App Store or Google Play are subject to the withdrawal and refund policies of those platforms.
+For Apple users, requests and refunds can be made directly through Apple’s system at https://reportaproblem.apple.com.
+We do not process withdrawal or refund requests ourselves.
+
+7. Data Rights and Deletion
+You have the right to access, export, or delete your data as described in our Privacy Policy.
+Since all data are stored only on your device, any actions related to data deletion or export must be performed locally.
+QuitERGY does not operate user accounts or external servers, and we cannot access or recover deleted data.
+For users within the European Union, we comply with the General Data Protection Regulation (GDPR), including data portability and erasure rights.
+
+8. Service Availability
+We strive to ensure stable operation of the Service but cannot guarantee uninterrupted access.
+Temporary interruptions may occur due to maintenance, updates, or technical issues.
+We may modify, suspend, or discontinue the Service or any part thereof at any time for maintenance, security, or legal reasons.
+
+9. Third-Party Content and Links
+The Service may display links to third-party websites or services.
+We are not responsible for the content, privacy practices, or policies of such external services.
+Links are provided solely for convenience and do not imply endorsement.
+
+10. Termination
+We may suspend or terminate your access to the Service at any time, without notice, if you breach these Terms.
+Upon termination, your right to use the Service ceases immediately.
+
+11. Limitation of Liability
+The Service is provided “as is” and “as available,” without warranties of any kind.
+To the extent permitted by law, we are not liable for indirect, incidental, or consequential damages.
+Our liability for damages caused by slight negligence is limited to foreseeable damages resulting from a breach of essential contractual obligations.
+This limitation does not apply in cases of personal injury, intent, or gross negligence.
+Apple Inc. and Google LLC have no liability for any claims related to the Service or your use of it.
+
+12. United States Legal Compliance
+You represent and warrant that:
+- You are not located in a country subject to a U.S. government embargo.
+- You are not located in a country designated by the U.S. government as supporting terrorism.
+- You are not listed on any U.S. government list of prohibited or restricted parties.
+
+13. Severability
+If any provision of these Terms is found invalid or unenforceable, that provision will be modified to the extent necessary to make it valid and enforceable, while preserving its intent.
+The remaining provisions will continue in full force and effect.
+
+14. Governing Law and Jurisdiction
+These Terms are governed by the laws of the Federal Republic of Germany.
+For EU consumers, mandatory consumer protection laws of your country of residence shall apply.
+Any disputes shall be subject to the non-exclusive jurisdiction of the courts of Wiesbaden, Germany.
+
+15. Contact Information
+If you have any questions or concerns regarding these Terms, please contact:
+support@georgevalandis.com
+We aim to respond to all inquiries within 7 business days.
+
+16. Entire Agreement, Translations, and Updates
+These Terms constitute the entire agreement between you and George Valandis Einzelunternehmen regarding your use of QuitERGY.
+If translated into other languages, the English version shall prevail in case of discrepancies.
+We may update these Terms periodically, and the latest version will always be available on our website.
+
+Summary:
+By using QuitERGY, you agree to these Terms of Use.
+The Service operates entirely on your device — without external servers, data sharing, or analytics.

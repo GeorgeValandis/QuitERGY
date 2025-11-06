@@ -1,0 +1,101 @@
+Privacy Policy for the QuitERGY App
+URL: https://georgevalandis.com/privacy-statement-quitergy-app/
+Effective Date: October 20, 2025
+Version: 1.0
+
+Controller (Article 4 No. 7 GDPR):
+Georgios Andi Avenidis
+Berliner Straße 235
+65205 Wiesbaden, Germany
+Email: info@georgevalandis.com
+
+1. Introduction
+This Privacy Policy applies to the QuitERGY app developed by Georgios Andi Avenidis.
+QuitERGY helps users track and reduce their energy drink consumption, build healthier habits, and monitor their progress — all while protecting user privacy.
+QuitERGY is designed with privacy in mind: all user-generated data remain entirely on your device and are never transmitted to us or to any third parties.
+
+2. Type of Data Processed
+QuitERGY does not automatically collect or transmit any personal data. However, users may choose to enter information such as drink logs, notes, or progress data. These remain stored locally on the device.
+
+This includes:
+- User-entered data: Drink logs, notes, streaks, or progress tracking information.
+- Notifications and reminders: Used locally to help users stay consistent.
+- Technical data: Device type or system version, processed only locally to ensure functionality.
+- Optional location data (if enabled): Used solely to trigger local reminders (e.g., at specific places or times). These data are never transmitted externally or used for analytics.
+
+QuitERGY does not use analytics tools, advertising SDKs, or third-party tracking.
+
+3. Purpose and Legal Basis
+- App functionality: To provide the app’s main features (Article 6(1)(b) GDPR – performance of a contract).
+- Reminders and notifications: Based on your explicit consent (Article 6(1)(a) GDPR). You can revoke consent anytime by adjusting notification or location settings in your device preferences.
+Without these permissions, certain features (like geofenced reminders) may not function properly.
+
+4. Data Transfer and Storage
+QuitERGY does not send any data to external servers or third parties. All data remain on your device.
+- Local storage: All information is stored securely on your device.
+- No synchronization: The app does not connect to cloud databases.
+- Data deletion: All locally stored data are automatically deleted when you uninstall the app.
+We recommend regular device backups to prevent data loss.
+
+5. User Rights
+Under GDPR and other applicable laws, users may have the following rights regarding their personal data:
+- Access, rectification, or deletion (by editing or uninstalling the app)
+- Restriction of processing (by disabling permissions)
+- Data portability (if applicable)
+- Objection or withdrawal of consent
+- Right to lodge a complaint with a data protection authority
+As all processing happens locally on the device, these rights can typically be exercised directly by managing your app data.
+
+6. Consent and Withdrawal
+QuitERGY does not require any general consent for external data transfer, since no such transfer occurs.
+If you grant access to notifications or location services, you can withdraw that consent anytime through your system settings.
+
+7. Security Measures
+- All data remain entirely on your device.
+- Protect your device using biometric or password security.
+- Optionally enable an in-app lock (if available).
+- QuitERGY does not engage in automated decision-making or profiling.
+
+8. Cookies and Tracking Technologies
+QuitERGY does not use cookies or any tracking technologies.
+
+9. Third-Party Analytics and Advertising
+QuitERGY does not use any third-party analytics services, SDKs, or ad networks.
+No user data are transmitted or analyzed externally.
+
+10. Backups
+If your device is backed up (e.g., via iCloud or Google Drive), QuitERGY’s local data may be included in those backups.
+We have no access to or control over those backups; they are managed entirely by your platform provider.
+
+11. Changes to This Privacy Policy
+We may update this Privacy Policy from time to time.
+The effective date and version number are displayed at the top of this document.
+Significant changes will be communicated within the app or on our website.
+
+12. Child Protection
+QuitERGY is not directed at children under the age of 13.
+Since the app does not collect or transmit data, we cannot verify user age.
+Parents or guardians should supervise children’s use of the app.
+If a child has entered personal data, please delete it directly within the app or uninstall the app.
+
+13. International Compliance
+QuitERGY complies with international privacy frameworks, including:
+- The EU General Data Protection Regulation (GDPR)
+- The U.S. Children’s Online Privacy Protection Act (COPPA)
+As no personal data are collected from children under 13, QuitERGY fulfills these requirements by design.
+
+14. Governing Law and Jurisdiction
+This Privacy Policy is governed by the laws of the Federal Republic of Germany.
+Any disputes shall be subject to the non-exclusive jurisdiction of the courts of Wiesbaden, Germany.
+
+15. Language and Translations
+This Privacy Policy may be translated into other languages for convenience.
+In case of discrepancies, the English version shall prevail.
+
+16. Contact Information
+If you have questions about privacy or this policy, please contact:
+info@georgevalandis.com
+
+Summary:
+QuitERGY is built with privacy by design.
+All your data stay on your device — nothing leaves it, nothing is shared, sold, or analyzed.
