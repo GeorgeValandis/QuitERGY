@@ -145,31 +145,63 @@ struct HomeView: View {
                     )
             }
 
-            // Log drink button
-            Button {
-                if viewModel.selectedProfile == nil {
-                    viewModel.showMissingProfileAlert = true
-                } else {
-                    viewModel.isShowingResetAlert = true
+            // Action buttons
+            HStack(spacing: 12) {
+                // Log Drink button (red)
+                Button {
+                    if viewModel.selectedProfile == nil {
+                        viewModel.showMissingProfileAlert = true
+                    } else {
+                        viewModel.isShowingResetAlert = true
+                    }
+                } label: {
+                    HStack(spacing: 8) {
+                        Image(systemName: "waterbottle.fill")
+                            .font(.system(size: 18, weight: .semibold))
+                        Text("Log Drink")
+                            .font(.system(size: 15, weight: .semibold, design: .rounded))
+                    }
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 14)
+                    .frame(maxWidth: .infinity)
+                    .background(
+                        Color.red
+                            .shadow(.inner(color: Color.red.opacity(0.5), radius: 8))
+                    )
+                    .clipShape(Capsule())
+                    .shadow(color: Color.red.opacity(0.6), radius: 16, y: 4)
                 }
-            } label: {
-                HStack(spacing: 10) {
-                    Image(systemName: "waterbottle.fill")
-                        .font(.system(size: 20, weight: .semibold))
-                    Text("Log Drink")
-                        .font(.system(size: 16, weight: .semibold, design: .rounded))
+                .buttonStyle(.plain)
+                
+                // No Drink button (green)
+                Button {
+                    if viewModel.selectedProfile == nil {
+                        viewModel.showMissingProfileAlert = true
+                    } else {
+                        viewModel.logNoDrink()
+                    }
+                } label: {
+                    HStack(spacing: 8) {
+                        Image(systemName: "checkmark.circle.fill")
+                            .font(.system(size: 18, weight: .semibold))
+                        Text("No Drink")
+                            .font(.system(size: 15, weight: .semibold, design: .rounded))
+                    }
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 14)
+                    .frame(maxWidth: .infinity)
+                    .background(
+                        Color.green
+                            .shadow(.inner(color: Color.green.opacity(0.5), radius: 8))
+                    )
+                    .clipShape(Capsule())
+                    .shadow(color: Color.green.opacity(0.6), radius: 16, y: 4)
                 }
-                .foregroundStyle(.white)
-                .padding(.horizontal, 24)
-                .padding(.vertical, 14)
-                .background(
-                    QuitERGYTheme.accent
-                        .shadow(.inner(color: QuitERGYTheme.accent.opacity(0.5), radius: 8))
-                )
-                .clipShape(Capsule())
-                .shadow(color: QuitERGYTheme.accent.opacity(0.6), radius: 16, y: 4)
+                .buttonStyle(.plain)
             }
-            .buttonStyle(.plain)
+            .padding(.horizontal, 20)
         }
     }
     
@@ -186,16 +218,16 @@ struct HomeView: View {
                     ForEach(0..<84, id: \.self) { index in
                         let daysAgo = 83 - index
                         let date = Calendar.current.date(byAdding: .day, value: -daysAgo, to: Date()) ?? Date()
-                        let hasDrink = viewModel.hasDrinkOn(date: date)
+                        let dayStatus = viewModel.getDayStatus(for: date)
                         
                         RoundedRectangle(cornerRadius: 4)
-                            .fill(hasDrink ? QuitERGYTheme.accent : Color.white.opacity(0.1))
+                            .fill(fillColor(for: dayStatus))
                             .frame(width: 18, height: 18)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 4)
-                                    .stroke(hasDrink ? QuitERGYTheme.accent.opacity(0.5) : Color.white.opacity(0.15), lineWidth: 1)
+                                    .stroke(strokeColor(for: dayStatus), lineWidth: 1)
                             )
-                            .shadow(color: hasDrink ? QuitERGYTheme.accent.opacity(0.6) : Color.clear, radius: 4)
+                            .shadow(color: shadowColor(for: dayStatus), radius: 4)
                     }
                 }
                 .padding(.vertical, 8)
@@ -203,6 +235,39 @@ struct HomeView: View {
             }
         }
         .padding(.horizontal, 20)
+    }
+
+    private func fillColor(for status: HomeViewModel.DayStatus) -> Color {
+        switch status {
+        case .noDrink:
+            return Color.green
+        case .hadDrink:
+            return Color.red
+        case .noEntry:
+            return Color.white.opacity(0.1)
+        }
+    }
+    
+    private func strokeColor(for status: HomeViewModel.DayStatus) -> Color {
+        switch status {
+        case .noDrink:
+            return Color.green.opacity(0.5)
+        case .hadDrink:
+            return Color.red.opacity(0.5)
+        case .noEntry:
+            return Color.white.opacity(0.15)
+        }
+    }
+    
+    private func shadowColor(for status: HomeViewModel.DayStatus) -> Color {
+        switch status {
+        case .noDrink:
+            return Color.green.opacity(0.6)
+        case .hadDrink:
+            return Color.red.opacity(0.6)
+        case .noEntry:
+            return Color.clear
+        }
     }
 
     private var targetDate: String {

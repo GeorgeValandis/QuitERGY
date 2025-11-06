@@ -47,6 +47,10 @@ struct UnimplementedDrinkPersistenceService: DrinkPersistenceProviding {
     func logDrink(_ profile: DrinkProfile, date: Date) throws -> DrinkLog {
         fatalError("Drink persistence service not provided.")
     }
+    
+    func logNoDrink(_ profile: DrinkProfile, date: Date) throws -> DrinkLog {
+        fatalError("Drink persistence service not provided.")
+    }
 
     func fetchRecentLogs(in interval: DateInterval) throws -> [DrinkLog] {
         fatalError("Drink persistence service not provided.")

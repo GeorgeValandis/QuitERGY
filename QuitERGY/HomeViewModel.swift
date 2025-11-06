@@ -71,6 +71,25 @@ final class HomeViewModel: ObservableObject {
             errorMessage = error.localizedDescription
         }
     }
+    
+    func logNoDrink() {
+        guard let profile = selectedProfile else {
+            showMissingProfileAlert = true
+            return
+        }
+
+        do {
+            #if DEBUG
+            // Clear debug simulation when logging "no drink"
+            DebugSimulationController.shared.simulatedCleanDays = nil
+            #endif
+            
+            _ = try persistence.logNoDrink(profile, date: Date())
+            loadData()
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
 
     var streakTitle: String {
         "⚡️ \(streakDays) DAYS CLEAN"
@@ -126,5 +145,31 @@ final class HomeViewModel: ObservableObject {
         return recentLogs.contains { log in
             calendar.startOfDay(for: log.timestamp) == startOfDay
         }
+    }
+    
+    enum DayStatus {
+        case noDrink    // Green - user logged "No Drink"
+        case hadDrink   // Red - user logged a drink
+        case noEntry    // Gray - no entry for this day
+    }
+    
+    func getDayStatus(for date: Date) -> DayStatus {
+        let startOfDay = calendar.startOfDay(for: date)
+        let logsForDay = recentLogs.filter { log in
+            calendar.startOfDay(for: log.timestamp) == startOfDay
+        }
+        
+        // If there's any drink log (isNoDrink = false), show red
+        if logsForDay.contains(where: { !$0.isNoDrink }) {
+            return .hadDrink
+        }
+        
+        // If there's a "no drink" log (isNoDrink = true), show green
+        if logsForDay.contains(where: { $0.isNoDrink }) {
+            return .noDrink
+        }
+        
+        // No entry for this day
+        return .noEntry
     }
 }

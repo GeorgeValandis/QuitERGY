@@ -51,6 +51,7 @@ protocol DrinkPersistenceProviding {
     func loadSelectedProfile() throws -> DrinkProfile?
     func loadUserProfile() throws -> UserProfile?
     func logDrink(_ profile: DrinkProfile, date: Date) throws -> DrinkLog
+    func logNoDrink(_ profile: DrinkProfile, date: Date) throws -> DrinkLog
     func fetchRecentLogs(in interval: DateInterval) throws -> [DrinkLog]
     func loadReminderConfiguration() throws -> ReminderConfiguration
     func updateReminderConfiguration(_ configuration: ReminderConfiguration) throws
@@ -115,7 +116,18 @@ final class DrinkPersistenceService: DrinkPersistenceProviding {
             throw DrinkPersistenceError.missingProfile
         }
 
-        let log = DrinkLog(timestamp: date, profile: managedProfile)
+        let log = DrinkLog(timestamp: date, profile: managedProfile, isNoDrink: false)
+        modelContext.insert(log)
+        try saveContext()
+        return log
+    }
+    
+    func logNoDrink(_ profile: DrinkProfile, date: Date) throws -> DrinkLog {
+        guard let managedProfile = modelContext.model(for: profile.persistentModelID) as? DrinkProfile else {
+            throw DrinkPersistenceError.missingProfile
+        }
+
+        let log = DrinkLog(timestamp: date, profile: managedProfile, isNoDrink: true)
         modelContext.insert(log)
         try saveContext()
         return log

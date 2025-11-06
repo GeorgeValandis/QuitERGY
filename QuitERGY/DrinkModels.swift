@@ -64,11 +64,13 @@ final class DrinkLog {
     @Attribute(.unique) var id: UUID
     var timestamp: Date
     var profile: DrinkProfile
+    var isNoDrink: Bool  // true = "No Drink" logged, false = actual drink logged
 
-    init(id: UUID = UUID(), timestamp: Date, profile: DrinkProfile) {
+    init(id: UUID = UUID(), timestamp: Date, profile: DrinkProfile, isNoDrink: Bool = false) {
         self.id = id
         self.timestamp = timestamp
         self.profile = profile
+        self.isNoDrink = isNoDrink
     }
 }
 
