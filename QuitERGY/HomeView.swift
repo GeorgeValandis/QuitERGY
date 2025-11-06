@@ -77,6 +77,22 @@ struct HomeView: View {
         } message: {
             Text(viewModel.errorMessage ?? "")
         }
+        .alert("Change to No Drink?", isPresented: $viewModel.showChangeToNoDrinkAlert) {
+            Button("Cancel", role: .cancel) {}
+            Button("Yes, No Drink", role: .destructive) {
+                viewModel.confirmLogNoDrink()
+            }
+        } message: {
+            Text("You already logged drinks today. Do you want to change to 'No Drink'? This will delete all drink logs for today.")
+        }
+        .alert("Change to Drink?", isPresented: $viewModel.showChangeToDrinkAlert) {
+            Button("Cancel", role: .cancel) {}
+            Button("Yes, Log Drink", role: .destructive) {
+                viewModel.confirmAddDrink()
+            }
+        } message: {
+            Text("You already logged 'No Drink' today. Do you want to change and log a drink instead?")
+        }
     }
 
     private var errorBinding: Binding<Bool> {

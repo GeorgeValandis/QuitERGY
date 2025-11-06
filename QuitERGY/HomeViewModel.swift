@@ -17,6 +17,8 @@ final class HomeViewModel: ObservableObject {
     @Published var recentLogs: [DrinkLog] = []
     @Published var isShowingResetAlert = false
     @Published var showMissingProfileAlert = false
+    @Published var showChangeToNoDrinkAlert = false
+    @Published var showChangeToDrinkAlert = false
     @Published var errorMessage: String?
 
     private let persistence: DrinkPersistenceProviding
@@ -57,13 +59,42 @@ final class HomeViewModel: ObservableObject {
             showMissingProfileAlert = true
             return
         }
-
+        
+        // Check if there's a "No Drink" log for today
+        let today = calendar.startOfDay(for: Date())
+        let todayNoDrinkLogs = recentLogs.filter { log in
+            calendar.startOfDay(for: log.timestamp) == today && log.isNoDrink
+        }
+        
+        if !todayNoDrinkLogs.isEmpty {
+            // Show confirmation alert
+            showChangeToDrinkAlert = true
+        } else {
+            // No "No Drink" log today, proceed directly
+            confirmAddDrink()
+        }
+    }
+    
+    func confirmAddDrink() {
+        guard let profile = selectedProfile else { return }
+        
         do {
             #if DEBUG
             // Clear debug simulation when logging a real drink
             DebugSimulationController.shared.simulatedCleanDays = nil
             #endif
             
+            // Delete all "No Drink" logs for today
+            let today = calendar.startOfDay(for: Date())
+            let todayNoDrinkLogs = recentLogs.filter { log in
+                calendar.startOfDay(for: log.timestamp) == today && log.isNoDrink
+            }
+            
+            for log in todayNoDrinkLogs {
+                try persistence.deleteLog(log)
+            }
+            
+            // Add drink log (allows multiple drinks per day)
             _ = try persistence.logDrink(profile, date: Date())
             isShowingResetAlert = false
             loadData()
@@ -77,13 +108,42 @@ final class HomeViewModel: ObservableObject {
             showMissingProfileAlert = true
             return
         }
-
+        
+        // Check if there are any drink logs for today
+        let today = calendar.startOfDay(for: Date())
+        let todayLogs = recentLogs.filter { log in
+            calendar.startOfDay(for: log.timestamp) == today && !log.isNoDrink
+        }
+        
+        if !todayLogs.isEmpty {
+            // Show confirmation alert
+            showChangeToNoDrinkAlert = true
+        } else {
+            // No drinks logged today, proceed directly
+            confirmLogNoDrink()
+        }
+    }
+    
+    func confirmLogNoDrink() {
+        guard let profile = selectedProfile else { return }
+        
         do {
             #if DEBUG
             // Clear debug simulation when logging "no drink"
             DebugSimulationController.shared.simulatedCleanDays = nil
             #endif
             
+            // Delete all drink logs for today
+            let today = calendar.startOfDay(for: Date())
+            let todayDrinkLogs = recentLogs.filter { log in
+                calendar.startOfDay(for: log.timestamp) == today && !log.isNoDrink
+            }
+            
+            for log in todayDrinkLogs {
+                try persistence.deleteLog(log)
+            }
+            
+            // Add "No Drink" log
             _ = try persistence.logNoDrink(profile, date: Date())
             loadData()
         } catch {

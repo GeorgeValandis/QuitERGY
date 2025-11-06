@@ -52,6 +52,7 @@ protocol DrinkPersistenceProviding {
     func loadUserProfile() throws -> UserProfile?
     func logDrink(_ profile: DrinkProfile, date: Date) throws -> DrinkLog
     func logNoDrink(_ profile: DrinkProfile, date: Date) throws -> DrinkLog
+    func deleteLog(_ log: DrinkLog) throws
     func fetchRecentLogs(in interval: DateInterval) throws -> [DrinkLog]
     func loadReminderConfiguration() throws -> ReminderConfiguration
     func updateReminderConfiguration(_ configuration: ReminderConfiguration) throws
@@ -131,6 +132,11 @@ final class DrinkPersistenceService: DrinkPersistenceProviding {
         modelContext.insert(log)
         try saveContext()
         return log
+    }
+    
+    func deleteLog(_ log: DrinkLog) throws {
+        modelContext.delete(log)
+        try saveContext()
     }
 
     func fetchRecentLogs(in interval: DateInterval) throws -> [DrinkLog] {
