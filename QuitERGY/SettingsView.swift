@@ -94,16 +94,22 @@ struct SettingsView: View {
 
                     Button {
                         // Check if user can create more profiles
+                        #if DEBUG
+                        viewModel.prepareNewProfile()
+                        isPresentingProfileForm = true
+                        #else
                         if !PurchaseManager.shared.isPremiumUnlocked && viewModel.profiles.count >= 1 {
                             isPresentingPaywall = true
                         } else {
                             viewModel.prepareNewProfile()
                             isPresentingProfileForm = true
                         }
+                        #endif
                     } label: {
                         HStack {
                             Label("Save New Profile", systemImage: "plus.circle.fill")
                                 .font(.quitRounded(.semibold, size: 16))
+                            #if !DEBUG
                             if !PurchaseManager.shared.isPremiumUnlocked && viewModel.profiles.count >= 1 {
                                 Spacer()
                                 Image(systemName: "lock.fill")
@@ -112,6 +118,7 @@ struct SettingsView: View {
                                     .padding(4)
                                     .background(Circle().fill(.red))
                             }
+                            #endif
                         }
                     }
                     .buttonStyle(.plain)
@@ -121,6 +128,26 @@ struct SettingsView: View {
                 .listRowBackground(QuitERGYTheme.surface)
 
                 Section("Daily Reminder") {
+                    #if DEBUG
+                    Toggle(isOn: $viewModel.reminderEnabled) {
+                        Label("Ask me once per day", systemImage: "alarm.fill")
+                    }
+                    .onChange(of: viewModel.reminderEnabled, initial: false) { oldValue, newValue in
+                        guard hasInitializedReminder else { return }
+                        guard oldValue != newValue else { return }
+                        
+                        if !newValue {
+                            withAnimation {
+                                isEditingReminderTime = false
+                            }
+                        }
+                        
+                        // Handle permission request asynchronously without blocking UI
+                        Task {
+                            await viewModel.handleReminderToggle(newValue)
+                        }
+                    }
+                    #else
                     if PurchaseManager.shared.isPremiumUnlocked {
                         Toggle(isOn: $viewModel.reminderEnabled) {
                             Label("Ask me once per day", systemImage: "alarm.fill")
@@ -157,6 +184,7 @@ struct SettingsView: View {
                         }
                         .buttonStyle(.plain)
                     }
+                    #endif
 
                     if viewModel.reminderEnabled {
                         DisclosureGroup(isExpanded: $isEditingReminderTime) {

@@ -20,11 +20,15 @@ struct StatsView: View {
 
     var body: some View {
         NavigationStack {
+            #if DEBUG
+            statsContent
+            #else
             if purchaseManager.isPremiumUnlocked {
                 statsContent
             } else {
                 premiumLockedView
             }
+            #endif
         }
         .sheet(isPresented: $isPresentingPaywall) {
             PaywallView()
