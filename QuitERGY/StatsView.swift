@@ -289,10 +289,10 @@ struct StatsView: View {
                             .resizable()
                             .aspectRatio(contentMode: .fit)
                             .frame(maxWidth: .infinity)
-                            .frame(height: 200)
-                            .blur(radius: 6)
+                            .frame(height: 300)
+                            .blur(radius: 3)
                             .clipShape(RoundedRectangle(cornerRadius: 16))
-                            .padding(.horizontal, 32)
+                            .padding(.horizontal, 24)
                             .padding(.vertical, 8)
                         
                         Text("Track your progress with detailed charts and insights.")
