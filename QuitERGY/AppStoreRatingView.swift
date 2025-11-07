@@ -43,6 +43,26 @@ struct AppStoreRatingView: View {
                             Text("Enjoying QuitERGY?")
                                 .font(.title3.weight(.bold))
                                 .multilineTextAlignment(.center)
+                            
+                            // 5 goldene Sterne
+                            HStack(spacing: 6) {
+                                ForEach(0..<5, id: \.self) { _ in
+                                    Image(systemName: "star.fill")
+                                        .font(.system(size: 24, weight: .bold))
+                                        .foregroundStyle(
+                                            LinearGradient(
+                                                colors: [
+                                                    Color(red: 1.0, green: 0.84, blue: 0.0),
+                                                    Color(red: 1.0, green: 0.75, blue: 0.0)
+                                                ],
+                                                startPoint: .top,
+                                                endPoint: .bottom
+                                            )
+                                        )
+                                        .shadow(color: Color.yellow.opacity(0.3), radius: 4, x: 0, y: 2)
+                                }
+                            }
+                            .padding(.vertical, 4)
 
                             Text(
                                 "Your App Store review helps more people break free from energy drinks."
