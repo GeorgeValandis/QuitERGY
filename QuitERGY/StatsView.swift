@@ -244,72 +244,97 @@ struct StatsView: View {
     }
     
     private var premiumLockedView: some View {
-        VStack(spacing: 0) {
-            Spacer()
+        ZStack {
+            // Blurred background image
+            Image("ic_blurred_stats_view")
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .blur(radius: 20)
+                .opacity(0.3)
+                .ignoresSafeArea()
             
-            VStack(spacing: 24) {
-                // Icon mit Glow-Effekt
-                ZStack {
-                    Circle()
-                        .fill(QuitERGYTheme.accent.opacity(0.2))
-                        .frame(width: 100, height: 100)
-                        .blur(radius: 20)
-                    
-                    Circle()
-                        .fill(QuitERGYTheme.accent.opacity(0.15))
-                        .frame(width: 90, height: 90)
-                    
-                    Image(systemName: "chart.bar.doc.horizontal.fill")
-                        .font(.system(size: 40, weight: .semibold))
-                        .foregroundStyle(QuitERGYTheme.accent)
-                }
-                .padding(.bottom, 8)
+            // Dark overlay
+            QuitERGYTheme.background.opacity(0.85)
+                .ignoresSafeArea()
+            
+            VStack(spacing: 0) {
+                Spacer()
                 
-                VStack(spacing: 12) {
-                    Text("Unlock Statistics")
-                        .font(.quitRounded(.bold, size: 28))
-                        .foregroundStyle(QuitERGYTheme.textPrimary)
+                VStack(spacing: 24) {
+                    // Icon mit Glow-Effekt
+                    ZStack {
+                        Circle()
+                            .fill(QuitERGYTheme.accent.opacity(0.2))
+                            .frame(width: 100, height: 100)
+                            .blur(radius: 20)
+                        
+                        Circle()
+                            .fill(QuitERGYTheme.accent.opacity(0.15))
+                            .frame(width: 90, height: 90)
+                        
+                        Image(systemName: "chart.bar.doc.horizontal.fill")
+                            .font(.system(size: 40, weight: .semibold))
+                            .foregroundStyle(QuitERGYTheme.accent)
+                    }
+                    .padding(.bottom, 8)
                     
-                    Text("Track your progress with detailed charts and insights.")
-                        .font(.quitRounded(.medium, size: 16))
-                        .foregroundStyle(QuitERGYTheme.textSecondary)
-                        .multilineTextAlignment(.center)
-                        .lineSpacing(4)
-                        .padding(.horizontal, 40)
+                    VStack(spacing: 12) {
+                        Text("Unlock Statistics")
+                            .font(.quitRounded(.bold, size: 28))
+                            .foregroundStyle(QuitERGYTheme.textPrimary)
+                        
+                        // Blurred preview image
+                        Image("ic_blurred_stats_view")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 200)
+                            .blur(radius: 6)
+                            .clipShape(RoundedRectangle(cornerRadius: 16))
+                            .padding(.horizontal, 32)
+                            .padding(.vertical, 8)
+                        
+                        Text("Track your progress with detailed charts and insights.")
+                            .font(.quitRounded(.medium, size: 16))
+                            .foregroundStyle(QuitERGYTheme.textSecondary)
+                            .multilineTextAlignment(.center)
+                            .lineSpacing(4)
+                            .padding(.horizontal, 40)
+                    }
                 }
-            }
-            .padding(.bottom, 40)
-            
-            // CTA Button
-            Button {
-                isPresentingPaywall = true
-            } label: {
-                HStack(spacing: 12) {
-                    Image(systemName: "crown.fill")
-                        .font(.system(size: 16, weight: .semibold))
-                    Text("Get Premium")
-                        .font(.quitRounded(.semibold, size: 18))
-                    Image(systemName: "arrow.right")
-                        .font(.system(size: 14, weight: .semibold))
-                }
-                .foregroundStyle(.white)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 18)
-                .background(
-                    LinearGradient(
-                        colors: [QuitERGYTheme.accent, QuitERGYTheme.accent.opacity(0.85)],
-                        startPoint: .leading,
-                        endPoint: .trailing
+                .padding(.bottom, 40)
+                
+                // CTA Button
+                Button {
+                    isPresentingPaywall = true
+                } label: {
+                    HStack(spacing: 12) {
+                        Image(systemName: "crown.fill")
+                            .font(.system(size: 16, weight: .semibold))
+                        Text("Get Premium")
+                            .font(.quitRounded(.semibold, size: 18))
+                        Image(systemName: "arrow.right")
+                            .font(.system(size: 14, weight: .semibold))
+                    }
+                    .foregroundStyle(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 18)
+                    .background(
+                        LinearGradient(
+                            colors: [QuitERGYTheme.accent, QuitERGYTheme.accent.opacity(0.85)],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
                     )
-                )
-                .clipShape(RoundedRectangle(cornerRadius: 16))
-                .shadow(color: QuitERGYTheme.accent.opacity(0.4), radius: 12, y: 6)
+                    .clipShape(RoundedRectangle(cornerRadius: 16))
+                    .shadow(color: QuitERGYTheme.accent.opacity(0.4), radius: 12, y: 6)
+                }
+                .padding(.horizontal, 32)
+                
+                Spacer()
             }
-            .padding(.horizontal, 32)
-            
-            Spacer()
         }
-        .background(QuitERGYTheme.background.ignoresSafeArea())
         .navigationTitle("Stats")
         .toolbarTitleDisplayMode(.inline)
     }
