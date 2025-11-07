@@ -13,6 +13,8 @@ struct QuitERGYApp: App {
     let sharedModelContainer: ModelContainer
     let persistenceService: DrinkPersistenceService
     @StateObject private var ratingController = RatingPromptController()
+    
+    @Environment(\.scenePhase) private var scenePhase
 
     init() {
         let schema = Schema([
@@ -44,7 +46,27 @@ struct QuitERGYApp: App {
                 .environment(\.drinkPersistence, persistenceService)
                 .environmentObject(ratingController)
                 .preferredColorScheme(.dark)
+                .onAppear {
+                    // Request badge permission on first launch
+                    BadgeManager.shared.requestBadgePermission()
+                    // Check if badge should be shown
+                    BadgeManager.shared.checkAndUpdateBadge()
+                }
         }
         .modelContainer(sharedModelContainer)
+        .onChange(of: scenePhase) { oldPhase, newPhase in
+            switch newPhase {
+            case .active:
+                // App became active - clear badge and update last open
+                BadgeManager.shared.handleAppDidBecomeActive()
+            case .background:
+                // App went to background - schedule badge for tomorrow
+                BadgeManager.shared.handleAppWillResignActive()
+            case .inactive:
+                break
+            @unknown default:
+                break
+            }
+        }
     }
 }
