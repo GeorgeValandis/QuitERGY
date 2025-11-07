@@ -120,7 +120,7 @@ struct SettingsView: View {
                 }
                 .listRowBackground(QuitERGYTheme.surface)
 
-                Section("Daily Reminder") {
+                Section("Daily Reminder & Badges") {
                     #if DEBUG
                     Toggle(isOn: $viewModel.reminderEnabled) {
                         Label("Ask me once per day", systemImage: "alarm.fill")
