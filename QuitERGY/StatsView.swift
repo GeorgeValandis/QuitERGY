@@ -305,32 +305,44 @@ struct StatsView: View {
                 }
                 .padding(.bottom, 40)
                 
-                // CTA Button
+                // Premium Banner (matching Settings design)
                 Button {
                     isPresentingPaywall = true
                 } label: {
-                    HStack(spacing: 12) {
-                        Image(systemName: "crown.fill")
-                            .font(.system(size: 16, weight: .semibold))
-                        Text("Get Premium")
-                            .font(.quitRounded(.semibold, size: 18))
-                        Image(systemName: "arrow.right")
+                    HStack(spacing: 16) {
+                        ZStack {
+                            Circle()
+                                .fill(QuitERGYTheme.accent.opacity(0.18))
+                                .frame(width: 56, height: 56)
+                            Image(systemName: "bolt.fill")
+                                .font(.system(size: 26, weight: .semibold))
+                                .foregroundStyle(QuitERGYTheme.accent)
+                        }
+                        
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text("Unlock Premium")
+                                .font(.quitRounded(.semibold, size: 18))
+                                .foregroundStyle(QuitERGYTheme.textPrimary)
+                            Text("Track unlimited streaks, insights & more")
+                                .font(.quitRounded(.medium, size: 14))
+                                .foregroundStyle(QuitERGYTheme.textSecondary)
+                                .lineLimit(2)
+                        }
+                        
+                        Spacer(minLength: 8)
+                        
+                        Image(systemName: "chevron.right")
                             .font(.system(size: 14, weight: .semibold))
+                            .foregroundStyle(QuitERGYTheme.textSecondary.opacity(0.6))
                     }
-                    .foregroundStyle(.white)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 18)
+                    .padding(18)
                     .background(
-                        LinearGradient(
-                            colors: [QuitERGYTheme.accent, QuitERGYTheme.accent.opacity(0.85)],
-                            startPoint: .leading,
-                            endPoint: .trailing
-                        )
+                        RoundedRectangle(cornerRadius: 16)
+                            .fill(QuitERGYTheme.surface)
                     )
-                    .clipShape(RoundedRectangle(cornerRadius: 16))
-                    .shadow(color: QuitERGYTheme.accent.opacity(0.4), radius: 12, y: 6)
                 }
-                .padding(.horizontal, 32)
+                .buttonStyle(.plain)
+                .padding(.horizontal, 20)
                 
                 Spacer()
             }
