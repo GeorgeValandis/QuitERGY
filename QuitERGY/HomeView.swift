@@ -231,7 +231,8 @@ struct HomeView: View {
                         HStack(spacing: 6) {
                             ForEach(0..<12, id: \.self) { col in
                                 let index = (row * 12) + col
-                                let daysAgo = index
+                                // Start bei 1 Tag zurück (gestern), dann 0 (heute), dann weiter zurück
+                                let daysAgo = index == 0 ? 1 : (index == 1 ? 0 : index)
                                 let date =
                                     Calendar.current.date(byAdding: .day, value: -daysAgo, to: Date())
                                     ?? Date()
