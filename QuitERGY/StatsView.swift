@@ -303,21 +303,19 @@ struct StatsView: View {
                             .padding(.horizontal, 40)
                     }
                 }
-                .padding(.bottom, 40)
+                .padding(.bottom, 24)
                 
                 // Premium Banner (matching Settings design)
                 Button {
                     isPresentingPaywall = true
                 } label: {
                     HStack(spacing: 16) {
-                        ZStack {
-                            Circle()
-                                .fill(QuitERGYTheme.accent.opacity(0.18))
-                                .frame(width: 56, height: 56)
-                            Image(systemName: "bolt.fill")
-                                .font(.system(size: 26, weight: .semibold))
-                                .foregroundStyle(QuitERGYTheme.accent)
-                        }
+                        // App Logo
+                        Image("PaywallIcon")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 56, height: 56)
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
                         
                         VStack(alignment: .leading, spacing: 6) {
                             Text("Unlock Premium")
