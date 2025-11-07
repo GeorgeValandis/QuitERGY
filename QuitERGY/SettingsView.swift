@@ -360,14 +360,11 @@ struct SettingsView: View {
             isPresentingPaywall = true
         } label: {
             HStack(spacing: 16) {
-                ZStack {
-                    Circle()
-                        .fill(QuitERGYTheme.accent.opacity(0.18))
-                        .frame(width: 56, height: 56)
-                    Image(systemName: "bolt.fill")
-                        .font(.system(size: 26, weight: .semibold))
-                        .foregroundStyle(QuitERGYTheme.accent)
-                }
+                Image("PaywallIcon")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 70, height: 70)
+                    .clipShape(Circle())
 
                 VStack(alignment: .leading, spacing: 6) {
                     Text("Unlock Premium")

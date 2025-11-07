@@ -314,7 +314,7 @@ struct StatsView: View {
                         Image("PaywallIcon")
                             .resizable()
                             .scaledToFit()
-                            .frame(width: 64, height: 64)
+                            .frame(width: 70, height: 70)
                             .clipShape(Circle())
                         
                         VStack(alignment: .leading, spacing: 6) {
