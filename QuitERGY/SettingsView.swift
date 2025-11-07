@@ -93,8 +93,13 @@ struct SettingsView: View {
                     }
 
                     Button {
-                        viewModel.prepareNewProfile()
-                        isPresentingProfileForm = true
+                        // Check if user can create more profiles
+                        if !PurchaseManager.shared.isPremiumUnlocked && viewModel.profiles.count >= 1 {
+                            isPresentingPaywall = true
+                        } else {
+                            viewModel.prepareNewProfile()
+                            isPresentingProfileForm = true
+                        }
                     } label: {
                         Label("Save New Profile", systemImage: "plus.circle.fill")
                             .font(.quitRounded(.semibold, size: 16))
@@ -109,9 +114,17 @@ struct SettingsView: View {
                     Toggle(isOn: $viewModel.reminderEnabled) {
                         Label("Ask me once per day", systemImage: "alarm.fill")
                     }
+                    .disabled(!PurchaseManager.shared.isPremiumUnlocked)
                     .onChange(of: viewModel.reminderEnabled, initial: false) { oldValue, newValue in
                         guard hasInitializedReminder else { return }
                         guard oldValue != newValue else { return }
+                        
+                        // Check premium status
+                        if newValue && !PurchaseManager.shared.isPremiumUnlocked {
+                            viewModel.reminderEnabled = false
+                            isPresentingPaywall = true
+                            return
+                        }
                         
                         if !newValue {
                             withAnimation {

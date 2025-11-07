@@ -11,6 +11,8 @@ import SwiftUI
 
 struct StatsView: View {
     @StateObject private var viewModel: StatsViewModel
+    @EnvironmentObject private var purchaseManager: PurchaseManager
+    @State private var isPresentingPaywall = false
 
     init(service: DrinkPersistenceProviding) {
         _viewModel = StateObject(wrappedValue: StatsViewModel(service: service))
@@ -18,22 +20,35 @@ struct StatsView: View {
 
     var body: some View {
         NavigationStack {
-            ScrollView(showsIndicators: false) {
-                VStack(spacing: 28) {
-                    if viewModel.selectedProfile == nil {
-                        missingProfileCard
-                    }
-
-                    chartSection
-                    metricsSection
-                }
-                .padding(.horizontal, 24)
-                .padding(.top, 0)
-                .padding(.bottom, 32)
+            if purchaseManager.isPremiumUnlocked {
+                statsContent
+            } else {
+                premiumLockedView
             }
-            .background(QuitERGYTheme.background.ignoresSafeArea())
-            .navigationTitle("Stats")
-            .toolbarTitleDisplayMode(.inline)
+        }
+        .sheet(isPresented: $isPresentingPaywall) {
+            PaywallView()
+                .environmentObject(purchaseManager)
+        }
+    }
+    
+    private var statsContent: some View {
+        ScrollView(showsIndicators: false) {
+            VStack(spacing: 28) {
+                if viewModel.selectedProfile == nil {
+                    missingProfileCard
+                }
+
+                chartSection
+                metricsSection
+            }
+            .padding(.horizontal, 24)
+            .padding(.top, 0)
+            .padding(.bottom, 32)
+        }
+        .background(QuitERGYTheme.background.ignoresSafeArea())
+        .navigationTitle("Stats")
+        .toolbarTitleDisplayMode(.inline)
             #if DEBUG
                 .toolbar {
                     ToolbarItem(placement: .topBarTrailing) {
@@ -65,7 +80,6 @@ struct StatsView: View {
             } message: {
                 Text(viewModel.errorMessage ?? "")
             }
-        }
     }
 
     private var errorBinding: Binding<Bool> {
@@ -223,6 +237,61 @@ struct StatsView: View {
 
     private var drinksDifference: Int {
         6  // Placeholder - sollte aus ViewModel kommen
+    }
+    
+    private var premiumLockedView: some View {
+        VStack(spacing: 24) {
+            Spacer()
+            
+            VStack(spacing: 16) {
+                ZStack {
+                    Circle()
+                        .fill(QuitERGYTheme.accent.opacity(0.15))
+                        .frame(width: 80, height: 80)
+                    Image(systemName: "chart.bar.doc.horizontal.fill")
+                        .font(.system(size: 36, weight: .semibold))
+                        .foregroundStyle(QuitERGYTheme.accent)
+                }
+                
+                Text("Premium Feature")
+                    .font(.quitRounded(.bold, size: 24))
+                    .foregroundStyle(QuitERGYTheme.textPrimary)
+                
+                Text("Unlock detailed statistics to track your progress, see money saved, and understand your journey.")
+                    .font(.quitRounded(.medium, size: 16))
+                    .foregroundStyle(QuitERGYTheme.textSecondary)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 32)
+            }
+            
+            Button {
+                isPresentingPaywall = true
+            } label: {
+                HStack(spacing: 10) {
+                    Text("Unlock Stats")
+                        .font(.quitRounded(.semibold, size: 18))
+                    Image(systemName: "arrow.right")
+                        .font(.system(size: 14, weight: .semibold))
+                }
+                .foregroundStyle(.white)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 16)
+                .background(
+                    LinearGradient(
+                        colors: [QuitERGYTheme.accent, QuitERGYTheme.accent.opacity(0.8)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+                .clipShape(RoundedRectangle(cornerRadius: 14))
+            }
+            .padding(.horizontal, 32)
+            
+            Spacer()
+        }
+        .background(QuitERGYTheme.background.ignoresSafeArea())
+        .navigationTitle("Stats")
+        .toolbarTitleDisplayMode(.inline)
     }
 }
 

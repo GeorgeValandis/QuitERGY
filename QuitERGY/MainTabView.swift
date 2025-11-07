@@ -11,6 +11,7 @@ import SwiftData
 
 struct MainTabView: View {
     @Environment(\.drinkPersistence) private var persistence
+    @StateObject private var purchaseManager = PurchaseManager.shared
     private let reminderScheduler: ReminderScheduling = ReminderScheduler()
 
     init() {
@@ -46,6 +47,7 @@ struct MainTabView: View {
                     Label("Settings", systemImage: "slider.horizontal.3")
                 }
         }
+        .environmentObject(purchaseManager)
         .tint(QuitERGYTheme.accent)
         .background(QuitERGYTheme.background.ignoresSafeArea())
     }

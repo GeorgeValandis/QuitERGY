@@ -284,19 +284,19 @@ private struct BenefitItem: Identifiable {
 
     static let sampleItems: [BenefitItem] = [
         BenefitItem(
-            icon: "bolt.heart.fill",
-            title: "Boost your streak",
-            description: "Keep motivation high with streak boosts, gentle nudges, and relapse insights."
+            icon: "chart.bar.doc.horizontal.fill",
+            title: "Detailed Statistics",
+            description: "Track your progress with beautiful charts showing money saved, sugar avoided, and drinks skipped."
         ),
         BenefitItem(
-            icon: "chart.bar.xaxis",
-            title: "Understand savings",
-            description: "See caffeine, sugar, and money saved with beautiful charts updated in real time."
+            icon: "person.2.fill",
+            title: "Multiple Profiles",
+            description: "Create unlimited drink profiles to track different energy drinks and compare your progress."
         ),
         BenefitItem(
-            icon: "target",
-            title: "Set smarter goals",
-            description: "Personalise reduction goals and track weekly wins that keep you accountable."
+            icon: "alarm.fill",
+            title: "Daily Reminders",
+            description: "Get gentle daily check-ins to log your progress and stay accountable to your goals."
         )
     ]
 }
