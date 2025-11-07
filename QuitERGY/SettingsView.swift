@@ -101,8 +101,16 @@ struct SettingsView: View {
                             isPresentingProfileForm = true
                         }
                     } label: {
-                        Label("Save New Profile", systemImage: "plus.circle.fill")
-                            .font(.quitRounded(.semibold, size: 16))
+                        HStack {
+                            Label("Save New Profile", systemImage: "plus.circle.fill")
+                                .font(.quitRounded(.semibold, size: 16))
+                            if !PurchaseManager.shared.isPremiumUnlocked && viewModel.profiles.count >= 1 {
+                                Spacer()
+                                Image(systemName: "lock.fill")
+                                    .font(.system(size: 14))
+                                    .foregroundStyle(QuitERGYTheme.accent)
+                            }
+                        }
                     }
                     .buttonStyle(.plain)
                     .foregroundStyle(QuitERGYTheme.accent)
@@ -111,31 +119,39 @@ struct SettingsView: View {
                 .listRowBackground(QuitERGYTheme.surface)
 
                 Section("Daily Reminder") {
-                    Toggle(isOn: $viewModel.reminderEnabled) {
-                        Label("Ask me once per day", systemImage: "alarm.fill")
-                    }
-                    .disabled(!PurchaseManager.shared.isPremiumUnlocked)
-                    .onChange(of: viewModel.reminderEnabled, initial: false) { oldValue, newValue in
-                        guard hasInitializedReminder else { return }
-                        guard oldValue != newValue else { return }
-                        
-                        // Check premium status
-                        if newValue && !PurchaseManager.shared.isPremiumUnlocked {
-                            viewModel.reminderEnabled = false
-                            isPresentingPaywall = true
-                            return
+                    if PurchaseManager.shared.isPremiumUnlocked {
+                        Toggle(isOn: $viewModel.reminderEnabled) {
+                            Label("Ask me once per day", systemImage: "alarm.fill")
                         }
-                        
-                        if !newValue {
-                            withAnimation {
-                                isEditingReminderTime = false
+                        .onChange(of: viewModel.reminderEnabled, initial: false) { oldValue, newValue in
+                            guard hasInitializedReminder else { return }
+                            guard oldValue != newValue else { return }
+                            
+                            if !newValue {
+                                withAnimation {
+                                    isEditingReminderTime = false
+                                }
+                            }
+                            
+                            // Handle permission request asynchronously without blocking UI
+                            Task {
+                                await viewModel.handleReminderToggle(newValue)
                             }
                         }
-                        
-                        // Handle permission request asynchronously without blocking UI
-                        Task {
-                            await viewModel.handleReminderToggle(newValue)
+                    } else {
+                        Button {
+                            isPresentingPaywall = true
+                        } label: {
+                            HStack {
+                                Label("Ask me once per day", systemImage: "alarm.fill")
+                                    .foregroundStyle(QuitERGYTheme.textPrimary)
+                                Spacer()
+                                Image(systemName: "lock.fill")
+                                    .font(.system(size: 14))
+                                    .foregroundStyle(QuitERGYTheme.accent)
+                            }
                         }
+                        .buttonStyle(.plain)
                     }
 
                     if viewModel.reminderEnabled {

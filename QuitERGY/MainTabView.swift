@@ -41,6 +41,7 @@ struct MainTabView: View {
                 .tabItem {
                     Label("Stats", systemImage: "chart.bar.doc.horizontal.fill")
                 }
+                .badge(purchaseManager.isPremiumUnlocked ? "" : "🔒")
 
             SettingsView(service: persistence, reminderScheduler: reminderScheduler)
                 .tabItem {

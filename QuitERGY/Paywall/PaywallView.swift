@@ -286,17 +286,17 @@ private struct BenefitItem: Identifiable {
         BenefitItem(
             icon: "chart.bar.doc.horizontal.fill",
             title: "Detailed Statistics",
-            description: "Track your progress with beautiful charts showing money saved, sugar avoided, and drinks skipped."
+            description: "Track money saved, sugar avoided, and progress."
         ),
         BenefitItem(
             icon: "person.2.fill",
             title: "Multiple Profiles",
-            description: "Create unlimited drink profiles to track different energy drinks and compare your progress."
+            description: "Create unlimited drink profiles."
         ),
         BenefitItem(
             icon: "alarm.fill",
             title: "Daily Reminders",
-            description: "Get gentle daily check-ins to log your progress and stay accountable to your goals."
+            description: "Get daily check-ins to stay accountable."
         )
     ]
 }
