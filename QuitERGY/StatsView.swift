@@ -315,7 +315,7 @@ struct StatsView: View {
                             .resizable()
                             .scaledToFit()
                             .frame(width: 56, height: 56)
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                            .clipShape(Circle())
                         
                         VStack(alignment: .leading, spacing: 6) {
                             Text("Unlock Premium")
