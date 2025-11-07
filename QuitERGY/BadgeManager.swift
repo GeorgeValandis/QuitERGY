@@ -79,8 +79,8 @@ final class BadgeManager {
         let content = UNMutableNotificationContent()
         content.badge = 1
         
-        // Trigger after 1 minute (FOR TESTING - change back to 24 * 60 * 60 for production)
-        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 60, repeats: false)
+        // Trigger after 24 hours
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 24 * 60 * 60, repeats: false)
         
         let request = UNNotificationRequest(
             identifier: "badge_reminder",
@@ -92,7 +92,7 @@ final class BadgeManager {
             if let error = error {
                 print("❌ Error scheduling badge: \(error)")
             } else {
-                print("✅ Badge scheduled for 1 minute from now (TESTING MODE)")
+                print("✅ Badge scheduled for 24 hours from now")
             }
         }
     }
