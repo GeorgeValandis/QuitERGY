@@ -240,50 +240,66 @@ struct StatsView: View {
     }
     
     private var premiumLockedView: some View {
-        VStack(spacing: 24) {
+        VStack(spacing: 0) {
             Spacer()
             
-            VStack(spacing: 16) {
+            VStack(spacing: 24) {
+                // Icon mit Glow-Effekt
                 ZStack {
                     Circle()
+                        .fill(QuitERGYTheme.accent.opacity(0.2))
+                        .frame(width: 100, height: 100)
+                        .blur(radius: 20)
+                    
+                    Circle()
                         .fill(QuitERGYTheme.accent.opacity(0.15))
-                        .frame(width: 80, height: 80)
+                        .frame(width: 90, height: 90)
+                    
                     Image(systemName: "chart.bar.doc.horizontal.fill")
-                        .font(.system(size: 36, weight: .semibold))
+                        .font(.system(size: 40, weight: .semibold))
                         .foregroundStyle(QuitERGYTheme.accent)
                 }
+                .padding(.bottom, 8)
                 
-                Text("Premium Feature")
-                    .font(.quitRounded(.bold, size: 24))
-                    .foregroundStyle(QuitERGYTheme.textPrimary)
-                
-                Text("Unlock detailed statistics to track your progress, see money saved, and understand your journey.")
-                    .font(.quitRounded(.medium, size: 16))
-                    .foregroundStyle(QuitERGYTheme.textSecondary)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 32)
+                VStack(spacing: 12) {
+                    Text("Unlock Statistics")
+                        .font(.quitRounded(.bold, size: 28))
+                        .foregroundStyle(QuitERGYTheme.textPrimary)
+                    
+                    Text("Track your progress with detailed charts and insights.")
+                        .font(.quitRounded(.medium, size: 16))
+                        .foregroundStyle(QuitERGYTheme.textSecondary)
+                        .multilineTextAlignment(.center)
+                        .lineSpacing(4)
+                        .padding(.horizontal, 40)
+                }
             }
+            .padding(.bottom, 40)
             
+            // CTA Button
             Button {
                 isPresentingPaywall = true
             } label: {
-                HStack(spacing: 10) {
-                    Text("Unlock Stats")
+                HStack(spacing: 12) {
+                    Image(systemName: "crown.fill")
+                        .font(.system(size: 16, weight: .semibold))
+                    Text("Get Premium")
                         .font(.quitRounded(.semibold, size: 18))
                     Image(systemName: "arrow.right")
                         .font(.system(size: 14, weight: .semibold))
                 }
                 .foregroundStyle(.white)
                 .frame(maxWidth: .infinity)
-                .padding(.vertical, 16)
+                .padding(.vertical, 18)
                 .background(
                     LinearGradient(
-                        colors: [QuitERGYTheme.accent, QuitERGYTheme.accent.opacity(0.8)],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
+                        colors: [QuitERGYTheme.accent, QuitERGYTheme.accent.opacity(0.85)],
+                        startPoint: .leading,
+                        endPoint: .trailing
                     )
                 )
-                .clipShape(RoundedRectangle(cornerRadius: 14))
+                .clipShape(RoundedRectangle(cornerRadius: 16))
+                .shadow(color: QuitERGYTheme.accent.opacity(0.4), radius: 12, y: 6)
             }
             .padding(.horizontal, 32)
             
