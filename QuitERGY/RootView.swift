@@ -85,11 +85,14 @@ struct RootView: View {
         }
         .onChange(of: showPaywall) { _, isShowing in
             // When paywall is dismissed and we should trigger rating
+            print("🔍 Paywall onChange: isShowing=\(isShowing), shouldTrigger=\(shouldTriggerRatingAfterPaywall)")
             if !isShowing && shouldTriggerRatingAfterPaywall {
+                print("✅ Triggering rating after paywall dismiss")
                 shouldTriggerRatingAfterPaywall = false
                 // Delay slightly to ensure smooth transition
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                    ratingController.recordEntryCreated()
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                    print("⭐️ Showing rating prompt directly after onboarding")
+                    ratingController.isPresentingPrompt = true
                 }
             }
         }
