@@ -10,6 +10,7 @@ import SwiftUI
 
 struct HomeView: View {
     @StateObject private var viewModel: HomeViewModel
+    @EnvironmentObject private var ratingController: RatingPromptController
     @State private var displayedProgress: Double = 0
 
     init(service: DrinkPersistenceProviding) {
@@ -52,6 +53,7 @@ struct HomeView: View {
         .alert("Drink logged?", isPresented: $viewModel.isShowingResetAlert) {
             Button("Confirm", role: .destructive) {
                 viewModel.addDrink()
+                ratingController.recordEntryCreated()
             }
             Button("Cancel", role: .cancel) {}
         } message: {
@@ -71,6 +73,7 @@ struct HomeView: View {
             Button("Cancel", role: .cancel) {}
             Button("Yes, No Drink", role: .destructive) {
                 viewModel.confirmLogNoDrink()
+                ratingController.recordEntryCreated()
             }
         } message: {
             Text(
@@ -81,6 +84,7 @@ struct HomeView: View {
             Button("Cancel", role: .cancel) {}
             Button("Yes, Log Drink", role: .destructive) {
                 viewModel.confirmAddDrink()
+                ratingController.recordEntryCreated()
             }
         } message: {
             Text(
@@ -192,6 +196,7 @@ struct HomeView: View {
                         viewModel.showMissingProfileAlert = true
                     } else {
                         viewModel.logNoDrink()
+                        ratingController.recordEntryCreated()
                     }
                 } label: {
                     HStack(spacing: 8) {

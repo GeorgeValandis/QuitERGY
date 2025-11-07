@@ -87,6 +87,7 @@ struct PaywallLayoutMetrics {
 struct PaywallView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var purchaseManager: PurchaseManager
+    @EnvironmentObject private var ratingController: RatingPromptController
 
     @State private var canDismiss = false
     @State private var progress: Double = 0
@@ -149,6 +150,8 @@ struct PaywallView: View {
         .onChange(of: purchaseManager.isPremiumUnlocked) { _, isPremium in
             guard isPremium, !wasPremiumOnAppear else { return }
             handlePurchaseSuccess()
+            // Trigger rating prompt after premium purchase
+            ratingController.recordEntryCreated()
         }
         .interactiveDismissDisabled(!canDismiss)
     }

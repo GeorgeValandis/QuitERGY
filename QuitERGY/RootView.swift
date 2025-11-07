@@ -10,11 +10,14 @@ import SwiftData
 
 struct RootView: View {
     @Environment(\.modelContext) private var modelContext
+    @EnvironmentObject private var ratingController: RatingPromptController
 
     @Query var settings: [UserSettings]
     @State private var hasEnsuredSettings = false
     @State private var ensureError: String?
     @State private var showPaywall = false
+    @State private var showRatingPrompt = false
+    @State private var shouldTriggerRatingAfterPaywall = false
 
     init() {
         _settings = Query(FetchDescriptor<UserSettings>())
@@ -48,6 +51,8 @@ struct RootView: View {
             } else {
                 OnboardingView {
                     showPaywall = true
+                    // Mark that we should trigger rating after paywall dismisses
+                    shouldTriggerRatingAfterPaywall = true
                 }
             }
         }
@@ -55,10 +60,38 @@ struct RootView: View {
         .sheet(isPresented: $showPaywall) {
             PaywallView()
                 .environmentObject(PurchaseManager.shared)
+                .environmentObject(ratingController)
                 .interactiveDismissDisabled()
+        }
+        .sheet(isPresented: $showRatingPrompt) {
+            AppStoreRatingView(
+                onRateNow: {
+                    ratingController.handleRateNowAction()
+                },
+                onSendFeedback: {
+                    // TODO: Feedback-Logik implementieren (z.B. E-Mail öffnen)
+                    ratingController.completePrompt()
+                },
+                onMaybeLater: {
+                    ratingController.completePrompt()
+                }
+            )
         }
         .task {
             await ensureSettingsRecord()
+        }
+        .onChange(of: ratingController.isPresentingPrompt) { _, newValue in
+            showRatingPrompt = newValue
+        }
+        .onChange(of: showPaywall) { _, isShowing in
+            // When paywall is dismissed and we should trigger rating
+            if !isShowing && shouldTriggerRatingAfterPaywall {
+                shouldTriggerRatingAfterPaywall = false
+                // Delay slightly to ensure smooth transition
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    ratingController.recordEntryCreated()
+                }
+            }
         }
     }
 

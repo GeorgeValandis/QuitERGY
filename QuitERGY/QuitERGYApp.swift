@@ -12,6 +12,7 @@ import SwiftData
 struct QuitERGYApp: App {
     let sharedModelContainer: ModelContainer
     let persistenceService: DrinkPersistenceService
+    @StateObject private var ratingController = RatingPromptController()
 
     init() {
         let schema = Schema([
@@ -41,6 +42,7 @@ struct QuitERGYApp: App {
         WindowGroup {
             RootView()
                 .environment(\.drinkPersistence, persistenceService)
+                .environmentObject(ratingController)
                 .preferredColorScheme(.dark)
         }
         .modelContainer(sharedModelContainer)
