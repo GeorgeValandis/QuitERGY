@@ -47,9 +47,7 @@ struct QuitERGYApp: App {
                 .environmentObject(ratingController)
                 .preferredColorScheme(.dark)
                 .onAppear {
-                    // Request badge permission on first launch
-                    BadgeManager.shared.requestBadgePermission()
-                    // Check if badge should be shown
+                    // Check if badge should be shown (but don't request permission yet)
                     BadgeManager.shared.checkAndUpdateBadge()
                 }
         }
