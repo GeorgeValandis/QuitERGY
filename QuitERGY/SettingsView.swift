@@ -107,8 +107,10 @@ struct SettingsView: View {
                             if !PurchaseManager.shared.isPremiumUnlocked && viewModel.profiles.count >= 1 {
                                 Spacer()
                                 Image(systemName: "lock.fill")
-                                    .font(.system(size: 14))
-                                    .foregroundStyle(QuitERGYTheme.accent)
+                                    .font(.system(size: 10, weight: .semibold))
+                                    .foregroundStyle(.white)
+                                    .padding(4)
+                                    .background(Circle().fill(.red))
                             }
                         }
                     }
@@ -147,8 +149,10 @@ struct SettingsView: View {
                                     .foregroundStyle(QuitERGYTheme.textPrimary)
                                 Spacer()
                                 Image(systemName: "lock.fill")
-                                    .font(.system(size: 14))
-                                    .foregroundStyle(QuitERGYTheme.accent)
+                                    .font(.system(size: 10, weight: .semibold))
+                                    .foregroundStyle(.white)
+                                    .padding(4)
+                                    .background(Circle().fill(.red))
                             }
                         }
                         .buttonStyle(.plain)
