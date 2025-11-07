@@ -226,24 +226,27 @@ struct HomeView: View {
                 .padding(.leading, 20)
 
             ScrollView(.horizontal, showsIndicators: false) {
-                LazyHGrid(
-                    rows: Array(repeating: GridItem(.fixed(18), spacing: 6), count: 7), spacing: 6
-                ) {
-                    ForEach(0..<84, id: \.self) { index in
-                        let daysAgo = 83 - index
-                        let date =
-                            Calendar.current.date(byAdding: .day, value: -daysAgo, to: Date())
-                            ?? Date()
-                        let dayStatus = viewModel.getDayStatus(for: date)
+                VStack(spacing: 6) {
+                    ForEach(0..<7, id: \.self) { row in
+                        HStack(spacing: 6) {
+                            ForEach(0..<12, id: \.self) { col in
+                                let index = (row * 12) + col
+                                let daysAgo = index
+                                let date =
+                                    Calendar.current.date(byAdding: .day, value: -daysAgo, to: Date())
+                                    ?? Date()
+                                let dayStatus = viewModel.getDayStatus(for: date)
 
-                        RoundedRectangle(cornerRadius: 4)
-                            .fill(fillColor(for: dayStatus))
-                            .frame(width: 18, height: 18)
-                            .overlay(
                                 RoundedRectangle(cornerRadius: 4)
-                                    .stroke(strokeColor(for: dayStatus), lineWidth: 1)
-                            )
-                            .shadow(color: shadowColor(for: dayStatus), radius: 4)
+                                    .fill(fillColor(for: dayStatus))
+                                    .frame(width: 18, height: 18)
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 4)
+                                            .stroke(strokeColor(for: dayStatus), lineWidth: 1)
+                                    )
+                                    .shadow(color: shadowColor(for: dayStatus), radius: 4)
+                            }
+                        }
                     }
                 }
                 .padding(.vertical, 8)
