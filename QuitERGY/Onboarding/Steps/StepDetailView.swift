@@ -32,6 +32,7 @@ struct StepDetailView<Content: View>: View {
                 Text(title)
                     .font(.quitRounded(.semibold, size: 24))
                     .foregroundStyle(QuitERGYTheme.textPrimary)
+                    .fixedSize(horizontal: false, vertical: true)
                 Text(subtitle)
                     .font(.quitRounded(.medium, size: 15))
                     .foregroundStyle(QuitERGYTheme.textSecondary)
