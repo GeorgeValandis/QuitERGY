@@ -61,13 +61,6 @@ struct SettingsView: View {
                 }
                 .listRowBackground(Color.clear)
 
-                Section {
-                    heroCard
-                        .listRowInsets(EdgeInsets(top: 12, leading: 0, bottom: 16, trailing: 0))
-                        .listRowBackground(Color.clear)
-                }
-                .listRowBackground(Color.clear)
-
                 Section("Drink Profiles") {
                     if viewModel.profiles.isEmpty {
                         Text("No profiles yet. Create one to keep track of your stats.")
