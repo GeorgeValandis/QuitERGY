@@ -195,22 +195,33 @@ struct HomeView: View {
                         handleAddDrinkButton()
                     }
                 } label: {
-                    HStack(spacing: 8) {
-                        Image(systemName: "waterbottle.fill")
-                            .font(.system(size: 18, weight: .semibold))
-                        Text("Log Drink")
-                            .font(.system(size: 15, weight: .semibold, design: .rounded))
+                    ZStack(alignment: .topTrailing) {
+                        HStack(spacing: 8) {
+                            Image(systemName: "waterbottle.fill")
+                                .font(.system(size: 18, weight: .semibold))
+                            Text("Log Drink")
+                                .font(.system(size: 15, weight: .semibold, design: .rounded))
+                        }
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 14)
+                        .frame(maxWidth: .infinity)
+                        .background(
+                            Color.red
+                                .shadow(.inner(color: Color.red.opacity(0.5), radius: 8))
+                        )
+                        .clipShape(Capsule())
+                        .shadow(color: Color.red.opacity(0.6), radius: 16, y: 4)
+                        
+                        if shouldShowLock {
+                            Image(systemName: "lock.fill")
+                                .font(.system(size: 10, weight: .semibold))
+                                .foregroundStyle(.white)
+                                .padding(4)
+                                .background(Circle().fill(.red))
+                                .offset(x: -8, y: 4)
+                        }
                     }
-                    .foregroundStyle(.white)
-                    .padding(.horizontal, 20)
-                    .padding(.vertical, 14)
-                    .frame(maxWidth: .infinity)
-                    .background(
-                        Color.red
-                            .shadow(.inner(color: Color.red.opacity(0.5), radius: 8))
-                    )
-                    .clipShape(Capsule())
-                    .shadow(color: Color.red.opacity(0.6), radius: 16, y: 4)
                 }
                 .buttonStyle(.plain)
 
@@ -222,22 +233,33 @@ struct HomeView: View {
                         handleNoDrinkButton()
                     }
                 } label: {
-                    HStack(spacing: 8) {
-                        Image(systemName: "checkmark.circle.fill")
-                            .font(.system(size: 18, weight: .semibold))
-                        Text("No Drink")
-                            .font(.system(size: 15, weight: .semibold, design: .rounded))
+                    ZStack(alignment: .topTrailing) {
+                        HStack(spacing: 8) {
+                            Image(systemName: "checkmark.circle.fill")
+                                .font(.system(size: 18, weight: .semibold))
+                            Text("No Drink")
+                                .font(.system(size: 15, weight: .semibold, design: .rounded))
+                        }
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 14)
+                        .frame(maxWidth: .infinity)
+                        .background(
+                            Color.green
+                                .shadow(.inner(color: Color.green.opacity(0.5), radius: 8))
+                        )
+                        .clipShape(Capsule())
+                        .shadow(color: Color.green.opacity(0.6), radius: 16, y: 4)
+                        
+                        if shouldShowLock {
+                            Image(systemName: "lock.fill")
+                                .font(.system(size: 10, weight: .semibold))
+                                .foregroundStyle(.white)
+                                .padding(4)
+                                .background(Circle().fill(.red))
+                                .offset(x: -8, y: 4)
+                        }
                     }
-                    .foregroundStyle(.white)
-                    .padding(.horizontal, 20)
-                    .padding(.vertical, 14)
-                    .frame(maxWidth: .infinity)
-                    .background(
-                        Color.green
-                            .shadow(.inner(color: Color.green.opacity(0.5), radius: 8))
-                    )
-                    .clipShape(Capsule())
-                    .shadow(color: Color.green.opacity(0.6), radius: 16, y: 4)
                 }
                 .buttonStyle(.plain)
             }
@@ -378,6 +400,19 @@ struct HomeView: View {
             return
                 "Outstanding achievement! You've proven your strength and commitment. Keep going!"
         }
+    }
+    
+    private var shouldShowLock: Bool {
+        #if DEBUG
+        return false
+        #else
+        // Check if user already has any entry logged today and is not premium
+        let today = Calendar.current.startOfDay(for: Date())
+        let todayLogs = viewModel.recentLogs.filter { log in
+            Calendar.current.startOfDay(for: log.timestamp) == today
+        }
+        return !todayLogs.isEmpty && !purchaseManager.isPremiumUnlocked
+        #endif
     }
     
     private func handleAddDrinkButton() {
