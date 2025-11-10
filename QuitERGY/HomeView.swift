@@ -11,8 +11,10 @@ import SwiftUI
 struct HomeView: View {
     @StateObject private var viewModel: HomeViewModel
     @EnvironmentObject private var ratingController: RatingPromptController
+    @EnvironmentObject private var purchaseManager: PurchaseManager
     @State private var displayedProgress: Double = 0
     @State private var lastLogCount: Int = 0
+    @State private var isPresentingPaywall = false
 
     init(service: DrinkPersistenceProviding) {
         _viewModel = StateObject(wrappedValue: HomeViewModel(service: service))
@@ -72,22 +74,34 @@ struct HomeView: View {
         .alert("Change to No Drink?", isPresented: $viewModel.showChangeToNoDrinkAlert) {
             Button("Cancel", role: .cancel) {}
             Button("Yes, No Drink", role: .destructive) {
-                viewModel.confirmLogNoDrink()
+                handleConfirmNoDrink()
             }
         } message: {
             Text(
                 "You already logged drinks today. Do you want to change to 'No Drink'? This will delete all drink logs for today."
             )
         }
+        .alert("Premium Required", isPresented: $viewModel.showPremiumRequiredAlert) {
+            Button("Cancel", role: .cancel) {}
+            Button("Unlock Premium") {
+                isPresentingPaywall = true
+            }
+        } message: {
+            Text("You can only log one entry per day with the free version. Upgrade to Premium to log unlimited entries.")
+        }
         .alert("Change to Drink?", isPresented: $viewModel.showChangeToDrinkAlert) {
             Button("Cancel", role: .cancel) {}
             Button("Yes, Log Drink", role: .destructive) {
-                viewModel.confirmAddDrink()
+                handleAddDrink()
             }
         } message: {
             Text(
                 "You already logged 'No Drink' today. Do you want to change and log a drink instead?"
             )
+        }
+        .sheet(isPresented: $isPresentingPaywall) {
+            PaywallView()
+                .environmentObject(purchaseManager)
         }
         .onChange(of: viewModel.recentLogs.count) { oldValue, newValue in
             // Only trigger rating if count actually increased (new log added)
@@ -178,7 +192,7 @@ struct HomeView: View {
                     if viewModel.selectedProfile == nil {
                         viewModel.showMissingProfileAlert = true
                     } else {
-                        viewModel.isShowingResetAlert = true
+                        handleAddDrinkButton()
                     }
                 } label: {
                     HStack(spacing: 8) {
@@ -205,7 +219,7 @@ struct HomeView: View {
                     if viewModel.selectedProfile == nil {
                         viewModel.showMissingProfileAlert = true
                     } else {
-                        viewModel.logNoDrink()
+                        handleNoDrinkButton()
                     }
                 } label: {
                     HStack(spacing: 8) {
@@ -364,6 +378,82 @@ struct HomeView: View {
             return
                 "Outstanding achievement! You've proven your strength and commitment. Keep going!"
         }
+    }
+    
+    private func handleAddDrinkButton() {
+        #if DEBUG
+        viewModel.isShowingResetAlert = true
+        #else
+        // Check if user already has a drink logged today
+        let today = Calendar.current.startOfDay(for: Date())
+        let todayDrinkLogs = viewModel.recentLogs.filter { log in
+            Calendar.current.startOfDay(for: log.timestamp) == today && !log.isNoDrink
+        }
+        
+        // If user has already logged a drink today and is not premium, show paywall
+        if !todayDrinkLogs.isEmpty && !purchaseManager.isPremiumUnlocked {
+            isPresentingPaywall = true
+        } else {
+            viewModel.isShowingResetAlert = true
+        }
+        #endif
+    }
+    
+    private func handleAddDrink() {
+        #if DEBUG
+        viewModel.confirmAddDrink()
+        #else
+        // Check if user already has a drink logged today
+        let today = Calendar.current.startOfDay(for: Date())
+        let todayDrinkLogs = viewModel.recentLogs.filter { log in
+            Calendar.current.startOfDay(for: log.timestamp) == today && !log.isNoDrink
+        }
+        
+        // If user has already logged a drink today and is not premium, show paywall
+        if !todayDrinkLogs.isEmpty && !purchaseManager.isPremiumUnlocked {
+            isPresentingPaywall = true
+        } else {
+            viewModel.confirmAddDrink()
+        }
+        #endif
+    }
+    
+    private func handleNoDrinkButton() {
+        #if DEBUG
+        viewModel.logNoDrink()
+        #else
+        // Check if user already has any entry (drink or no drink) logged today
+        let today = Calendar.current.startOfDay(for: Date())
+        let todayLogs = viewModel.recentLogs.filter { log in
+            Calendar.current.startOfDay(for: log.timestamp) == today
+        }
+        
+        // If user has already logged an entry today and is not premium, show paywall
+        if !todayLogs.isEmpty && !purchaseManager.isPremiumUnlocked {
+            isPresentingPaywall = true
+        } else {
+            viewModel.logNoDrink()
+        }
+        #endif
+    }
+    
+    private func handleConfirmNoDrink() {
+        #if DEBUG
+        viewModel.confirmLogNoDrink()
+        #else
+        // Check if user already has any entry (drink or no drink) logged today
+        let today = Calendar.current.startOfDay(for: Date())
+        let todayLogs = viewModel.recentLogs.filter { log in
+            Calendar.current.startOfDay(for: log.timestamp) == today
+        }
+        
+        // If user has already logged an entry today and is not premium, show paywall
+        if !todayLogs.isEmpty && !purchaseManager.isPremiumUnlocked {
+            isPresentingPaywall = true
+        } else {
+            viewModel.confirmLogNoDrink()
+        }
+        #endif
     }
 }
 

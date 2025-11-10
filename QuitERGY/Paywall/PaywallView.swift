@@ -118,6 +118,7 @@ struct PaywallView: View {
 
                         footerLinks(metrics: metrics)
                     }
+                    .padding(.top, -20)
                     .padding(.horizontal, metrics.horizontalPadding)
                     .padding(.bottom, metrics.contentBottomPadding)
                 }
@@ -295,6 +296,11 @@ private struct BenefitItem: Identifiable {
             icon: "person.2.fill",
             title: "Multiple Profiles",
             description: "Create unlimited drink profiles."
+        ),
+        BenefitItem(
+            icon: "plus.circle.fill",
+            title: "Multiple Entries Per Day",
+            description: "Log more than one drink per day."
         ),
         BenefitItem(
             icon: "alarm.fill",

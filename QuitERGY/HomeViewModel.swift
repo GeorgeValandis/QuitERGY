@@ -19,6 +19,7 @@ final class HomeViewModel: ObservableObject {
     @Published var showMissingProfileAlert = false
     @Published var showChangeToNoDrinkAlert = false
     @Published var showChangeToDrinkAlert = false
+    @Published var showPremiumRequiredAlert = false
     @Published var errorMessage: String?
 
     private let persistence: DrinkPersistenceProviding
