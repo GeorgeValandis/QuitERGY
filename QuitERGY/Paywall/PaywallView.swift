@@ -288,24 +288,24 @@ private struct BenefitItem: Identifiable {
 
     static let sampleItems: [BenefitItem] = [
         BenefitItem(
-            icon: "chart.bar.doc.horizontal.fill",
-            title: "Detailed Statistics",
-            description: "Track money saved, sugar avoided, and progress."
-        ),
-        BenefitItem(
-            icon: "person.2.fill",
-            title: "Multiple Profiles",
-            description: "Create unlimited drink profiles."
-        ),
-        BenefitItem(
             icon: "plus.circle.fill",
             title: "Multiple Entries Per Day",
             description: "Log more than one drink per day."
         ),
         BenefitItem(
+            icon: "chart.bar.doc.horizontal.fill",
+            title: "Detailed Statistics",
+            description: "Track money saved, sugar avoided, and progress."
+        ),
+        BenefitItem(
             icon: "alarm.fill",
             title: "Daily Reminders",
             description: "Get daily check-ins to stay accountable."
+        ),
+        BenefitItem(
+            icon: "person.2.fill",
+            title: "Multiple Profiles",
+            description: "Create unlimited drink profiles."
         )
     ]
 }
