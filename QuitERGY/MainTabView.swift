@@ -37,11 +37,7 @@ struct MainTabView: View {
                     Label("Home", systemImage: "bolt.heart.fill")
                 }
 
-            StatsView(service: persistence)
-                .tabItem {
-                    Label("Stats", systemImage: "chart.bar.doc.horizontal.fill")
-                }
-                .badge(purchaseManager.isPremiumUnlocked ? "" : "🔒")
+            statsTab
 
             SettingsView(service: persistence, reminderScheduler: reminderScheduler)
                 .tabItem {
@@ -51,6 +47,22 @@ struct MainTabView: View {
         .environmentObject(purchaseManager)
         .tint(QuitERGYTheme.accent)
         .background(QuitERGYTheme.background.ignoresSafeArea())
+    }
+    
+    @ViewBuilder
+    private var statsTab: some View {
+        #if DEBUG
+        StatsView(service: persistence)
+            .tabItem {
+                Label("Stats", systemImage: "chart.bar.doc.horizontal.fill")
+            }
+        #else
+        StatsView(service: persistence)
+            .tabItem {
+                Label("Stats", systemImage: "chart.bar.doc.horizontal.fill")
+            }
+            .badge(purchaseManager.isPremiumUnlocked ? "" : "🔒")
+        #endif
     }
 }
 
