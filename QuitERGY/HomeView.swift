@@ -276,17 +276,14 @@ struct HomeView: View {
                 .padding(.leading, 20)
 
             ScrollView(.horizontal, showsIndicators: false) {
+                let statuses = activityStatuses
+
                 VStack(spacing: 6) {
                     ForEach(0..<7, id: \.self) { row in
                         HStack(spacing: 6) {
                             ForEach(0..<12, id: \.self) { col in
                                 let index = (row * 12) + col
-                                // Index 0 = heute, Index 1 = gestern, usw.
-                                let daysAgo = index
-                                let date =
-                                    Calendar.current.date(byAdding: .day, value: -daysAgo, to: Date())
-                                    ?? Date()
-                                let dayStatus = viewModel.getDayStatus(for: date)
+                                let dayStatus = statuses[index]
 
                                 RoundedRectangle(cornerRadius: 4)
                                     .fill(fillColor(for: dayStatus))
@@ -300,8 +297,6 @@ struct HomeView: View {
                         }
                     }
                 }
-                .padding(.vertical, 8)
-                .padding(.horizontal, 20)
             }
         }
         .padding(.horizontal, 20)
@@ -338,6 +333,44 @@ struct HomeView: View {
         case .noEntry:
             return Color.clear
         }
+    }
+
+    private var activityStatuses: [HomeViewModel.DayStatus] {
+        let totalDays = 7 * 12
+        let calendar = Calendar.current
+        let startOfToday = calendar.startOfDay(for: Date())
+        let earliestWindowStart = calendar.date(byAdding: .day, value: -(totalDays - 1), to: startOfToday)
+            ?? startOfToday
+
+        let firstLogDate = viewModel.recentLogs
+            .map { calendar.startOfDay(for: $0.timestamp) }
+            .min()
+
+        let displayStart = max(earliestWindowStart, firstLogDate ?? earliestWindowStart)
+
+        var statuses: [HomeViewModel.DayStatus] = []
+        var currentDate = displayStart
+
+        while currentDate <= startOfToday && statuses.count < totalDays {
+            statuses.append(viewModel.getDayStatus(for: currentDate))
+            guard let nextDate = calendar.date(byAdding: .day, value: 1, to: currentDate) else { break }
+            currentDate = nextDate
+        }
+
+        while statuses.count < totalDays {
+            statuses.append(.noEntry)
+        }
+
+        if let firstFilledIndex = statuses.firstIndex(where: { status in
+            if case .noEntry = status { return false }
+            return true
+        }), firstFilledIndex > 0 {
+            let trimmedStatuses = Array(statuses[firstFilledIndex...])
+            let padding = Array(repeating: HomeViewModel.DayStatus.noEntry, count: firstFilledIndex)
+            statuses = trimmedStatuses + padding
+        }
+
+        return statuses
     }
 
     private func redColor(for drinkCount: Int) -> Color {
