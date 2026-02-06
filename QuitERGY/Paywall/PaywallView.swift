@@ -7,7 +7,11 @@ import RevenueCat
 
 enum QuitERGYRevenueCat {
     static var apiKey: String {
-        Bundle.main.object(forInfoDictionaryKey: "REVENUECAT_API_KEY") as? String ?? ""
+        if let key = Bundle.main.object(forInfoDictionaryKey: "REVENUECAT_API_KEY") as? String,
+           !key.isEmpty {
+            return key
+        }
+        return "appl_vUTgbYmXfbNOEkfgLkuMUdAsKTm"
     }
 
     static let offeringIdentifier: String = "default"
@@ -214,10 +218,10 @@ struct PaywallView: View {
                     .underline()
             }
 
-            Link("Terms", destination: URL(string: "https://quitergy.app/terms")!)
+            Link("Terms", destination: URL(string: "https://georgevalandis.com/terms-and-conditions-quitergy-app/")!)
                 .underline()
             
-            Link("Privacy", destination: URL(string: "https://quitergy.app/privacy")!)
+            Link("Privacy", destination: URL(string: "https://georgevalandis.com/privacy-statement-quitergy/")!)
                 .underline()
         }
         .font(.quitRounded(.medium, size: metrics.scaledValue(13, minimum: 11, maximum: 15)))

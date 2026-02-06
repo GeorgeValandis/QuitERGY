@@ -17,6 +17,8 @@ struct QuitERGYApp: App {
     @Environment(\.scenePhase) private var scenePhase
 
     init() {
+        PurchaseManager.configureIfNeeded()
+
         let schema = Schema([
             DrinkProfile.self,
             DrinkLog.self,

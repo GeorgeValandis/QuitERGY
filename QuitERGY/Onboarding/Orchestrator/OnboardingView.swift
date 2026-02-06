@@ -11,6 +11,7 @@ import SwiftData
 struct OnboardingView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.drinkPersistence) private var persistence
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
     let onCompleted: () -> Void
 
@@ -18,6 +19,8 @@ struct OnboardingView: View {
     @State var form = OnboardingForm()
     @State private var showValidationHint = false
     @State private var errorMessage: String?
+    @State private var headerHeight: CGFloat = 0
+    @State private var footerHeight: CGFloat = 0
     @FocusState var focusedField: FocusField?
 
     init(onCompleted: @escaping () -> Void = {}) {
@@ -27,33 +30,88 @@ struct OnboardingView: View {
     var body: some View {
         ZStack {
             onboardingBackground
-            VStack(spacing: 28) {
-                headerSection
+            if horizontalSizeClass == .regular {
+                GeometryReader { proxy in
+                    let isTightHeight = proxy.size.height < 900
+                    let sectionSpacing: CGFloat = isTightHeight ? 20 : 28
+                    let outerTopPadding: CGFloat = isTightHeight ? 20 : 36
+                    let outerBottomPadding: CGFloat = isTightHeight ? 16 : 30
+                    let scrollPadding: CGFloat = isTightHeight ? 16 : 24
+                    let scrollInsetExtra: CGFloat = isTightHeight ? 8 : 16
 
-                StepDetailView(
-                    indicator: stepIndicatorText,
-                    title: stepTitle,
-                    subtitle: stepSubtitle
-                ) {
-                    stepContent()
+                    ZStack {
+                        ScrollView {
+                            VStack(spacing: sectionSpacing) {
+                                stepCard
+
+                                if showValidationHint, let message = validationMessage {
+                                    Text(message)
+                                        .font(.quitRounded(.medium, size: 14))
+                                        .foregroundStyle(Color.red.opacity(0.85))
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                        .transition(.opacity)
+                                }
+                            }
+                            .padding(.horizontal, 24)
+                            .padding(.vertical, scrollPadding)
+                            .frame(maxWidth: .infinity, alignment: .top)
+                        }
+                        .padding(.top, headerHeight + scrollInsetExtra)
+                        .padding(.bottom, footerHeight + scrollInsetExtra)
+
+                        VStack(spacing: sectionSpacing) {
+                            headerSection
+                                .background(
+                                    GeometryReader { overlayProxy in
+                                        Color.clear.preference(
+                                            key: HeaderHeightKey.self,
+                                            value: overlayProxy.size.height
+                                        )
+                                    }
+                                )
+                                .onPreferenceChange(HeaderHeightKey.self) { value in
+                                    headerHeight = value
+                                }
+
+                            Spacer(minLength: 0)
+
+                            footerControls
+                                .background(
+                                    GeometryReader { overlayProxy in
+                                        Color.clear.preference(
+                                            key: FooterHeightKey.self,
+                                            value: overlayProxy.size.height
+                                        )
+                                    }
+                                )
+                                .onPreferenceChange(FooterHeightKey.self) { value in
+                                    footerHeight = value
+                                }
+                        }
+                        .padding(.horizontal, 24)
+                        .padding(.top, outerTopPadding)
+                        .padding(.bottom, outerBottomPadding)
+                    }
+                    .frame(width: proxy.size.width, height: proxy.size.height, alignment: .top)
+                    .overlay(alignment: .topLeading) {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("h: \(Int(proxy.size.height)) w: \(Int(proxy.size.width))")
+                            Text("header: \(Int(headerHeight)) footer: \(Int(footerHeight))")
+                            Text("sizeClass: \(horizontalSizeClass == .regular ? "regular" : "compact")")
+                            Text("tight: \(isTightHeight ? "yes" : "no")")
+                        }
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundStyle(.white)
+                        .padding(8)
+                        .background(Color.black.opacity(0.65))
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                        .padding(.top, 8)
+                        .padding(.leading, 8)
+                    }
                 }
-                .animation(.easeInOut(duration: 0.3), value: workflow.currentStep)
-
-                Spacer(minLength: 0)
-
-                if showValidationHint, let message = validationMessage {
-                    Text(message)
-                        .font(.quitRounded(.medium, size: 14))
-                        .foregroundStyle(Color.red.opacity(0.85))
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .transition(.opacity)
-                }
-
-                footerControls
+            } else {
+                contentStack(includeSpacer: true)
             }
-            .padding(.horizontal, 24)
-            .padding(.top, 36)
-            .padding(.bottom, 30)
         }
         .onAppear {
             applyDefaults(for: form.drinkType)
@@ -79,6 +137,42 @@ struct OnboardingView: View {
         } message: {
             Text(errorMessage ?? "We couldn’t save your onboarding data. Please try again.")
         }
+    }
+
+    private func contentStack(includeSpacer: Bool) -> some View {
+        VStack(spacing: 28) {
+            headerSection
+
+            stepCard
+
+            if includeSpacer {
+                Spacer(minLength: 0)
+            }
+
+            if showValidationHint, let message = validationMessage {
+                Text(message)
+                    .font(.quitRounded(.medium, size: 14))
+                    .foregroundStyle(Color.red.opacity(0.85))
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .transition(.opacity)
+            }
+
+            footerControls
+        }
+        .padding(.horizontal, 24)
+        .padding(.top, 36)
+        .padding(.bottom, 30)
+    }
+
+    private var stepCard: some View {
+        StepDetailView(
+            indicator: stepIndicatorText,
+            title: stepTitle,
+            subtitle: stepSubtitle
+        ) {
+            stepContent()
+        }
+        .animation(.easeInOut(duration: 0.3), value: workflow.currentStep)
     }
 
     private var headerSection: some View {
@@ -237,6 +331,22 @@ struct OnboardingView: View {
             get: { errorMessage != nil },
             set: { if !$0 { errorMessage = nil } }
         )
+    }
+}
+
+private struct HeaderHeightKey: PreferenceKey {
+    static var defaultValue: CGFloat = 0
+
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+        value = max(value, nextValue())
+    }
+}
+
+private struct FooterHeightKey: PreferenceKey {
+    static var defaultValue: CGFloat = 0
+
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+        value = max(value, nextValue())
     }
 }
 
