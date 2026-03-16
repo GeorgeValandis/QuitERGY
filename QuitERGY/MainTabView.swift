@@ -47,6 +47,9 @@ struct MainTabView: View {
         .environmentObject(purchaseManager)
         .tint(QuitERGYTheme.accent)
         .background(QuitERGYTheme.background.ignoresSafeArea())
+        .task {
+            purchaseManager.ensureInitialSync()
+        }
     }
     
     @ViewBuilder

@@ -79,6 +79,9 @@ struct RootView: View {
         }
         .task {
             await ensureSettingsRecord()
+            if ProcessInfo.processInfo.environment["UITEST_SHOW_PAYWALL_ON_LAUNCH"] == "1" {
+                showPaywall = true
+            }
         }
         .onChange(of: ratingController.isPresentingPrompt) { _, newValue in
             showRatingPrompt = newValue
@@ -101,10 +104,19 @@ struct RootView: View {
     private func ensureSettingsRecord() async {
         guard !hasEnsuredSettings else { return }
         do {
+            let shouldSkipOnboardingForUITests = ProcessInfo.processInfo.environment["UITEST_SKIP_ONBOARDING"] == "1"
             var descriptor = FetchDescriptor<UserSettings>()
             descriptor.fetchLimit = 1
-            if try modelContext.fetch(descriptor).first == nil {
+            if let existing = try modelContext.fetch(descriptor).first {
+                if shouldSkipOnboardingForUITests, !existing.hasCompletedOnboarding {
+                    existing.hasCompletedOnboarding = true
+                    try modelContext.save()
+                }
+            } else {
                 let settings = UserSettings()
+                if shouldSkipOnboardingForUITests {
+                    settings.hasCompletedOnboarding = true
+                }
                 modelContext.insert(settings)
                 try modelContext.save()
             }

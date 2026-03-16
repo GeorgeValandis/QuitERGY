@@ -10,6 +10,7 @@ import SwiftUI
 
 struct SettingsView: View {
     @Environment(\.openURL) private var openURL
+    @EnvironmentObject private var purchaseManager: PurchaseManager
     @StateObject private var viewModel: SettingsViewModel
     @State private var isPresentingResetAlert = false
     @State private var isPresentingOnboardingResetAlert = false
@@ -91,7 +92,7 @@ struct SettingsView: View {
                         viewModel.prepareNewProfile()
                         isPresentingProfileForm = true
                         #else
-                        if !PurchaseManager.shared.isPremiumUnlocked && viewModel.profiles.count >= 1 {
+                        if !purchaseManager.isPremiumUnlocked && viewModel.profiles.count >= 1 {
                             isPresentingPaywall = true
                         } else {
                             viewModel.prepareNewProfile()
@@ -103,7 +104,7 @@ struct SettingsView: View {
                             Label("Save New Profile", systemImage: "plus.circle.fill")
                                 .font(.quitRounded(.semibold, size: 16))
                             #if !DEBUG
-                            if !PurchaseManager.shared.isPremiumUnlocked && viewModel.profiles.count >= 1 {
+                            if !purchaseManager.isPremiumUnlocked && viewModel.profiles.count >= 1 {
                                 Spacer()
                                 Image(systemName: "lock.fill")
                                     .font(.system(size: 10, weight: .semibold))
@@ -141,7 +142,7 @@ struct SettingsView: View {
                         }
                     }
                     #else
-                    if PurchaseManager.shared.isPremiumUnlocked {
+                    if purchaseManager.isPremiumUnlocked {
                         Toggle(isOn: $viewModel.reminderEnabled) {
                             Label("Ask me once per day", systemImage: "alarm.fill")
                         }
@@ -341,7 +342,7 @@ struct SettingsView: View {
             }
             .sheet(isPresented: $isPresentingPaywall) {
                 PaywallView()
-                    .environmentObject(PurchaseManager.shared)
+                    .environmentObject(purchaseManager)
             }
             .task {
                 viewModel.loadData()
@@ -357,7 +358,9 @@ struct SettingsView: View {
 
     private var premiumBanner: some View {
         Button {
-            isPresentingPaywall = true
+            if !purchaseManager.isPremiumUnlocked {
+                isPresentingPaywall = true
+            }
         } label: {
             HStack(spacing: 16) {
                 Image("PaywallIcon")
@@ -367,10 +370,14 @@ struct SettingsView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 16))
 
                 VStack(alignment: .leading, spacing: 6) {
-                    Text("Unlock Premium")
+                    Text(purchaseManager.isPremiumUnlocked ? "Premium Active" : "Unlock Premium")
                         .font(.quitRounded(.semibold, size: 18))
                         .foregroundStyle(QuitERGYTheme.textPrimary)
-                    Text("Track unlimited streaks, insights & more")
+                    Text(
+                        purchaseManager.isPremiumUnlocked
+                            ? "Your subscription is active."
+                            : "Track unlimited streaks, insights & more"
+                    )
                         .font(.quitRounded(.medium, size: 14))
                         .foregroundStyle(QuitERGYTheme.textSecondary)
                         .lineLimit(2)
@@ -378,9 +385,15 @@ struct SettingsView: View {
 
                 Spacer(minLength: 8)
 
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 14, weight: .semibold))
-                    .foregroundStyle(QuitERGYTheme.textSecondary.opacity(0.6))
+                if purchaseManager.isPremiumUnlocked {
+                    Image(systemName: "checkmark.seal.fill")
+                        .font(.system(size: 18, weight: .semibold))
+                        .foregroundStyle(QuitERGYTheme.accent)
+                } else {
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundStyle(QuitERGYTheme.textSecondary.opacity(0.6))
+                }
             }
             .padding(18)
             .cardBackground()

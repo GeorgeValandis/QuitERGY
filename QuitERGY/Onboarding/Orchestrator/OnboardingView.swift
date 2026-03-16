@@ -94,19 +94,23 @@ struct OnboardingView: View {
                     }
                     .frame(width: proxy.size.width, height: proxy.size.height, alignment: .top)
                     .overlay(alignment: .topLeading) {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("h: \(Int(proxy.size.height)) w: \(Int(proxy.size.width))")
-                            Text("header: \(Int(headerHeight)) footer: \(Int(footerHeight))")
-                            Text("sizeClass: \(horizontalSizeClass == .regular ? "regular" : "compact")")
-                            Text("tight: \(isTightHeight ? "yes" : "no")")
+                        #if DEBUG
+                        if ProcessInfo.processInfo.environment["SHOW_ONBOARDING_LAYOUT_DEBUG"] == "1" {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("h: \(Int(proxy.size.height)) w: \(Int(proxy.size.width))")
+                                Text("header: \(Int(headerHeight)) footer: \(Int(footerHeight))")
+                                Text("sizeClass: \(horizontalSizeClass == .regular ? "regular" : "compact")")
+                                Text("tight: \(isTightHeight ? "yes" : "no")")
+                            }
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundStyle(.white)
+                            .padding(8)
+                            .background(Color.black.opacity(0.65))
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                            .padding(.top, 8)
+                            .padding(.leading, 8)
                         }
-                        .font(.system(size: 11, weight: .semibold))
-                        .foregroundStyle(.white)
-                        .padding(8)
-                        .background(Color.black.opacity(0.65))
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                        .padding(.top, 8)
-                        .padding(.leading, 8)
+                        #endif
                     }
                 }
             } else {

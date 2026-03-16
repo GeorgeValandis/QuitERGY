@@ -268,12 +268,16 @@ struct HomeView: View {
     }
 
     private var activityGrid: some View {
-        VStack(spacing: 12) {
+        let gridColumns = 12
+        let cellSize: CGFloat = 18
+        let cellSpacing: CGFloat = 6
+        let gridWidth = (CGFloat(gridColumns) * cellSize) + (CGFloat(gridColumns - 1) * cellSpacing)
+
+        return VStack(spacing: 12) {
             Text("Activity")
                 .font(.system(size: 15, weight: .semibold, design: .rounded))
                 .foregroundStyle(.white.opacity(0.7))
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.leading, 20)
 
             ScrollView(.horizontal, showsIndicators: false) {
                 let statuses = activityStatuses
@@ -297,8 +301,11 @@ struct HomeView: View {
                         }
                     }
                 }
+                .frame(maxWidth: .infinity, alignment: .center)
             }
         }
+        .frame(width: gridWidth)
+        .frame(maxWidth: .infinity, alignment: .center)
         .padding(.horizontal, 20)
     }
 

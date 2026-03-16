@@ -18,8 +18,10 @@ enum QuitERGYRevenueCat {
     static let packageIdWeekly: String = "$rc_weekly"
     static let packageIdYearly: String = "$rc_annual"
 
-    static let productIdWeekly: String = "quitergy_weekly"
-    static let productIdYearly: String = "quitergy_yearly"
+    static let productIdWeekly: String = "com.quitergy.premium.weekly"
+    static let productIdYearly: String = "com.quitergy.premium.yearly"
+    static let legacyProductIdWeekly: String = "quitergy_weekly"
+    static let legacyProductIdYearly: String = "quitergy_yearly"
 
     static let entitlementPremium: String = "QuitERGYPremium"
 }
@@ -377,6 +379,15 @@ struct PlanSelectionSection: View {
             }
         }
 
+        var productIds: [String] {
+            switch self {
+            case .yearly:
+                return [QuitERGYRevenueCat.productIdYearly, QuitERGYRevenueCat.legacyProductIdYearly]
+            case .weekly:
+                return [QuitERGYRevenueCat.productIdWeekly, QuitERGYRevenueCat.legacyProductIdWeekly]
+            }
+        }
+
         var packageId: String {
             switch self {
             case .yearly: return QuitERGYRevenueCat.packageIdYearly
@@ -394,7 +405,22 @@ struct PlanSelectionSection: View {
 
     var body: some View {
         VStack(spacing: scaledValue(16, minimum: 12, maximum: 20)) {
-            if isLoading {
+            if purchaseManager.isPremiumUnlocked {
+                HStack(spacing: 10) {
+                    Image(systemName: "checkmark.seal.fill")
+                        .foregroundStyle(QuitERGYPaywallBrand.accent)
+                    Text("Premium is already active on this account.")
+                        .font(.quitRounded(.semibold, size: scaledValue(15, minimum: 13, maximum: 17)))
+                        .foregroundStyle(QuitERGYTheme.textPrimary)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, scaledValue(14, minimum: 12, maximum: 18))
+                .padding(.vertical, scaledValue(12, minimum: 10, maximum: 14))
+                .background(
+                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                        .fill(QuitERGYPaywallBrand.surface.opacity(0.9))
+                )
+            } else if isLoading {
                 ProgressView("Loading plans…")
                     .foregroundStyle(QuitERGYTheme.textSecondary)
             } else {
@@ -407,8 +433,8 @@ struct PlanSelectionSection: View {
                 .foregroundStyle(QuitERGYTheme.textSecondary)
                 .multilineTextAlignment(.leading)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .opacity(selectedPlan == .weekly ? 1 : 0)
-                .accessibilityHidden(selectedPlan != .weekly)
+                .opacity(purchaseManager.isPremiumUnlocked ? 0 : (selectedPlan == .weekly ? 1 : 0))
+                .accessibilityHidden(purchaseManager.isPremiumUnlocked || selectedPlan != .weekly)
 
             Button {
                 Task { await onPurchaseTapped() }
@@ -418,10 +444,16 @@ struct PlanSelectionSection: View {
                         ProgressView().tint(.white)
                     } else {
                         HStack(spacing: scaledValue(10, minimum: 8, maximum: 12)) {
-                            Text(selectedPlan == .weekly ? "Start free trial" : "Continue")
+                            Text(
+                                purchaseManager.isPremiumUnlocked
+                                    ? "Premium Active"
+                                    : (selectedPlan == .weekly ? "Start free trial" : "Continue")
+                            )
                                 .font(.quitRounded(.semibold, size: scaledValue(20, minimum: 18, maximum: 24)))
-                            Image(systemName: "chevron.right")
-                                .font(.system(size: scaledValue(16, minimum: 14, maximum: 18), weight: .semibold))
+                            if !purchaseManager.isPremiumUnlocked {
+                                Image(systemName: "chevron.right")
+                                    .font(.system(size: scaledValue(16, minimum: 14, maximum: 18), weight: .semibold))
+                            }
                         }
                     }
                 }
@@ -437,7 +469,7 @@ struct PlanSelectionSection: View {
                 )
                 .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
             }
-            .disabled(isProcessing || isLoading)
+            .disabled(isProcessing || isLoading || purchaseManager.isPremiumUnlocked)
 
             if let loadError {
                 VStack(alignment: .leading, spacing: 6) {
@@ -459,6 +491,7 @@ struct PlanSelectionSection: View {
     private func planButton(for plan: SubscriptionPlan, badge: String, subtitle: String) -> some View {
         let isSelected = selectedPlan == plan
         return Button {
+            guard !purchaseManager.isPremiumUnlocked else { return }
             selectedPlan = plan
         } label: {
             HStack(spacing: scaledValue(12, minimum: 10, maximum: 16)) {
@@ -498,11 +531,13 @@ struct PlanSelectionSection: View {
             .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.28 : 0.12), radius: scaledValue(18, minimum: 12, maximum: 24), y: 8)
         }
         .buttonStyle(.plain)
+        .disabled(purchaseManager.isPremiumUnlocked)
+        .opacity(purchaseManager.isPremiumUnlocked ? 0.6 : 1)
     }
 
     private func priceDescription(for plan: SubscriptionPlan) -> String {
         let localized = purchaseManager.packages.first(where: {
-            $0.identifier == plan.packageId || $0.storeProduct.productIdentifier == plan.productId
+            $0.identifier == plan.packageId || plan.productIds.contains($0.storeProduct.productIdentifier)
         })?.storeProduct.localizedPriceString
         if let localized { return localized }
         return plan.fallbackPrice
@@ -542,7 +577,10 @@ struct PlanSelectionSection: View {
                 await purchaseManager.purchase(package: package)
                 await handlePostPurchase()
             } else {
-                try? await purchaseManager.purchase(productId: selectedPlan.productId)
+                for productId in selectedPlan.productIds {
+                    try? await purchaseManager.purchase(productId: productId)
+                    if purchaseManager.isPremiumUnlocked { break }
+                }
                 await handlePostPurchase()
             }
         }
@@ -550,7 +588,7 @@ struct PlanSelectionSection: View {
 
     private func package(for plan: SubscriptionPlan) -> Package? {
         purchaseManager.packages.first {
-            $0.identifier == plan.packageId || $0.storeProduct.productIdentifier == plan.productId
+            $0.identifier == plan.packageId || plan.productIds.contains($0.storeProduct.productIdentifier)
         }
     }
 
@@ -694,6 +732,7 @@ final class PurchaseManager: NSObject, ObservableObject, PurchasesDelegate {
         do {
             let result = try await Purchases.shared.purchase(package: package)
             updateState(with: result.customerInfo)
+            await refreshCustomerInfo()
         } catch {
             // Ignore errors for now; UI will remain unchanged.
         }
@@ -705,12 +744,14 @@ final class PurchaseManager: NSObject, ObservableObject, PurchasesDelegate {
         guard let product = products.first else { return }
         let result = try await Purchases.shared.purchase(product: product)
         updateState(with: result.customerInfo)
+        await refreshCustomerInfo()
     }
 
     func restorePurchases() async throws {
         guard PurchaseManager.isSDKConfigured else { return }
         let info = try await Purchases.shared.restorePurchases()
         updateState(with: info)
+        await refreshCustomerInfo()
     }
 
     func refreshCustomerInfo() async {
@@ -729,7 +770,13 @@ final class PurchaseManager: NSObject, ObservableObject, PurchasesDelegate {
 
     private func updateState(with info: CustomerInfo) {
         customerInfo = info
-        isPremiumUnlocked = info.entitlements[QuitERGYRevenueCat.entitlementPremium]?.isActive == true
+        // Prefer explicit entitlement, but gracefully fall back to any active entitlement
+        // or active subscription so a naming mismatch does not lock paying users out.
+        let hasConfiguredEntitlement = info.entitlements[QuitERGYRevenueCat.entitlementPremium]?.isActive == true
+        let hasAnyActiveEntitlement = info.entitlements.active.values.contains { $0.isActive }
+        let hasAnyActiveSubscription = !info.activeSubscriptions.isEmpty
+
+        isPremiumUnlocked = hasConfiguredEntitlement || hasAnyActiveEntitlement || hasAnyActiveSubscription
     }
 }
 #else
