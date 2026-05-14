@@ -52,14 +52,19 @@ Expected phrase coverage:
 - `quit energy drinks`
 - `reduce energy drinks`
 
-## Screenshot Decision
+## Screenshot Policy
 
-For version 1.0.3, keep only the clean first screenshot per device class for now.
+Version 1.0.3 should keep the existing screenshot count unless a replacement set has been created and approved first.
 
-Reason:
-- The first screenshot supports the keyword intent with "Track energy drinks" and clear in-app logging UI.
-- The previous second and third screenshots had visible mock-data/text artifacts that could reduce conversion.
-- Conversion quality is more important than having extra screenshots with obvious defects.
+Current state:
+- 3 iPhone screenshots.
+- 3 iPad screenshots.
+
+Rules:
+- Do not remove App Store screenshots without explicit approval.
+- Before removing or replacing screenshots, create a better alternative set first.
+- Screenshot changes should be treated as conversion changes, not only keyword work.
+- The first screenshot already supports the keyword intent with "Track energy drinks" and clear in-app logging UI.
 
 ## Highest-Impact Next Steps
 
