@@ -8,12 +8,28 @@
 import SwiftData
 import SwiftUI
 
+struct FreeDrinkLogAllowance {
+    static let freeLogLimit = 3
+    static let storageKey = "free_drink_log_count"
+
+    static func usedFreeLogCount(defaults: UserDefaults = .standard) -> Int {
+        defaults.integer(forKey: storageKey)
+    }
+
+    static func hasRemainingFreeLog(defaults: UserDefaults = .standard) -> Bool {
+        usedFreeLogCount(defaults: defaults) < freeLogLimit
+    }
+
+    static func recordFreeLog(defaults: UserDefaults = .standard) {
+        defaults.set(usedFreeLogCount(defaults: defaults) + 1, forKey: storageKey)
+    }
+}
+
 struct HomeView: View {
     @StateObject private var viewModel: HomeViewModel
     @EnvironmentObject private var ratingController: RatingPromptController
     @EnvironmentObject private var purchaseManager: PurchaseManager
     @State private var displayedProgress: Double = 0
-    @State private var lastLogCount: Int = 0
     @State private var isPresentingPaywall = false
 
     init(service: DrinkPersistenceProviding) {
@@ -55,9 +71,11 @@ struct HomeView: View {
         }
         .alert("Drink logged?", isPresented: $viewModel.isShowingResetAlert) {
             Button("Confirm", role: .destructive) {
-                viewModel.addDrink()
+                handleAddDrink()
             }
-            Button("Cancel", role: .cancel) {}
+            Button("Cancel", role: .cancel) {
+                trackLogCancelled(action: "drink", reason: "reset_alert_cancelled")
+            }
         } message: {
             Text("Adding an energy drink will reset your current clean streak.")
         }
@@ -72,7 +90,9 @@ struct HomeView: View {
             Text(viewModel.errorMessage ?? "")
         }
         .alert("Change to No Drink?", isPresented: $viewModel.showChangeToNoDrinkAlert) {
-            Button("Cancel", role: .cancel) {}
+            Button("Cancel", role: .cancel) {
+                trackLogCancelled(action: "no_drink", reason: "existing_drink_cancelled")
+            }
             Button("Yes, No Drink", role: .destructive) {
                 handleConfirmNoDrink()
             }
@@ -82,15 +102,26 @@ struct HomeView: View {
             )
         }
         .alert("Premium Required", isPresented: $viewModel.showPremiumRequiredAlert) {
-            Button("Cancel", role: .cancel) {}
+            Button("Cancel", role: .cancel) {
+                trackLogCancelled(action: "unknown", reason: "premium_required_alert_cancelled")
+            }
             Button("Unlock Premium") {
+                AppAnalytics.shared.track("paywall_presented", properties: [
+                    "free_logs_used": "\(FreeDrinkLogAllowance.usedFreeLogCount())",
+                    "has_free_log_remaining": "\(FreeDrinkLogAllowance.hasRemainingFreeLog())",
+                    "is_premium": "\(purchaseManager.isPremiumUnlocked)",
+                    "surface": "home",
+                    "trigger": "premium_required_alert"
+                ])
                 isPresentingPaywall = true
             }
         } message: {
-            Text("You can only log one entry per day with the free version. Upgrade to Premium to log unlimited entries.")
+            Text("You can log 3 entries with the free version. Upgrade to Premium to keep logging unlimited entries.")
         }
         .alert("Change to Drink?", isPresented: $viewModel.showChangeToDrinkAlert) {
-            Button("Cancel", role: .cancel) {}
+            Button("Cancel", role: .cancel) {
+                trackLogCancelled(action: "drink", reason: "existing_no_drink_cancelled")
+            }
             Button("Yes, Log Drink", role: .destructive) {
                 handleAddDrink()
             }
@@ -102,18 +133,6 @@ struct HomeView: View {
         .sheet(isPresented: $isPresentingPaywall) {
             PaywallView()
                 .environmentObject(purchaseManager)
-        }
-        .onChange(of: viewModel.recentLogs.count) { oldValue, newValue in
-            // Only trigger rating if count actually increased (new log added)
-            // and we're not in the initial load phase
-            if lastLogCount > 0 && newValue > oldValue {
-                ratingController.recordEntryCreated()
-            }
-            lastLogCount = newValue
-        }
-        .onAppear {
-            // Initialize lastLogCount on first appear
-            lastLogCount = viewModel.recentLogs.count
         }
     }
 
@@ -152,11 +171,11 @@ struct HomeView: View {
                     .foregroundStyle(.white.opacity(0.6))
                     .tracking(1.5)
 
-                Text("\(Int(displayedProgress * 100))%")
+                Text(L10n.format("%d%%", Int(displayedProgress * 100)))
                     .font(.system(size: 52, weight: .bold, design: .rounded))
                     .foregroundStyle(.white)
 
-                Text("\(viewModel.streakDays)D STREAK")
+                Text(L10n.format("%dD STREAK", viewModel.streakDays))
                     .font(.system(size: 13, weight: .semibold, design: .rounded))
                     .foregroundStyle(.white.opacity(0.7))
                     .tracking(0.8)
@@ -190,6 +209,7 @@ struct HomeView: View {
                 // Log Drink button (red)
                 Button {
                     if viewModel.selectedProfile == nil {
+                        trackLogBlocked(action: "drink", reason: "missing_profile")
                         viewModel.showMissingProfileAlert = true
                     } else {
                         handleAddDrinkButton()
@@ -228,6 +248,7 @@ struct HomeView: View {
                 // No Drink button (green)
                 Button {
                     if viewModel.selectedProfile == nil {
+                        trackLogBlocked(action: "no_drink", reason: "missing_profile")
                         viewModel.showMissingProfileAlert = true
                     } else {
                         handleNoDrinkButton()
@@ -404,9 +425,9 @@ struct HomeView: View {
         }
 
         if hasDrinkToday {
-            return "Your 90-day goal has been adjusted to:"
+            return L10n.text("Your 90-day goal has been adjusted to:")
         } else {
-            return "You're on track to reach your 90-day goal by:"
+            return L10n.text("You're on track to reach your 90-day goal by:")
         }
     }
 
@@ -416,29 +437,30 @@ struct HomeView: View {
         if targetDays > 0 {
             let targetDate = calendar.date(byAdding: .day, value: targetDays, to: Date()) ?? Date()
             let formatter = DateFormatter()
-            formatter.dateFormat = "MMM d, yyyy"
+            formatter.locale = Locale.current
+            formatter.dateStyle = .medium
             return formatter.string(from: targetDate)
         }
-        return "Goal achieved!"
+        return L10n.text("Goal achieved!")
     }
 
     private var motivationalMessage: String {
         let days = viewModel.streakDays
         if days == 0 {
-            return "Every journey begins with a single step. You've got this!"
+            return L10n.text("Every journey begins with a single step. You've got this!")
         } else if days < 7 {
-            return "Great start! The first week is the hardest, but you're already making progress."
+            return L10n.text("Great start! The first week is the hardest, but you're already making progress.")
         } else if days < 14 {
-            return
-                "You're building momentum! Your body is starting to adjust to life without energy drinks."
+            return L10n.text("You're building momentum! Your body is starting to adjust to life without energy drinks.")
         } else if days < 30 {
-            return "Impressive progress! You're breaking the habit and forming healthier patterns."
+            return L10n.text("Impressive progress! You're breaking the habit and forming healthier patterns.")
         } else if days < 60 {
-            return
-                "You're over \(days) days in! The cravings may still come, but your mind is stronger, and your willpower is greater. Stay the course and trust the process."
+            return L10n.format(
+                "You're over %d days in! The cravings may still come, but your mind is stronger, and your willpower is greater. Stay the course and trust the process.",
+                days
+            )
         } else {
-            return
-                "Outstanding achievement! You've proven your strength and commitment. Keep going!"
+            return L10n.text("Outstanding achievement! You've proven your strength and commitment. Keep going!")
         }
     }
     
@@ -446,89 +468,118 @@ struct HomeView: View {
         #if DEBUG
         return false
         #else
-        // Check if user already has any entry logged today and is not premium
-        let today = Calendar.current.startOfDay(for: Date())
-        let todayLogs = viewModel.recentLogs.filter { log in
-            Calendar.current.startOfDay(for: log.timestamp) == today
-        }
-        return !todayLogs.isEmpty && !purchaseManager.isPremiumUnlocked
+        return !purchaseManager.isPremiumUnlocked && !FreeDrinkLogAllowance.hasRemainingFreeLog()
         #endif
     }
     
     private func handleAddDrinkButton() {
+        trackLogActionTapped("drink")
         #if DEBUG
         viewModel.isShowingResetAlert = true
         #else
-        // Check if user already has a drink logged today
-        let today = Calendar.current.startOfDay(for: Date())
-        let todayDrinkLogs = viewModel.recentLogs.filter { log in
-            Calendar.current.startOfDay(for: log.timestamp) == today && !log.isNoDrink
-        }
-        
-        // If user has already logged a drink today and is not premium, show paywall
-        if !todayDrinkLogs.isEmpty && !purchaseManager.isPremiumUnlocked {
-            isPresentingPaywall = true
-        } else {
-            viewModel.isShowingResetAlert = true
-        }
+        guard !presentPaywallIfFreeLimitReached(action: "drink") else { return }
+        viewModel.isShowingResetAlert = true
         #endif
     }
     
     private func handleAddDrink() {
         #if DEBUG
-        viewModel.confirmAddDrink()
+        recordRatingEvent(viewModel.confirmAddDrink())
         #else
-        // Check if user already has a drink logged today
-        let today = Calendar.current.startOfDay(for: Date())
-        let todayDrinkLogs = viewModel.recentLogs.filter { log in
-            Calendar.current.startOfDay(for: log.timestamp) == today && !log.isNoDrink
-        }
-        
-        // If user has already logged a drink today and is not premium, show paywall
-        if !todayDrinkLogs.isEmpty && !purchaseManager.isPremiumUnlocked {
-            isPresentingPaywall = true
-        } else {
-            viewModel.confirmAddDrink()
-        }
+        guard !presentPaywallIfFreeLimitReached(action: "drink") else { return }
+        recordRatingEvent(viewModel.confirmAddDrink())
         #endif
     }
     
     private func handleNoDrinkButton() {
+        trackLogActionTapped("no_drink")
         #if DEBUG
-        viewModel.logNoDrink()
+        recordRatingEvent(viewModel.logNoDrink())
         #else
-        // Check if user already has any entry (drink or no drink) logged today
-        let today = Calendar.current.startOfDay(for: Date())
-        let todayLogs = viewModel.recentLogs.filter { log in
-            Calendar.current.startOfDay(for: log.timestamp) == today
-        }
-        
-        // If user has already logged an entry today and is not premium, show paywall
-        if !todayLogs.isEmpty && !purchaseManager.isPremiumUnlocked {
-            isPresentingPaywall = true
-        } else {
-            viewModel.logNoDrink()
-        }
+        guard !presentPaywallIfFreeLimitReached(action: "no_drink") else { return }
+        recordRatingEvent(viewModel.logNoDrink())
         #endif
     }
     
     private func handleConfirmNoDrink() {
         #if DEBUG
-        viewModel.confirmLogNoDrink()
+        recordRatingEvent(viewModel.confirmLogNoDrink())
         #else
-        // Check if user already has any entry (drink or no drink) logged today
-        let today = Calendar.current.startOfDay(for: Date())
-        let todayLogs = viewModel.recentLogs.filter { log in
-            Calendar.current.startOfDay(for: log.timestamp) == today
-        }
-        
-        // If user has already logged an entry today and is not premium, show paywall
-        if !todayLogs.isEmpty && !purchaseManager.isPremiumUnlocked {
-            isPresentingPaywall = true
-        } else {
-            viewModel.confirmLogNoDrink()
+        guard !presentPaywallIfFreeLimitReached(action: "no_drink") else { return }
+        recordRatingEvent(viewModel.confirmLogNoDrink())
+        #endif
+    }
+
+    private func presentPaywallIfFreeLimitReached(action: String) -> Bool {
+        guard !purchaseManager.isPremiumUnlocked else { return false }
+        guard !FreeDrinkLogAllowance.hasRemainingFreeLog() else { return false }
+        trackLogBlocked(action: action, reason: "free_log_limit")
+        AppAnalytics.shared.track("paywall_presented", properties: [
+            "free_logs_used": "\(FreeDrinkLogAllowance.usedFreeLogCount())",
+            "has_free_log_remaining": "\(FreeDrinkLogAllowance.hasRemainingFreeLog())",
+            "is_premium": "\(purchaseManager.isPremiumUnlocked)",
+            "surface": "home",
+            "trigger": "free_log_limit"
+        ])
+        isPresentingPaywall = true
+        return true
+    }
+
+    private func recordRatingEvent(_ outcome: HomeViewModel.LogOutcome?) {
+        guard let outcome else { return }
+
+        #if !DEBUG
+        if !purchaseManager.isPremiumUnlocked {
+            FreeDrinkLogAllowance.recordFreeLog()
         }
         #endif
+
+        switch outcome {
+        case .noDrink:
+            AppAnalytics.shared.track("drink_log_recorded", properties: logEventProperties(kind: "no_drink"))
+            ratingController.recordSuccessfulLog(isNoDrink: true, streakDays: viewModel.streakDays)
+        case .drink:
+            AppAnalytics.shared.track("drink_log_recorded", properties: logEventProperties(kind: "drink"))
+            ratingController.recordSuccessfulLog(isNoDrink: false, streakDays: viewModel.streakDays)
+        }
+    }
+
+    private func trackLogActionTapped(_ action: String) {
+        AppAnalytics.shared.track("drink_log_tapped", properties: [
+            "action": action,
+            "free_logs_used": "\(FreeDrinkLogAllowance.usedFreeLogCount())",
+            "has_free_log_remaining": "\(FreeDrinkLogAllowance.hasRemainingFreeLog())",
+            "is_premium": "\(purchaseManager.isPremiumUnlocked)"
+        ])
+    }
+
+    private func trackLogBlocked(action: String, reason: String) {
+        AppAnalytics.shared.track("drink_log_blocked", properties: [
+            "action": action,
+            "free_logs_used": "\(FreeDrinkLogAllowance.usedFreeLogCount())",
+            "has_free_log_remaining": "\(FreeDrinkLogAllowance.hasRemainingFreeLog())",
+            "is_premium": "\(purchaseManager.isPremiumUnlocked)",
+            "reason": reason
+        ])
+    }
+
+    private func trackLogCancelled(action: String, reason: String) {
+        AppAnalytics.shared.track("drink_log_cancelled", properties: [
+            "action": action,
+            "free_logs_used": "\(FreeDrinkLogAllowance.usedFreeLogCount())",
+            "has_free_log_remaining": "\(FreeDrinkLogAllowance.hasRemainingFreeLog())",
+            "is_premium": "\(purchaseManager.isPremiumUnlocked)",
+            "reason": reason
+        ])
+    }
+
+    private func logEventProperties(kind: String) -> [String: String] {
+        [
+            "free_logs_used": "\(FreeDrinkLogAllowance.usedFreeLogCount())",
+            "is_premium": "\(purchaseManager.isPremiumUnlocked)",
+            "kind": kind,
+            "streak_days": "\(viewModel.streakDays)"
+        ]
     }
 }
 

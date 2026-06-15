@@ -1,0 +1,158 @@
+{
+  "generatedAt": "2026-05-28",
+  "source": "Astro MCP http://127.0.0.1:8089/mcp",
+  "temporaryResearchApp": {
+    "appStoreId": "109",
+    "name": "QuitERGY Locale Keyword Research 2026-05-28",
+    "platform": "iphone"
+  },
+  "qualificationThreshold": {
+    "popularityMin": 20,
+    "difficultyMax": 50
+  },
+  "selectedLocales": {
+    "de-DE": {
+      "storefront": "de",
+      "verdict": "qualified",
+      "mainKeyword": {
+        "keyword": "sucht tracker",
+        "popularity": 22,
+        "difficulty": 19,
+        "intent": "Relevant native alternative; SERP contains sober/addiction/habit stopping trackers."
+      },
+      "secondaryKeyword": {
+        "keyword": "drink counter",
+        "popularity": 6,
+        "difficulty": 37,
+        "verdict": "near_miss_popularity"
+      },
+      "rejectedDirectTerms": [
+        {
+          "keyword": "koffein tracker",
+          "popularity": 5,
+          "difficulty": 5
+        },
+        {
+          "keyword": "energy drink tracker",
+          "popularity": 5,
+          "difficulty": 5
+        },
+        {
+          "keyword": "getränkezähler",
+          "popularity": 5,
+          "difficulty": 7
+        }
+      ]
+    },
+    "es-ES": {
+      "storefront": "es",
+      "verdict": "qualified_broad_intent",
+      "mainKeyword": {
+        "keyword": "habit tracker",
+        "popularity": 58,
+        "difficulty": 41,
+        "intent": "Broad but compatible; SERP is routine/streak/habit tracking apps."
+      },
+      "secondaryKeyword": {
+        "keyword": "drink counter",
+        "popularity": 12,
+        "difficulty": 21,
+        "verdict": "near_miss_popularity"
+      },
+      "rejectedDirectTerms": [
+        {
+          "keyword": "contador de bebidas",
+          "popularity": 5,
+          "difficulty": 35
+        },
+        {
+          "keyword": "cafeina tracker",
+          "popularity": 5,
+          "difficulty": 5
+        },
+        {
+          "keyword": "bebidas energeticas",
+          "popularity": 5,
+          "difficulty": 5
+        }
+      ]
+    },
+    "fr-FR": {
+      "storefront": "fr",
+      "verdict": "qualified_broad_intent",
+      "mainKeyword": {
+        "keyword": "habit tracker",
+        "popularity": 60,
+        "difficulty": 44,
+        "intent": "Broad but compatible; SERP is routine/streak/habit tracking apps."
+      },
+      "secondaryKeyword": {
+        "keyword": "drink counter",
+        "popularity": 6,
+        "difficulty": 19,
+        "verdict": "near_miss_popularity"
+      },
+      "rejectedDirectTerms": [
+        {
+          "keyword": "suivi caféine",
+          "popularity": 5,
+          "difficulty": 5
+        },
+        {
+          "keyword": "compteur boissons",
+          "popularity": 5,
+          "difficulty": 50
+        },
+        {
+          "keyword": "boisson énergétique",
+          "popularity": 5,
+          "difficulty": 5
+        }
+      ]
+    }
+  },
+  "heldBackLocales": {
+    "pt-BR": {
+      "storefront": "br",
+      "reason": "Only broad habit tracker qualifies and difficulty is exactly at the threshold; hold for second wave.",
+      "strongestKeyword": {
+        "keyword": "habit tracker",
+        "popularity": 56,
+        "difficulty": 50
+      },
+      "directTerms": [
+        {
+          "keyword": "caffeine tracker",
+          "popularity": 6,
+          "difficulty": 5
+        },
+        {
+          "keyword": "contador de bebidas",
+          "popularity": 5,
+          "difficulty": 52
+        }
+      ]
+    },
+    "es-MX": {
+      "storefront": "mx",
+      "reason": "Same broad habit tracker signal as ES; avoid duplicating Spanish markets in first pass.",
+      "strongestKeyword": {
+        "keyword": "habit tracker",
+        "popularity": 55,
+        "difficulty": 49
+      },
+      "directTerms": [
+        {
+          "keyword": "drink counter",
+          "popularity": 5,
+          "difficulty": 7
+        },
+        {
+          "keyword": "contador de bebidas",
+          "popularity": 5,
+          "difficulty": 47
+        }
+      ]
+    }
+  }
+}

@@ -15,8 +15,6 @@ extension OnboardingView {
             baselineStep()
         case .drink:
             drinkStep()
-        case .composition:
-            compositionStep()
         case .goal:
             goalStep()
         case .summary:
@@ -51,8 +49,11 @@ extension OnboardingView {
                 ForEach(DrinkType.allCases) { type in
                     OptionButton(
                         title: type.displayName,
-                        subtitle:
-                            "\(Int(type.defaultSugar)) g sugar\n\(Int(type.defaultCaffeine)) mg caffeine",
+                        subtitle: L10n.format(
+                            "%d g sugar\n%d mg caffeine",
+                            Int(type.defaultSugar),
+                            Int(type.defaultCaffeine)
+                        ),
                         emoji: nil,
                         isSelected: form.drinkType == type
                     ) {
@@ -96,33 +97,56 @@ extension OnboardingView {
                         .fill(QuitERGYTheme.surface.opacity(0.88))
                 )
             }
+
+            compositionEditor()
         }
     }
 
     @ViewBuilder
-    private func compositionStep() -> some View {
-        VStack(alignment: .leading, spacing: 18) {
-            Text("Adjust if your favourite drink differs.")
-                .font(.quitRounded(.medium, size: 15))
-                .foregroundStyle(QuitERGYTheme.textSecondary)
-
-            HStack(spacing: 16) {
-                valueCard(
-                    title: "Sugar per can",
-                    unit: "g",
-                    value: $form.sugarPerDrink,
-                    focus: .sugar
-                ) {
-                    form.hasCustomizedSugar = true
+    private func compositionEditor() -> some View {
+        VStack(alignment: .leading, spacing: 14) {
+            Button {
+                withAnimation(.easeInOut(duration: 0.25)) {
+                    showsCompositionEditor.toggle()
                 }
+            } label: {
+                HStack(spacing: 8) {
+                    Text("Fine-tune sugar & caffeine")
+                        .font(.quitRounded(.medium, size: 15))
+                        .foregroundStyle(QuitERGYTheme.textSecondary)
+                    Spacer()
+                    Image(systemName: "chevron.down")
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundStyle(QuitERGYTheme.textSecondary)
+                        .rotationEffect(.degrees(showsCompositionEditor ? 180 : 0))
+                }
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
 
-                valueCard(
-                    title: "Caffeine per can",
-                    unit: "mg",
-                    value: $form.caffeinePerDrink,
-                    focus: .caffeine
-                ) {
-                    form.hasCustomizedCaffeine = true
+            if showsCompositionEditor {
+                Text("Adjust if your favourite drink differs.")
+                    .font(.quitRounded(.medium, size: 14))
+                    .foregroundStyle(QuitERGYTheme.textSecondary)
+
+                HStack(spacing: 16) {
+                    valueCard(
+                        title: L10n.text("Sugar per can"),
+                        unit: "g",
+                        value: $form.sugarPerDrink,
+                        focus: .sugar
+                    ) {
+                        form.hasCustomizedSugar = true
+                    }
+
+                    valueCard(
+                        title: L10n.text("Caffeine per can"),
+                        unit: "mg",
+                        value: $form.caffeinePerDrink,
+                        focus: .caffeine
+                    ) {
+                        form.hasCustomizedCaffeine = true
+                    }
                 }
             }
         }
@@ -164,7 +188,7 @@ extension OnboardingView {
                         .foregroundStyle(QuitERGYTheme.textSecondary)
 
                     Stepper(value: binding, in: 0...Double(max(0, baselineInt - 1)), step: 1) {
-                        Text("\(Int(binding.wrappedValue)) drinks / week")
+                        Text(L10n.format("%d drinks / week", Int(binding.wrappedValue)))
                             .font(.quitRounded(.semibold, size: 18))
                             .foregroundStyle(QuitERGYTheme.textPrimary)
                     }
@@ -172,7 +196,11 @@ extension OnboardingView {
                     .padding(.vertical, 4)
 
                     Text(
-                        "From \(formatDrinks(normalizedBaselinePerWeek)) down to \(formatDrinks(binding.wrappedValue)) per week."
+                        L10n.format(
+                            "From %@ down to %@ per week.",
+                            formatDrinks(normalizedBaselinePerWeek),
+                            formatDrinks(binding.wrappedValue)
+                        )
                     )
                     .font(.quitRounded(.medium, size: 14))
                     .foregroundStyle(QuitERGYTheme.textSecondary)
@@ -202,38 +230,64 @@ extension OnboardingView {
 
             HStack(alignment: .top, spacing: 16) {
                 MetricTile(
-                    title: "Weekly baseline",
-                    value: "\(formatDrinks(snapshot.weeklyBaseline)) drinks",
-                    caption: "Current routine"
+                    title: L10n.text("Weekly baseline"),
+                    value: L10n.format("%@ drinks", formatDrinks(snapshot.weeklyBaseline)),
+                    caption: L10n.text("Current routine")
                 )
                 .frame(height: 85)
                 MetricTile(
-                    title: "Weekly goal",
-                    value: "\(formatDrinks(snapshot.weeklyTarget)) drinks",
-                    caption: "A new target"
+                    title: L10n.text("Weekly goal"),
+                    value: L10n.format("%@ drinks", formatDrinks(snapshot.weeklyTarget)),
+                    caption: L10n.text("A new target")
                 )
                 .frame(height: 85)
             }
 
             HStack(alignment: .top, spacing: 16) {
                 MetricTile(
-                    title: "Monthly savings",
+                    title: L10n.text("Monthly savings"),
                     value: formatCurrency(snapshot.monthlyMoneySavings),
-                    caption: "\(formatDrinks(snapshot.monthlyDrinkSavings)) drinks avoided"
+                    caption: L10n.format(
+                        "%@ drinks avoided", formatDrinks(snapshot.monthlyDrinkSavings))
                 )
                 .frame(height: 85)
                 MetricTile(
-                    title: "Less sugar",
-                    value: "\(formatNumber(snapshot.monthlySugarSavings)) g",
-                    caption: "\(formatNumber(snapshot.monthlyCaffeineSavings)) mg caffeine"
+                    title: L10n.text("Less sugar"),
+                    value: L10n.format("%@ g", formatNumber(snapshot.monthlySugarSavings)),
+                    caption: L10n.format(
+                        "%@ mg caffeine", formatNumber(snapshot.monthlyCaffeineSavings))
                 )
                 .frame(height: 85)
             }
 
-            Text("Ready to reclaim your energy?")
-                .font(.quitRounded(.semibold, size: 18))
-                .foregroundStyle(QuitERGYTheme.textPrimary)
-                .padding(.top, 8)
+            VStack(alignment: .leading, spacing: 12) {
+                Text(L10n.text("Did you have an energy drink today?"))
+                    .font(.quitRounded(.semibold, size: 18))
+                    .foregroundStyle(QuitERGYTheme.textPrimary)
+
+                OptionButton(
+                    title: L10n.text("Yes, I had one"),
+                    subtitle: L10n.text("Log it as your first entry"),
+                    emoji: "\u{1F964}",
+                    isSelected: form.firstLogChoice == .drink
+                ) {
+                    withAnimation(.easeInOut(duration: 0.25)) {
+                        selectFirstLogChoice(.drink)
+                    }
+                }
+
+                OptionButton(
+                    title: L10n.text("Not today"),
+                    subtitle: L10n.text("Start your clean streak right away"),
+                    emoji: "\u{2705}",
+                    isSelected: form.firstLogChoice == .noDrink
+                ) {
+                    withAnimation(.easeInOut(duration: 0.25)) {
+                        selectFirstLogChoice(.noDrink)
+                    }
+                }
+            }
+            .padding(.top, 8)
         }
     }
 

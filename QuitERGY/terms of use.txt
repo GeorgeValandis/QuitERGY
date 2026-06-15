@@ -1,5 +1,5 @@
 Terms of Use for the QuitERGY App
-https://georgevalandis.com/terms-and-conditions-quitergy-app/
+https://georgevalandis.com/apps/quitergy/terms-and-conditions/
 Effective Date: October 20, 2025
 Version: 1.0
 
@@ -33,7 +33,7 @@ For the purposes of these Terms:
 
 3. Privacy Policy
 Your privacy is important to us. Please review our Privacy Policy at:
-https://georgevalandis.com/privacy-statement-quitergy-app/
+https://georgevalandis.com/apps/quitergy/privacy/
 Our Privacy Policy is an integral part of these Terms. By using the Service, you also agree to the Privacy Policy.
 
 4. Age Restrictions
@@ -110,4 +110,4 @@ We may update these Terms periodically, and the latest version will always be av
 
 Summary:
 By using QuitERGY, you agree to these Terms of Use.
-The Service operates entirely on your device — without external servers, data sharing, or analytics.
+Core habit tracking operates on your device. Premium purchase validation may be handled by Apple and RevenueCat, and the current analytics implementation is local-only.

@@ -1,0 +1,13 @@
+QuitERGY hilft dir, Energy-Drinks bewusster zu tracken, deinen Konsum zu reduzieren und Fortschritt sichtbar zu machen.
+
+Lege dein Lieblingsgetränk an, protokolliere Drink- oder No-Drink-Tage und sieh, wie sich deine Streak, Ersparnisse und vermiedener Zucker entwickeln.
+
+Funktionen:
+- Energy-Drink- und Koffein-Log
+- Clean-Streak und Tagesverlauf
+- Spar-, Zucker- und Fortschrittsstatistiken
+- Tägliche Erinnerung und Badges
+- Mehrere Drink-Profile mit Premium
+- Kein Account erforderlich
+
+Terms of Use (EULA): https://georgevalandis.com/apps/quitergy/terms-and-conditions/

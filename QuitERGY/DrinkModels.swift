@@ -19,11 +19,11 @@ enum DrinkVariant: String, CaseIterable, Codable, Identifiable {
 
     var displayName: String {
         switch self {
-        case .classic: return "Classic"
-        case .sugarFree: return "Sugar Free"
-        case .zero: return "Zero"
-        case .highCaffeine: return "High Caffeine"
-        case .custom: return "Custom"
+        case .classic: return L10n.text("Classic")
+        case .sugarFree: return L10n.text("Sugar Free")
+        case .zero: return L10n.text("Zero")
+        case .highCaffeine: return L10n.text("High Caffeine")
+        case .custom: return L10n.text("Custom")
         }
     }
 }

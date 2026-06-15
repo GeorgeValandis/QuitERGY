@@ -140,7 +140,7 @@ final class SettingsViewModel: ObservableObject {
             reminderEnabled = reminder.isEnabled
             reminderTime = reminder.reminderTime ?? defaultReminderTime
             reminderStatusMessage = reminder.isEnabled
-                ? "Daily reminder scheduled at \(formattedTime(reminderTime))."
+                ? L10n.format("Daily reminder scheduled at %@.", formattedTime(reminderTime))
                 : nil
             generalStatusMessage = nil
         } catch {
@@ -224,7 +224,7 @@ final class SettingsViewModel: ObservableObject {
             
             // Update status message on main thread
             await MainActor.run {
-                reminderStatusMessage = "Daily reminder scheduled at \(formattedTime(reminderTime))."
+                reminderStatusMessage = L10n.format("Daily reminder scheduled at %@.", formattedTime(reminderTime))
             }
             
             // Save configuration
@@ -268,7 +268,7 @@ final class SettingsViewModel: ObservableObject {
     func confirmReminderSelection() {
         // Just close the time picker, reminder is already scheduled
         if reminderEnabled {
-            reminderStatusMessage = "Daily reminder scheduled at \(formattedTime(reminderTime))."
+            reminderStatusMessage = L10n.format("Daily reminder scheduled at %@.", formattedTime(reminderTime))
         }
     }
     
@@ -278,7 +278,7 @@ final class SettingsViewModel: ObservableObject {
         do {
             // Update the scheduled reminder with new time
             try await reminderScheduler.scheduleDailyReminder(at: reminderTime, profileName: selectedProfile?.name)
-            reminderStatusMessage = "Daily reminder scheduled at \(formattedTime(reminderTime))."
+            reminderStatusMessage = L10n.format("Daily reminder scheduled at %@.", formattedTime(reminderTime))
             
             // Save configuration
             let config = ReminderConfiguration(
@@ -294,7 +294,7 @@ final class SettingsViewModel: ObservableObject {
     func resetOnboardingFlow() {
         do {
             try persistence.updateOnboardingCompletion(to: false)
-            generalStatusMessage = "Onboarding reset. The intro will run again on the next launch."
+            generalStatusMessage = L10n.text("Onboarding reset. The intro will run again on the next launch.")
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -309,10 +309,10 @@ final class SettingsViewModel: ObservableObject {
         do {
             if reminderEnabled {
                 try await reminderScheduler.scheduleDailyReminder(at: reminderTime, profileName: selectedProfile?.name)
-                reminderStatusMessage = "Daily reminder scheduled at \(formattedTime(reminderTime))."
+                reminderStatusMessage = L10n.format("Daily reminder scheduled at %@.", formattedTime(reminderTime))
             } else {
                 reminderScheduler.cancelScheduledReminder()
-                reminderStatusMessage = "Daily reminder disabled."
+                reminderStatusMessage = L10n.text("Daily reminder disabled.")
             }
             try persistence.updateReminderConfiguration(config)
         } catch {
@@ -329,7 +329,7 @@ final class SettingsViewModel: ObservableObject {
     private func buildInput() throws -> DrinkProfileInput {
         let trimmedName = nameInput.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmedName.isEmpty else {
-            throw ValidationError(message: "Please enter a name for the profile.")
+            throw ValidationError(message: L10n.text("Please enter a name for the profile."))
         }
 
         let sugar = try parseDouble(from: sugarInput, label: "Sugar (g)")
@@ -337,7 +337,7 @@ final class SettingsViewModel: ObservableObject {
         let price = try parseDecimal(from: priceInput, label: "Price (€)")
 
         guard sugar >= 0, caffeine >= 0, price >= 0 else {
-            throw ValidationError(message: "Negative values are not allowed.")
+            throw ValidationError(message: L10n.text("Negative values are not allowed."))
         }
 
         let brandTrimmed = brandInput.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -357,7 +357,7 @@ final class SettingsViewModel: ObservableObject {
         let sanitized = value.replacingOccurrences(of: ",", with: ".").trimmingCharacters(in: .whitespaces)
         guard !sanitized.isEmpty else { return 0 }
         guard let number = Double(sanitized) else {
-            throw ValidationError(message: "\(label) must be a number.")
+            throw ValidationError(message: L10n.format("%@ must be a number.", label))
         }
         return number
     }
@@ -368,7 +368,7 @@ final class SettingsViewModel: ObservableObject {
         guard let decimal = Decimal(string: sanitized, locale: Locale.current) ??
             Decimal(string: sanitized)
         else {
-            throw ValidationError(message: "\(label) must be a valid number.")
+            throw ValidationError(message: L10n.format("%@ must be a valid number.", label))
         }
         return decimal
     }

@@ -15,15 +15,17 @@ enum QuitERGYRevenueCat {
     }
 
     static let offeringIdentifier: String = "default"
-    static let packageIdWeekly: String = "$rc_weekly"
-    static let packageIdYearly: String = "$rc_annual"
+    static let packageIdLifetime: String = "$rc_lifetime"
 
-    static let productIdWeekly: String = "com.quitergy.premium.weekly"
-    static let productIdYearly: String = "com.quitergy.premium.yearly"
-    static let legacyProductIdWeekly: String = "quitergy_weekly"
-    static let legacyProductIdYearly: String = "quitergy_yearly"
+    static let productIdLifetime: String = "com.quitergy.premium.lifetime"
+    static let legacyProductIdLifetime: String = "quitergy_lifetime"
 
     static let entitlementPremium: String = "QuitERGYPremium"
+}
+
+enum QuitERGYLegalLinks {
+    static let termsOfUse = URL(string: "https://georgevalandis.com/apps/quitergy/terms-and-conditions/")!
+    static let privacyPolicy = URL(string: "https://georgevalandis.com/apps/quitergy/privacy/")!
 }
 
 // MARK: - Layout Metrics
@@ -93,7 +95,6 @@ struct PaywallLayoutMetrics {
 struct PaywallView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var purchaseManager: PurchaseManager
-    @EnvironmentObject private var ratingController: RatingPromptController
 
     @State private var canDismiss = false
     @State private var progress: Double = 0
@@ -101,6 +102,8 @@ struct PaywallView: View {
     @State private var showCelebration = false
     private let celebrationDuration: TimeInterval = 1.6
     @State private var wasPremiumOnAppear = false
+    @State private var completedEntitlementAction = false
+    @State private var hasTrackedPaywallExit = false
 
     private let timer = Timer.publish(every: 0.1, on: .main, in: .common).autoconnect()
 
@@ -152,13 +155,20 @@ struct PaywallView: View {
             canDismiss = false
             showCelebration = false
             wasPremiumOnAppear = purchaseManager.isPremiumUnlocked
+            completedEntitlementAction = purchaseManager.isPremiumUnlocked
+            hasTrackedPaywallExit = false
+            AppAnalytics.shared.track("paywall_viewed", properties: [
+                "is_premium": "\(purchaseManager.isPremiumUnlocked)",
+                "surface": "paywall"
+            ])
             purchaseManager.ensureInitialSync()
         }
         .onChange(of: purchaseManager.isPremiumUnlocked) { _, isPremium in
             guard isPremium, !wasPremiumOnAppear else { return }
             handlePurchaseSuccess()
-            // Trigger rating prompt after premium purchase
-            ratingController.recordEntryCreated()
+        }
+        .onDisappear {
+            trackPaywallDismissedIfNeeded(reason: "system_dismiss")
         }
         .interactiveDismissDisabled(!canDismiss)
     }
@@ -212,19 +222,21 @@ struct PaywallView: View {
 
     // MARK: Footer Links
     private func footerLinks(metrics: PaywallLayoutMetrics) -> some View {
-        HStack(spacing: metrics.footerSpacing) {
+        VStack(spacing: metrics.scaledValue(10, minimum: 8, maximum: 12)) {
             Button {
-                Task { try? await purchaseManager.restorePurchases() }
+                Task { await restorePurchasesTapped() }
             } label: {
                 Text("Restore")
                     .underline()
             }
 
-            Link("Terms", destination: URL(string: "https://georgevalandis.com/terms-and-conditions-quitergy-app/")!)
-                .underline()
-            
-            Link("Privacy", destination: URL(string: "https://georgevalandis.com/privacy-statement-quitergy/")!)
-                .underline()
+            HStack(spacing: metrics.footerSpacing) {
+                Link("Terms of Use (EULA)", destination: QuitERGYLegalLinks.termsOfUse)
+                    .underline()
+
+                Link("Privacy Policy", destination: QuitERGYLegalLinks.privacyPolicy)
+                    .underline()
+            }
         }
         .font(.quitRounded(.medium, size: metrics.scaledValue(13, minimum: 11, maximum: 15)))
         .foregroundStyle(QuitERGYTheme.textSecondary)
@@ -235,7 +247,10 @@ struct PaywallView: View {
     private var dismissButton: some View {
         VStack(spacing: 6) {
             Button {
-                if canDismiss { dismiss() }
+                if canDismiss {
+                    trackPaywallDismissedIfNeeded(reason: "close_button")
+                    dismiss()
+                }
             } label: {
                 ZStack {
                     Circle()
@@ -266,6 +281,11 @@ struct PaywallView: View {
     // MARK: Purchase Success
     private func handlePurchaseSuccess() {
         guard !showCelebration else { return }
+        completedEntitlementAction = true
+        AppAnalytics.shared.track("purchase_succeeded", properties: [
+            "plan": "lifetime",
+            "surface": "paywall"
+        ])
         withAnimation(.easeInOut(duration: 0.3)) {
             showCelebration = true
         }
@@ -283,6 +303,40 @@ struct PaywallView: View {
             }
         }
     }
+
+    private func restorePurchasesTapped() async {
+        AppAnalytics.shared.track("restore_started", properties: [
+            "surface": "paywall"
+        ])
+
+        do {
+            try await purchaseManager.restorePurchases()
+            if purchaseManager.isPremiumUnlocked {
+                completedEntitlementAction = true
+            }
+            AppAnalytics.shared.track("restore_completed", properties: [
+                "is_premium": "\(purchaseManager.isPremiumUnlocked)",
+                "surface": "paywall"
+            ])
+        } catch {
+            AppAnalytics.shared.track("restore_failed", properties: [
+                "reason": "exception",
+                "surface": "paywall"
+            ])
+        }
+    }
+
+    private func trackPaywallDismissedIfNeeded(reason: String) {
+        guard !completedEntitlementAction, !hasTrackedPaywallExit else { return }
+
+        hasTrackedPaywallExit = true
+        AppAnalytics.shared.track("paywall_dismissed", properties: [
+            "is_premium": "\(purchaseManager.isPremiumUnlocked)",
+            "plan": "lifetime",
+            "reason": reason,
+            "surface": "paywall"
+        ])
+    }
 }
 
 // MARK: - Benefit Views
@@ -295,23 +349,23 @@ private struct BenefitItem: Identifiable {
     static let sampleItems: [BenefitItem] = [
         BenefitItem(
             icon: "plus.circle.fill",
-            title: "Multiple Entries Per Day",
-            description: "Log more than one drink per day."
+            title: L10n.text("Multiple Entries Per Day"),
+            description: L10n.text("Log more than one drink per day.")
         ),
         BenefitItem(
             icon: "chart.bar.doc.horizontal.fill",
-            title: "Detailed Statistics",
-            description: "Track money saved, sugar avoided, and progress."
+            title: L10n.text("Detailed Statistics"),
+            description: L10n.text("Track money saved, sugar avoided, and progress.")
         ),
         BenefitItem(
             icon: "alarm.fill",
-            title: "Daily Reminders",
-            description: "Get daily check-ins to stay accountable."
+            title: L10n.text("Daily Reminders"),
+            description: L10n.text("Get daily check-ins to stay accountable.")
         ),
         BenefitItem(
             icon: "person.2.fill",
-            title: "Multiple Profiles",
-            description: "Create unlimited drink profiles."
+            title: L10n.text("Multiple Profiles"),
+            description: L10n.text("Create unlimited drink profiles.")
         )
     ]
 }
@@ -358,7 +412,6 @@ struct PlanSelectionSection: View {
     let layoutScale: CGFloat
     let onPurchaseSuccess: @MainActor () -> Void
 
-    @State private var selectedPlan: SubscriptionPlan = .weekly
     @State private var isProcessing = false
     @State private var isLoading = true
     @State private var loadError: String?
@@ -368,40 +421,10 @@ struct PlanSelectionSection: View {
         return max(minimum, min(maximum, value))
     }
 
-    enum SubscriptionPlan {
-        case yearly
-        case weekly
-
-        var productId: String {
-            switch self {
-            case .yearly: return QuitERGYRevenueCat.productIdYearly
-            case .weekly: return QuitERGYRevenueCat.productIdWeekly
-            }
-        }
-
-        var productIds: [String] {
-            switch self {
-            case .yearly:
-                return [QuitERGYRevenueCat.productIdYearly, QuitERGYRevenueCat.legacyProductIdYearly]
-            case .weekly:
-                return [QuitERGYRevenueCat.productIdWeekly, QuitERGYRevenueCat.legacyProductIdWeekly]
-            }
-        }
-
-        var packageId: String {
-            switch self {
-            case .yearly: return QuitERGYRevenueCat.packageIdYearly
-            case .weekly: return QuitERGYRevenueCat.packageIdWeekly
-            }
-        }
-
-        var fallbackPrice: String {
-            switch self {
-            case .yearly: return "$29.99 / year"
-            case .weekly: return "$2.49 / week"
-            }
-        }
-    }
+    private let lifetimeProductIds = [
+        QuitERGYRevenueCat.productIdLifetime,
+        QuitERGYRevenueCat.legacyProductIdLifetime
+    ]
 
     var body: some View {
         VStack(spacing: scaledValue(16, minimum: 12, maximum: 20)) {
@@ -421,20 +444,19 @@ struct PlanSelectionSection: View {
                         .fill(QuitERGYPaywallBrand.surface.opacity(0.9))
                 )
             } else if isLoading {
-                ProgressView("Loading plans…")
+                ProgressView("Loading offer...")
                     .foregroundStyle(QuitERGYTheme.textSecondary)
             } else {
-                planButton(for: .yearly, badge: "BEST VALUE", subtitle: "Save big each year")
-                planButton(for: .weekly, badge: "3-DAY FREE TRIAL", subtitle: "Cancel anytime")
+                lifetimeOfferCard
             }
 
-            Text("3-day free trial, then only what you already spend on energy drinks.")
+            Text("One purchase unlocks every premium feature permanently.")
                 .font(.quitRounded(.medium, size: scaledValue(14, minimum: 12, maximum: 16)))
                 .foregroundStyle(QuitERGYTheme.textSecondary)
                 .multilineTextAlignment(.leading)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .opacity(purchaseManager.isPremiumUnlocked ? 0 : (selectedPlan == .weekly ? 1 : 0))
-                .accessibilityHidden(purchaseManager.isPremiumUnlocked || selectedPlan != .weekly)
+                .opacity(purchaseManager.isPremiumUnlocked ? 0 : 1)
+                .accessibilityHidden(purchaseManager.isPremiumUnlocked)
 
             Button {
                 Task { await onPurchaseTapped() }
@@ -446,8 +468,8 @@ struct PlanSelectionSection: View {
                         HStack(spacing: scaledValue(10, minimum: 8, maximum: 12)) {
                             Text(
                                 purchaseManager.isPremiumUnlocked
-                                    ? "Premium Active"
-                                    : (selectedPlan == .weekly ? "Start free trial" : "Continue")
+                                    ? L10n.text("Premium Active")
+                                    : L10n.text("Unlock Lifetime")
                             )
                                 .font(.quitRounded(.semibold, size: scaledValue(20, minimum: 18, maximum: 24)))
                             if !purchaseManager.isPremiumUnlocked {
@@ -488,68 +510,60 @@ struct PlanSelectionSection: View {
         .task { await loadOfferings() }
     }
 
-    private func planButton(for plan: SubscriptionPlan, badge: String, subtitle: String) -> some View {
-        let isSelected = selectedPlan == plan
-        return Button {
-            guard !purchaseManager.isPremiumUnlocked else { return }
-            selectedPlan = plan
-        } label: {
-            HStack(spacing: scaledValue(12, minimum: 10, maximum: 16)) {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(plan == .weekly ? "Weekly Plan" : "Yearly Plan")
-                        .font(.quitRounded(.semibold, size: scaledValue(17, minimum: 15, maximum: 19)))
-                        .foregroundStyle(QuitERGYTheme.textPrimary)
-                    Text(priceDescription(for: plan))
-                        .font(.quitRounded(.semibold, size: scaledValue(18, minimum: 16, maximum: 20)))
-                        .foregroundStyle(QuitERGYTheme.textPrimary)
-                }
-                Spacer(minLength: scaledValue(8, minimum: 6, maximum: 12))
-                HStack(spacing: 8) {
-                    Text(badge)
-                        .font(.quitRounded(.semibold, size: scaledValue(11, minimum: 9, maximum: 13)))
-                        .foregroundStyle(.white)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
-                        .background(isSelected ? planColor.opacity(0.9) : Color.red.opacity(0.85))
-                        .clipShape(Capsule())
-                    Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
-                        .font(.system(size: scaledValue(22, minimum: 18, maximum: 24), weight: .semibold))
-                        .foregroundStyle(isSelected ? planColor : QuitERGYTheme.textSecondary)
-                }
+    private var lifetimeOfferCard: some View {
+        HStack(spacing: scaledValue(12, minimum: 10, maximum: 16)) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Lifetime Premium")
+                    .font(.quitRounded(.semibold, size: scaledValue(17, minimum: 15, maximum: 19)))
+                    .foregroundStyle(QuitERGYTheme.textPrimary)
+                Text(priceDescription())
+                    .font(.quitRounded(.semibold, size: scaledValue(18, minimum: 16, maximum: 20)))
+                    .foregroundStyle(QuitERGYTheme.textPrimary)
+                Text("One-time purchase")
+                    .font(.quitRounded(.medium, size: scaledValue(13, minimum: 11, maximum: 15)))
+                    .foregroundStyle(QuitERGYTheme.textSecondary)
             }
-            .padding(.vertical, scaledValue(14, minimum: 11, maximum: 16))
-            .padding(.horizontal, scaledValue(16, minimum: 13, maximum: 18))
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(
-                RoundedRectangle(cornerRadius: 18, style: .continuous)
-                    .fill(planRowBackground(isSelected: isSelected))
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 18, style: .continuous)
-                    .stroke(isSelected ? planColor : planRowSeparator(), lineWidth: isSelected ? 2 : 1)
-            )
-            .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.28 : 0.12), radius: scaledValue(18, minimum: 12, maximum: 24), y: 8)
+            Spacer(minLength: scaledValue(8, minimum: 6, maximum: 12))
+            HStack(spacing: 8) {
+                Text("LIFETIME")
+                    .font(.quitRounded(.semibold, size: scaledValue(11, minimum: 9, maximum: 13)))
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(planColor.opacity(0.9))
+                    .clipShape(Capsule())
+                Image(systemName: "checkmark.circle.fill")
+                    .font(.system(size: scaledValue(22, minimum: 18, maximum: 24), weight: .semibold))
+                    .foregroundStyle(planColor)
+            }
         }
-        .buttonStyle(.plain)
+        .padding(.vertical, scaledValue(14, minimum: 11, maximum: 16))
+        .padding(.horizontal, scaledValue(16, minimum: 13, maximum: 18))
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .fill(planRowBackground())
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .stroke(planColor, lineWidth: 2)
+        )
+        .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.28 : 0.12), radius: scaledValue(18, minimum: 12, maximum: 24), y: 8)
         .disabled(purchaseManager.isPremiumUnlocked)
         .opacity(purchaseManager.isPremiumUnlocked ? 0.6 : 1)
     }
 
-    private func priceDescription(for plan: SubscriptionPlan) -> String {
+    private func priceDescription() -> String {
         let localized = purchaseManager.packages.first(where: {
-            $0.identifier == plan.packageId || plan.productIds.contains($0.storeProduct.productIdentifier)
+            $0.identifier == QuitERGYRevenueCat.packageIdLifetime ||
+                lifetimeProductIds.contains($0.storeProduct.productIdentifier)
         })?.storeProduct.localizedPriceString
         if let localized { return localized }
-        return plan.fallbackPrice
+        return "$14.99"
     }
 
-    private func planRowBackground(isSelected: Bool) -> Color {
-        let base = QuitERGYPaywallBrand.surface.opacity(isSelected ? 0.95 : 0.75)
-        return base
-    }
-
-    private func planRowSeparator() -> Color {
-        Color.white.opacity(colorScheme == .dark ? 0.08 : 0.18)
+    private func planRowBackground() -> Color {
+        QuitERGYPaywallBrand.surface.opacity(0.95)
     }
 
     private func loadOfferings() async {
@@ -558,37 +572,58 @@ struct PlanSelectionSection: View {
         let success = await purchaseManager.loadOfferings()
         isLoading = false
         if !success || purchaseManager.packages.isEmpty {
-            loadError = "Could not load offers. Please check your connection."
+            AppAnalytics.shared.track("offerings_load_failed", properties: [
+                "surface": "paywall"
+            ])
+            loadError = L10n.text("Could not load offers. Please check your connection.")
+        } else {
+            AppAnalytics.shared.track("offerings_loaded", properties: [
+                "package_count": "\(purchaseManager.packages.count)",
+                "surface": "paywall"
+            ])
         }
     }
 
     @MainActor
     private func onPurchaseTapped() async {
         guard !isProcessing else { return }
+        AppAnalytics.shared.track("purchase_started", properties: [
+            "plan": "lifetime",
+            "surface": "paywall"
+        ])
         isProcessing = true
         defer { isProcessing = false }
 
-        if let package = package(for: selectedPlan) {
-            await purchaseManager.purchase(package: package)
-            await handlePostPurchase()
-        } else {
-            let _ = await purchaseManager.loadOfferings()
-            if let package = package(for: selectedPlan) {
-                await purchaseManager.purchase(package: package)
+        do {
+            if let package = lifetimePackage() {
+                try await purchaseManager.purchase(package: package)
                 await handlePostPurchase()
             } else {
-                for productId in selectedPlan.productIds {
-                    try? await purchaseManager.purchase(productId: productId)
-                    if purchaseManager.isPremiumUnlocked { break }
+                let _ = await purchaseManager.loadOfferings()
+                if let package = lifetimePackage() {
+                    try await purchaseManager.purchase(package: package)
+                    await handlePostPurchase()
+                } else {
+                    AppAnalytics.shared.track("purchase_package_missing", properties: [
+                        "plan": "lifetime",
+                        "surface": "paywall"
+                    ])
+                    for productId in lifetimeProductIds {
+                        try await purchaseManager.purchase(productId: productId)
+                        if purchaseManager.isPremiumUnlocked { break }
+                    }
+                    await handlePostPurchase()
                 }
-                await handlePostPurchase()
             }
+        } catch {
+            trackPurchaseException(error)
         }
     }
 
-    private func package(for plan: SubscriptionPlan) -> Package? {
+    private func lifetimePackage() -> Package? {
         purchaseManager.packages.first {
-            $0.identifier == plan.packageId || plan.productIds.contains($0.storeProduct.productIdentifier)
+            $0.identifier == QuitERGYRevenueCat.packageIdLifetime ||
+                lifetimeProductIds.contains($0.storeProduct.productIdentifier)
         }
     }
 
@@ -606,6 +641,31 @@ struct PlanSelectionSection: View {
                 return
             }
         }
+
+        AppAnalytics.shared.track("purchase_failed", properties: [
+            "plan": "lifetime",
+            "reason": "premium_not_unlocked",
+            "surface": "paywall"
+        ])
+    }
+
+    private func trackPurchaseException(_ error: Error) {
+        if isCancellationError(error) {
+            AppAnalytics.shared.track("purchase_cancelled", properties: [
+                "plan": "lifetime",
+                "surface": "paywall"
+            ])
+        } else {
+            AppAnalytics.shared.track("purchase_failed", properties: [
+                "plan": "lifetime",
+                "reason": "exception",
+                "surface": "paywall"
+            ])
+        }
+    }
+
+    private func isCancellationError(_ error: Error) -> Bool {
+        error.localizedDescription.localizedCaseInsensitiveContains("cancel")
     }
 }
 
@@ -716,7 +776,7 @@ final class PurchaseManager: NSObject, ObservableObject, PurchasesDelegate {
                 return false
             }
 
-            let prioritizedIds = [QuitERGYRevenueCat.packageIdWeekly, QuitERGYRevenueCat.packageIdYearly]
+            let prioritizedIds = [QuitERGYRevenueCat.packageIdLifetime]
             let prioritized = prioritizedIds.compactMap { current.package(identifier: $0) }
             let remaining = current.availablePackages.filter { !prioritizedIds.contains($0.identifier) }
             packages = prioritized + remaining
@@ -727,15 +787,11 @@ final class PurchaseManager: NSObject, ObservableObject, PurchasesDelegate {
         }
     }
 
-    func purchase(package: Package) async {
+    func purchase(package: Package) async throws {
         guard PurchaseManager.isSDKConfigured else { return }
-        do {
-            let result = try await Purchases.shared.purchase(package: package)
-            updateState(with: result.customerInfo)
-            await refreshCustomerInfo()
-        } catch {
-            // Ignore errors for now; UI will remain unchanged.
-        }
+        let result = try await Purchases.shared.purchase(package: package)
+        updateState(with: result.customerInfo)
+        await refreshCustomerInfo()
     }
 
     func purchase(productId: String) async throws {
@@ -775,8 +831,14 @@ final class PurchaseManager: NSObject, ObservableObject, PurchasesDelegate {
         let hasConfiguredEntitlement = info.entitlements[QuitERGYRevenueCat.entitlementPremium]?.isActive == true
         let hasAnyActiveEntitlement = info.entitlements.active.values.contains { $0.isActive }
         let hasAnyActiveSubscription = !info.activeSubscriptions.isEmpty
+        let hasKnownLifetimePurchase =
+            info.allPurchasedProductIdentifiers.contains(QuitERGYRevenueCat.productIdLifetime) ||
+            info.allPurchasedProductIdentifiers.contains(QuitERGYRevenueCat.legacyProductIdLifetime)
 
-        isPremiumUnlocked = hasConfiguredEntitlement || hasAnyActiveEntitlement || hasAnyActiveSubscription
+        isPremiumUnlocked = hasConfiguredEntitlement ||
+            hasAnyActiveEntitlement ||
+            hasAnyActiveSubscription ||
+            hasKnownLifetimePurchase
     }
 }
 #else
@@ -787,17 +849,14 @@ final class PurchaseManager: ObservableObject {
 
     @Published private(set) var packages: [Package] = [
         .init(
-            identifier: QuitERGYRevenueCat.packageIdWeekly,
-            storeProduct: .init(productIdentifier: QuitERGYRevenueCat.productIdWeekly, localizedPriceString: "$2.49")),
-        .init(
-            identifier: QuitERGYRevenueCat.packageIdYearly,
-            storeProduct: .init(productIdentifier: QuitERGYRevenueCat.productIdYearly, localizedPriceString: "$29.99"))
+            identifier: QuitERGYRevenueCat.packageIdLifetime,
+            storeProduct: .init(productIdentifier: QuitERGYRevenueCat.productIdLifetime, localizedPriceString: "$14.99"))
     ]
     @Published private(set) var isPremiumUnlocked: Bool = false
 
     func ensureInitialSync() {}
     func loadOfferings() async -> Bool { true }
-    func purchase(package: Package) async {
+    func purchase(package: Package) async throws {
         try? await Task.sleep(nanoseconds: 300_000_000)
         isPremiumUnlocked = true
     }

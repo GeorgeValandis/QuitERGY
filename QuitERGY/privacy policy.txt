@@ -1,101 +1,99 @@
 Privacy Policy for the QuitERGY App
-URL: https://georgevalandis.com/privacy-statement-quitergy/
-Effective Date: October 20, 2025
-Version: 1.0
+URL: https://georgevalandis.com/apps/quitergy/privacy/
+Effective Date: June 8, 2026
+Version: 1.2
 
 Controller (Article 4 No. 7 GDPR):
 Georgios Andi Avenidis
-Berliner Straße 235
+Berliner Strasse 235
 65205 Wiesbaden, Germany
 Email: info@georgevalandis.com
 
 1. Introduction
-This Privacy Policy applies to the QuitERGY app developed by Georgios Andi Avenidis.
-QuitERGY helps users track and reduce their energy drink consumption, build healthier habits, and monitor their progress — all while protecting user privacy.
-QuitERGY is designed with privacy in mind: all user-generated data remain entirely on your device and are never transmitted to us or to any third parties.
+This Privacy Policy applies to the QuitERGY mobile app developed by Georgios Andi Avenidis.
+QuitERGY helps users track and reduce energy drink consumption, set reminders, and review progress.
+The app is designed around local-first tracking. Your drink logs, notes, reminders, streaks, profiles, and progress data remain on your device and are not sent to George Valandis servers.
 
-2. Type of Data Processed
-QuitERGY does not automatically collect or transmit any personal data. However, users may choose to enter information such as drink logs, notes, or progress data. These remain stored locally on the device.
+2. Data Stored on Your Device
+QuitERGY may store the following data locally on your device:
+- Drink logs, caffeine or energy drink entries, streaks, milestones, and progress information.
+- Optional notes and drink profile information that you enter.
+- App settings, onboarding state, reminder settings, notification preferences, and local premium state.
+- Technical state needed to run the app, such as cached settings or compatibility-related app state.
 
-This includes:
-- User-entered data: Drink logs, notes, streaks, or progress tracking information.
-- Notifications and reminders: Used locally to help users stay consistent.
-- Technical data: Device type or system version, processed only locally to ensure functionality.
-- Optional location data (if enabled): Used solely to trigger local reminders (e.g., at specific places or times). These data are never transmitted externally or used for analytics.
+This information is used to provide the app's tracking, reminder, statistics, onboarding, paywall, and settings features.
 
-QuitERGY does not use analytics tools, advertising SDKs, or third-party tracking.
+3. Purchases and Third-Party Services
+If you buy or restore premium access, Apple processes the payment through the App Store.
+QuitERGY uses RevenueCat to validate purchases, restore access, and unlock premium features.
 
-3. Purpose and Legal Basis
-- App functionality: To provide the app’s main features (Article 6(1)(b) GDPR – performance of a contract).
-- Reminders and notifications: Based on your explicit consent (Article 6(1)(a) GDPR). You can revoke consent anytime by adjusting notification or location settings in your device preferences.
-Without these permissions, certain features (like geofenced reminders) may not function properly.
+For this purpose, Apple and RevenueCat may process technical purchase and entitlement information, such as product identifiers, purchase or restore status, receipt-related validation data, an anonymous app user identifier, device/app metadata required for purchase validation, and entitlement state.
 
-4. Data Transfer and Storage
-QuitERGY does not send any data to external servers or third parties. All data remain on your device.
-- Local storage: All information is stored securely on your device.
-- No synchronization: The app does not connect to cloud databases.
-- Data deletion: All locally stored data are automatically deleted when you uninstall the app.
-We recommend regular device backups to prevent data loss.
+QuitERGY does not send your drink logs, notes, streaks, reminders, drink profiles, or progress content to RevenueCat.
+QuitERGY is not designed to use purchase validation data for advertising or cross-app tracking.
 
-5. User Rights
-Under GDPR and other applicable laws, users may have the following rights regarding their personal data:
-- Access, rectification, or deletion (by editing or uninstalling the app)
-- Restriction of processing (by disabling permissions)
-- Data portability (if applicable)
-- Objection or withdrawal of consent
-- Right to lodge a complaint with a data protection authority
-As all processing happens locally on the device, these rights can typically be exercised directly by managing your app data.
+4. Product Analytics and Diagnostics
+QuitERGY includes a privacy-focused analytics layer to help test and improve product flows, especially where users may get stuck, where purchases are attempted, and where review prompts are shown.
+When external analytics is enabled in a release build, QuitERGY may send limited product interaction events to TelemetryDeck GmbH, the analytics provider used for this purpose. These events may include:
+- app opened, became active, or moved to the background;
+- drink logging started or completed;
+- paywall viewed, purchase started, purchase completed, purchase failed, or restore attempted;
+- review prompt eligibility, request, or suppression;
+- onboarding completed.
 
-6. Consent and Withdrawal
-QuitERGY does not require any general consent for external data transfer, since no such transfer occurs.
-If you grant access to notifications or location services, you can withdraw that consent anytime through your system settings.
+The analytics payload is limited to sanitized event names, short event parameters, app version, build number, locale, operating system, platform, timestamps, and similar technical context. TelemetryDeck may also process an app-installation or device identifier generated by its SDK and session-related identifiers for analytics.
 
-7. Security Measures
-- All data remain entirely on your device.
-- Protect your device using biometric or password security.
-- Optionally enable an in-app lock (if available).
-- QuitERGY does not engage in automated decision-making or profiling.
+QuitERGY does not send your free-text notes, drink log content, exact reminder content, drink profiles, names, email addresses, precise location, or advertising identifiers to TelemetryDeck. QuitERGY does not set a custom TelemetryDeck user ID based on your email address or name.
 
-8. Cookies and Tracking Technologies
-QuitERGY does not use cookies or any tracking technologies.
+These analytics are used only to understand product usage, diagnose drop-off points, improve onboarding and paywall flows, and improve the timing of review prompts. QuitERGY does not use third-party advertising SDKs and is not designed to track you across apps, websites, or services for advertising purposes.
 
-9. Third-Party Analytics and Advertising
-QuitERGY does not use any third-party analytics services, SDKs, or ad networks.
-No user data are transmitted or analyzed externally.
+In debug/test builds, or while no TelemetryDeck app identifier is configured, analytics events may remain local or be treated as test events.
 
-10. Backups
-If your device is backed up (e.g., via iCloud or Google Drive), QuitERGY’s local data may be included in those backups.
-We have no access to or control over those backups; they are managed entirely by your platform provider.
+5. Notifications, Reminders, and Optional Permissions
+If you enable reminders or notifications, QuitERGY may use local device notification features to remind you about your habit goals.
+You can disable notifications at any time in the app or in your operating system settings.
 
-11. Changes to This Privacy Policy
-We may update this Privacy Policy from time to time.
-The effective date and version number are displayed at the top of this document.
-Significant changes will be communicated within the app or on our website.
+If a feature asks for an optional device permission, the permission is used only for the feature described at the time of the request. You can withdraw permissions in system settings.
 
-12. Child Protection
-QuitERGY is not directed at children under the age of 13.
-Since the app does not collect or transmit data, we cannot verify user age.
-Parents or guardians should supervise children’s use of the app.
-If a child has entered personal data, please delete it directly within the app or uninstall the app.
+6. Data Transfer and Storage
+Core tracking data remains on your device.
+QuitERGY does not operate its own server for your drink logs, notes, reminders, profiles, or progress data.
+No cloud sync is enabled by default.
 
-13. International Compliance
-QuitERGY complies with international privacy frameworks, including:
-- The EU General Data Protection Regulation (GDPR)
-- The U.S. Children’s Online Privacy Protection Act (COPPA)
-As no personal data are collected from children under 13, QuitERGY fulfills these requirements by design.
+Platform-managed backups, such as iCloud device backups, may include local app data depending on your device and account settings. These backups are controlled by the platform provider, not by George Valandis.
 
-14. Governing Law and Jurisdiction
-This Privacy Policy is governed by the laws of the Federal Republic of Germany.
-Any disputes shall be subject to the non-exclusive jurisdiction of the courts of Wiesbaden, Germany.
+7. Data Deletion
+You can delete or edit app data where the app provides controls for that data.
+Removing QuitERGY from your device deletes locally stored app data from that device.
+Platform-managed backups may retain copies according to your Apple account and device backup settings.
 
-15. Language and Translations
-This Privacy Policy may be translated into other languages for convenience.
-In case of discrepancies, the English version shall prevail.
+8. User Rights
+Depending on applicable law, you may have rights to access, correct, delete, restrict, or object to processing of personal data.
+Because the core app data is stored locally on your device, most control is exercised directly in the app or by deleting the app.
+For purchase-related data processed by Apple or RevenueCat, the privacy practices and request processes of those providers may also apply.
 
-16. Contact Information
+9. Security
+QuitERGY keeps core tracking data on your device.
+You should protect your device with a passcode, biometric authentication, and current operating system updates.
+QuitERGY does not use automated decision-making or profiling for legal or similarly significant effects.
+
+10. Cookies and Tracking Technologies
+The mobile app does not use website cookies.
+QuitERGY is not designed to use advertising trackers or cross-app tracking technologies.
+
+11. Children
+QuitERGY is not directed to children under the age of 13.
+The app does not require an account and is not designed to collect personal data from children.
+Parents or guardians should supervise children's app use where appropriate.
+
+12. Changes to This Privacy Policy
+This policy may be updated when the app, third-party services, or legal requirements change.
+The effective date and version number at the top show the current version.
+The latest version is published in the app and on the website.
+
+13. Contact
 If you have questions about privacy or this policy, please contact:
 info@georgevalandis.com
 
 Summary:
-QuitERGY is built with privacy by design.
-All your data stay on your device — nothing leaves it, nothing is shared, sold, or analyzed.
+QuitERGY keeps your habit tracking local. Your drink logs, notes, reminders, profiles, and progress are not sent to George Valandis servers. Purchase validation may be handled by Apple and RevenueCat. Limited product interaction analytics may be processed through TelemetryDeck to understand where users get stuck and to improve the app without advertising or cross-app tracking.

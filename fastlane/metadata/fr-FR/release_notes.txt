@@ -1,0 +1,1 @@
+Interface de l’app et métadonnées App Store localisées en français.

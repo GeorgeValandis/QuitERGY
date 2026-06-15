@@ -1,0 +1,13 @@
+QuitERGY te ayuda a registrar bebidas energéticas, entender tu consumo de cafeína y avanzar hacia una rutina más limpia.
+
+Crea tu perfil de bebida, registra días con bebida o sin bebida y sigue tus rachas, ahorros y azúcar evitado.
+
+Funciones:
+- Registro de bebidas energéticas y cafeína
+- Racha limpia y actividad diaria
+- Estadísticas de ahorro, azúcar y progreso
+- Recordatorio diario e insignias
+- Varios perfiles de bebida con Premium
+- Sin cuenta obligatoria
+
+Terms of Use (EULA): https://georgevalandis.com/apps/quitergy/terms-and-conditions/

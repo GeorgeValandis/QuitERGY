@@ -22,19 +22,22 @@ struct SettingsView: View {
     private let supportEmail = "support@quitergy.app"
     private let legalDocuments: [LegalDocument] = [
         LegalDocument(
-            title: "Terms of Use",
+            titleKey: "Terms of Use (EULA)",
             systemImage: "doc.text.fill",
-            fileName: "terms of use"
+            fileName: "terms of use",
+            externalURL: QuitERGYLegalLinks.termsOfUse
         ),
         LegalDocument(
-            title: "Privacy Policy",
+            titleKey: "Privacy Policy",
             systemImage: "hand.raised.fill",
-            fileName: "privacy policy"
+            fileName: "privacy policy",
+            externalURL: QuitERGYLegalLinks.privacyPolicy
         ),
         LegalDocument(
-            title: "Imprint",
+            titleKey: "Imprint",
             systemImage: "info.circle.fill",
-            fileName: "legal notice"
+            fileName: "legal notice",
+            externalURL: nil
         ),
     ]
 
@@ -93,6 +96,10 @@ struct SettingsView: View {
                         isPresentingProfileForm = true
                         #else
                         if !purchaseManager.isPremiumUnlocked && viewModel.profiles.count >= 1 {
+                            AppAnalytics.shared.track("paywall_presented", properties: [
+                                "surface": "settings",
+                                "trigger": "profile_limit"
+                            ])
                             isPresentingPaywall = true
                         } else {
                             viewModel.prepareNewProfile()
@@ -163,6 +170,10 @@ struct SettingsView: View {
                         }
                     } else {
                         Button {
+                            AppAnalytics.shared.track("paywall_presented", properties: [
+                                "surface": "settings",
+                                "trigger": "reminder_locked"
+                            ])
                             isPresentingPaywall = true
                         } label: {
                             HStack {
@@ -359,6 +370,10 @@ struct SettingsView: View {
     private var premiumBanner: some View {
         Button {
             if !purchaseManager.isPremiumUnlocked {
+                AppAnalytics.shared.track("paywall_presented", properties: [
+                    "surface": "settings",
+                    "trigger": "premium_banner"
+                ])
                 isPresentingPaywall = true
             }
         } label: {
@@ -370,13 +385,13 @@ struct SettingsView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 16))
 
                 VStack(alignment: .leading, spacing: 6) {
-                    Text(purchaseManager.isPremiumUnlocked ? "Premium Active" : "Unlock Premium")
+                    Text(purchaseManager.isPremiumUnlocked ? L10n.text("Premium Active") : L10n.text("Unlock Premium"))
                         .font(.quitRounded(.semibold, size: 18))
                         .foregroundStyle(QuitERGYTheme.textPrimary)
                     Text(
                         purchaseManager.isPremiumUnlocked
-                            ? "Your subscription is active."
-                            : "Track unlimited streaks, insights & more"
+                            ? L10n.text("Lifetime premium is active.")
+                            : L10n.text("Track unlimited streaks, insights & more")
                     )
                         .font(.quitRounded(.medium, size: 14))
                         .foregroundStyle(QuitERGYTheme.textSecondary)
@@ -475,7 +490,7 @@ private struct ProfileFormView: View {
                             HStack {
                                 Text("Energy Drink")
                                 Spacer()
-                                Text(viewModel.selectedPreset?.displayName ?? "Choose")
+                                Text(viewModel.selectedPreset?.displayName ?? L10n.text("Choose"))
                                     .foregroundStyle(QuitERGYTheme.textSecondary)
                             }
                         }
@@ -590,9 +605,9 @@ private struct CurrentProfileSummary: View {
             }
 
             HStack(spacing: 16) {
-                metricTile(title: "Sugar", value: "\(format(profile.sugarGrams))g")
-                metricTile(title: "Caffeine", value: "\(format(profile.caffeineMg))mg")
-                metricTile(title: "Price", value: priceString)
+                metricTile(title: L10n.text("Sugar"), value: L10n.format("%@g", format(profile.sugarGrams)))
+                metricTile(title: L10n.text("Caffeine"), value: L10n.format("%@mg", format(profile.caffeineMg)))
+                metricTile(title: L10n.text("Price"), value: priceString)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }
@@ -639,11 +654,11 @@ private struct SettingRow: View {
                 )
 
             VStack(alignment: .leading, spacing: 4) {
-                Text(title)
+                Text(L10n.text(title))
                     .font(.quitRounded(.semibold, size: 16))
                     .foregroundStyle(QuitERGYTheme.textPrimary)
                 if let subtitle {
-                    Text(subtitle)
+                    Text(L10n.text(subtitle))
                         .font(.quitRounded(.medium, size: 13))
                         .foregroundStyle(QuitERGYTheme.textSecondary)
                 }
@@ -663,9 +678,12 @@ private struct SettingRow: View {
 
 private struct LegalDocument: Identifiable, Hashable {
     let id = UUID()
-    let title: String
+    let titleKey: String
     let systemImage: String
     let fileName: String
+    let externalURL: URL?
+
+    var title: String { L10n.text(titleKey) }
 }
 
 private struct LegalDocumentView: View {
@@ -680,11 +698,30 @@ private struct LegalDocumentView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .padding()
             } else {
-                Text(content)
-                    .font(.quitRounded(.medium, size: 15))
-                    .foregroundStyle(QuitERGYTheme.textSecondary)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(24)
+                VStack(alignment: .leading, spacing: 18) {
+                    if let externalURL = document.externalURL {
+                        Link(destination: externalURL) {
+                            HStack(spacing: 10) {
+                                Image(systemName: "safari.fill")
+                                Text(L10n.format("Open %@", document.title))
+                                Spacer(minLength: 8)
+                                Image(systemName: "arrow.up.right")
+                            }
+                            .font(.quitRounded(.semibold, size: 15))
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 13)
+                            .background(QuitERGYTheme.accent)
+                            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                        }
+                    }
+
+                    Text(content)
+                        .font(.quitRounded(.medium, size: 15))
+                        .foregroundStyle(QuitERGYTheme.textSecondary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                .padding(24)
             }
         }
         .background(QuitERGYTheme.background.ignoresSafeArea())

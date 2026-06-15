@@ -11,9 +11,15 @@ import SwiftUI
 
 @MainActor
 final class HomeViewModel: ObservableObject {
+    enum LogOutcome {
+        case drink
+        case noDrink
+    }
+
     @Published var streakDays: Int = 0
     @Published var lastDrinkDate: Date?
     @Published var selectedProfile: DrinkProfile?
+    @Published var userProfile: UserProfile?
     @Published var recentLogs: [DrinkLog] = []
     @Published var isShowingResetAlert = false
     @Published var showMissingProfileAlert = false
@@ -44,6 +50,7 @@ final class HomeViewModel: ObservableObject {
     func loadData() {
         do {
             selectedProfile = try persistence.loadSelectedProfile()
+            userProfile = try persistence.loadUserProfile()
             let start =
                 calendar.date(byAdding: .day, value: -365, to: Date())
                 ?? Date().addingTimeInterval(-365 * 24 * 60 * 60)
@@ -55,10 +62,11 @@ final class HomeViewModel: ObservableObject {
         }
     }
 
-    func addDrink() {
-        guard let profile = selectedProfile else {
+    @discardableResult
+    func addDrink() -> LogOutcome? {
+        guard selectedProfile != nil else {
             showMissingProfileAlert = true
-            return
+            return nil
         }
         
         // Check if there's a "No Drink" log for today
@@ -70,14 +78,16 @@ final class HomeViewModel: ObservableObject {
         if !todayNoDrinkLogs.isEmpty {
             // Show confirmation alert
             showChangeToDrinkAlert = true
+            return nil
         } else {
             // No "No Drink" log today, proceed directly
-            confirmAddDrink()
+            return confirmAddDrink()
         }
     }
-    
-    func confirmAddDrink() {
-        guard let profile = selectedProfile else { return }
+
+    @discardableResult
+    func confirmAddDrink() -> LogOutcome? {
+        guard let profile = selectedProfile else { return nil }
         
         do {
             #if DEBUG
@@ -99,15 +109,18 @@ final class HomeViewModel: ObservableObject {
             _ = try persistence.logDrink(profile, date: Date())
             isShowingResetAlert = false
             loadData()
+            return .drink
         } catch {
             errorMessage = error.localizedDescription
+            return nil
         }
     }
-    
-    func logNoDrink() {
-        guard let profile = selectedProfile else {
+
+    @discardableResult
+    func logNoDrink() -> LogOutcome? {
+        guard selectedProfile != nil else {
             showMissingProfileAlert = true
-            return
+            return nil
         }
         
         // Check if there are any drink logs for today
@@ -119,14 +132,16 @@ final class HomeViewModel: ObservableObject {
         if !todayLogs.isEmpty {
             // Show confirmation alert
             showChangeToNoDrinkAlert = true
+            return nil
         } else {
             // No drinks logged today, proceed directly
-            confirmLogNoDrink()
+            return confirmLogNoDrink()
         }
     }
-    
-    func confirmLogNoDrink() {
-        guard let profile = selectedProfile else { return }
+
+    @discardableResult
+    func confirmLogNoDrink() -> LogOutcome? {
+        guard let profile = selectedProfile else { return nil }
         
         do {
             #if DEBUG
@@ -147,17 +162,21 @@ final class HomeViewModel: ObservableObject {
             // Add "No Drink" log
             _ = try persistence.logNoDrink(profile, date: Date())
             loadData()
+            return .noDrink
         } catch {
             errorMessage = error.localizedDescription
+            return nil
         }
     }
 
     var streakTitle: String {
-        "⚡️ \(streakDays) DAYS CLEAN"
+        L10n.format("⚡️ %d DAYS CLEAN", streakDays)
     }
 
     var streakSubtitle: String {
-        selectedProfile != nil ? "since your last energy drink" : "Set up a drink profile first"
+        selectedProfile != nil
+            ? L10n.text("since your last energy drink")
+            : L10n.text("Set up a drink profile first")
     }
 
     var streakProgress: Double {
@@ -167,12 +186,12 @@ final class HomeViewModel: ObservableObject {
 
     var timeSinceLastDrink: String {
         guard let lastDrinkDate else {
-            return "No logs yet"
+            return L10n.text("No logs yet")
         }
         let components = calendar.dateComponents([.day, .hour], from: lastDrinkDate, to: Date())
         let days = components.day ?? 0
         let hours = components.hour ?? 0
-        return "\(days)d \(hours)h"
+        return L10n.format("%dd %dh", days, hours)
     }
 
     private func updateMetrics() {
@@ -183,8 +202,13 @@ final class HomeViewModel: ObservableObject {
                 return
             }
         #endif
-        lastDrinkDate = recentLogs.sorted(by: { $0.timestamp > $1.timestamp }).first?.timestamp
-        streakDays = calculateStreakDays(from: lastDrinkDate)
+        lastDrinkDate = recentLogs
+            .filter { !$0.isNoDrink }
+            .max(by: { $0.timestamp < $1.timestamp })?
+            .timestamp
+
+        let streakBaselineDate = lastDrinkDate ?? userProfile?.startDate
+        streakDays = calculateStreakDays(from: streakBaselineDate)
     }
 
     private func calculateStreakDays(from lastDrinkDate: Date?) -> Int {

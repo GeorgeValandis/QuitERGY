@@ -14,41 +14,37 @@ extension OnboardingView {
     }
 
     var stepIndicatorText: String {
-        "Step \(workflow.currentIndex + 1) of \(workflow.totalSteps)"
+        L10n.format("Step %d of %d", workflow.currentIndex + 1, workflow.totalSteps)
     }
 
     var stepTitle: String {
         switch workflow.currentStep {
         case .baseline:
-            return "How often do you drink energy drinks?"
+            return L10n.text("How often do you drink energy drinks?")
         case .drink:
-            return "Pick your go-to drink"
-        case .composition:
-            return "What’s inside your drink?"
+            return L10n.text("Pick your go-to drink")
         case .goal:
-            return "Define your goal"
+            return L10n.text("Define your goal")
         case .summary:
-            return "Ready to start?"
+            return L10n.text("Ready to start?")
         }
     }
 
     var stepSubtitle: String {
         switch workflow.currentStep {
         case .baseline:
-            return "Understanding your routine builds a personalised baseline."
+            return L10n.text("Understanding your routine builds a personalised baseline.")
         case .drink:
-            return "Price helps us calculate realistic savings."
-        case .composition:
-            return "Sugar and caffeine power your future victories."
+            return L10n.text("Price helps us calculate realistic savings.")
         case .goal:
-            return "Choose the path that fits your journey."
+            return L10n.text("Choose the path that fits your journey.")
         case .summary:
-            return "Here’s what changes when you start today."
+            return L10n.text("Here’s what changes when you start today.")
         }
     }
 
     var primaryActionTitle: String {
-        workflow.isOnSummary ? "Start My Journey ⚡️" : "Continue"
+        workflow.isOnSummary ? L10n.text("Start My Journey ⚡️") : L10n.text("Continue")
     }
 
     var isCurrentStepValid: Bool {
@@ -56,20 +52,19 @@ extension OnboardingView {
         case .baseline:
             return form.baselineFrequency != nil
         case .drink:
-            return form.pricePerDrink > 0
-        case .composition:
-            return form.sugarPerDrink >= 0 && form.caffeinePerDrink >= 0
+            return form.pricePerDrink > 0 && form.sugarPerDrink >= 0 && form.caffeinePerDrink >= 0
         case .goal:
             switch form.goal {
             case .quit:
                 return true
             case .reduce:
                 guard normalizedBaselinePerWeek > 0,
-                      let target = form.targetDrinksPerWeek else { return false }
+                    let target = form.targetDrinksPerWeek
+                else { return false }
                 return target >= 0 && target < normalizedBaselinePerWeek
             }
         case .summary:
-            return true
+            return form.firstLogChoice != nil
         }
     }
 
@@ -77,15 +72,16 @@ extension OnboardingView {
         guard !isCurrentStepValid else { return nil }
         switch workflow.currentStep {
         case .baseline:
-            return "Choose the option that matches your current habit."
+            return L10n.text("Choose the option that matches your current habit.")
         case .drink:
-            return "Enter a realistic average price per drink."
-        case .composition:
-            return "Sugar and caffeine can’t be negative."
+            if form.pricePerDrink <= 0 {
+                return L10n.text("Enter a realistic average price per drink.")
+            }
+            return L10n.text("Sugar and caffeine can’t be negative.")
         case .goal:
-            return "Set a target that’s lower than your current baseline."
+            return L10n.text("Set a target that’s lower than your current baseline.")
         case .summary:
-            return nil
+            return L10n.text("Answer the question above to start your tracking.")
         }
     }
 
@@ -96,12 +92,15 @@ extension OnboardingView {
     var summaryHeadline: String {
         let weekly = summarySnapshot.weeklyBaseline
         let formattedWeekly = weekly.formatted(.number.precision(.fractionLength(0...1)))
-        return "You currently drink about \(formattedWeekly) per week."
+        return L10n.format("You currently drink about %@ per week.", formattedWeekly)
     }
 
     var summaryBody: String {
-        let savings = summarySnapshot.monthlyMoneySavings.formatted(.currency(code: "EUR").precision(.fractionLength(0...1)))
-        let sugar = summarySnapshot.monthlySugarSavings.formatted(.number.precision(.fractionLength(0...0)))
-        return "Start today and you can save around \(savings) and \(sugar) g of sugar every month."
+        let savings = summarySnapshot.monthlyMoneySavings.formatted(
+            .currency(code: "EUR").precision(.fractionLength(0...1)))
+        let sugar = summarySnapshot.monthlySugarSavings.formatted(
+            .number.precision(.fractionLength(0...0)))
+        return L10n.format(
+            "Start today and you can save around %@ and %@ g of sugar every month.", savings, sugar)
     }
 }

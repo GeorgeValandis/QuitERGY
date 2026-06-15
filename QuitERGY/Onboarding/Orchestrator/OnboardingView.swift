@@ -5,8 +5,8 @@
 //  Created by Codex.
 //
 
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 struct OnboardingView: View {
     @Environment(\.modelContext) private var modelContext
@@ -17,10 +17,14 @@ struct OnboardingView: View {
 
     @State var workflow = Workflow()
     @State var form = OnboardingForm()
+    @State var showsCompositionEditor = false
     @State private var showValidationHint = false
     @State private var errorMessage: String?
     @State private var headerHeight: CGFloat = 0
     @State private var footerHeight: CGFloat = 0
+    @State private var didCompleteOnboarding = false
+    @State private var didTrackFirstLogPromptView = false
+    @State private var viewedOnboardingStepIDs: Set<String> = []
     @FocusState var focusedField: FocusField?
 
     init(onCompleted: @escaping () -> Void = {}) {
@@ -95,21 +99,26 @@ struct OnboardingView: View {
                     .frame(width: proxy.size.width, height: proxy.size.height, alignment: .top)
                     .overlay(alignment: .topLeading) {
                         #if DEBUG
-                        if ProcessInfo.processInfo.environment["SHOW_ONBOARDING_LAYOUT_DEBUG"] == "1" {
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text("h: \(Int(proxy.size.height)) w: \(Int(proxy.size.width))")
-                                Text("header: \(Int(headerHeight)) footer: \(Int(footerHeight))")
-                                Text("sizeClass: \(horizontalSizeClass == .regular ? "regular" : "compact")")
-                                Text("tight: \(isTightHeight ? "yes" : "no")")
+                            if ProcessInfo.processInfo.environment["SHOW_ONBOARDING_LAYOUT_DEBUG"]
+                                == "1"
+                            {
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text("h: \(Int(proxy.size.height)) w: \(Int(proxy.size.width))")
+                                    Text(
+                                        "header: \(Int(headerHeight)) footer: \(Int(footerHeight))")
+                                    Text(
+                                        "sizeClass: \(horizontalSizeClass == .regular ? "regular" : "compact")"
+                                    )
+                                    Text("tight: \(isTightHeight ? "yes" : "no")")
+                                }
+                                .font(.system(size: 11, weight: .semibold))
+                                .foregroundStyle(.white)
+                                .padding(8)
+                                .background(Color.black.opacity(0.65))
+                                .clipShape(RoundedRectangle(cornerRadius: 8))
+                                .padding(.top, 8)
+                                .padding(.leading, 8)
                             }
-                            .font(.system(size: 11, weight: .semibold))
-                            .foregroundStyle(.white)
-                            .padding(8)
-                            .background(Color.black.opacity(0.65))
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
-                            .padding(.top, 8)
-                            .padding(.leading, 8)
-                        }
                         #endif
                     }
                 }
@@ -124,6 +133,9 @@ struct OnboardingView: View {
             showValidationHint = false
             focusedField = nil
         }
+        .task(id: workflow.currentStep) {
+            trackOnboardingStepViewedIfNeeded()
+        }
         .onChange(of: form.drinkType) { oldValue, newValue in
             guard oldValue != newValue else { return }
             form.hasCustomizedPrice = false
@@ -137,9 +149,12 @@ struct OnboardingView: View {
             }
         }
         .alert("Something went wrong", isPresented: errorBinding) {
-            Button("OK", role: .cancel) { }
+            Button("OK", role: .cancel) {}
         } message: {
             Text(errorMessage ?? "We couldn’t save your onboarding data. Please try again.")
+        }
+        .onDisappear {
+            trackOnboardingAbandonedIfNeeded()
         }
     }
 
@@ -199,6 +214,8 @@ struct OnboardingView: View {
         HStack(spacing: 16) {
             if !workflow.isFirstStep {
                 secondaryButton(title: "Back") {
+                    AppAnalytics.shared.track(
+                        "onboarding_back_tapped", properties: onboardingStepProperties())
                     withAnimation(.easeInOut(duration: 0.3)) {
                         workflow.goBack()
                     }
@@ -213,6 +230,8 @@ struct OnboardingView: View {
 
     private func handlePrimaryAction() {
         guard isCurrentStepValid else {
+            AppAnalytics.shared.track(
+                "onboarding_validation_failed", properties: onboardingStepProperties())
             withAnimation(.easeInOut(duration: 0.3)) {
                 showValidationHint = true
             }
@@ -224,6 +243,8 @@ struct OnboardingView: View {
         if workflow.isOnSummary {
             completeOnboarding()
         } else {
+            AppAnalytics.shared.track(
+                "onboarding_next_tapped", properties: onboardingStepProperties())
             withAnimation(.easeInOut(duration: 0.35)) {
                 workflow.advance()
             }
@@ -232,11 +253,93 @@ struct OnboardingView: View {
 
     private func completeOnboarding() {
         do {
-            try persistProfile()
+            let drinkProfile = try persistProfile()
+            try recordFirstLogIfNeeded(for: drinkProfile)
+            didCompleteOnboarding = true
+            AppAnalytics.shared.track(
+                "onboarding_completed", properties: onboardingCompletionProperties())
             onCompleted()
         } catch {
+            AppAnalytics.shared.track(
+                "onboarding_save_failed", properties: onboardingStepProperties())
             errorMessage = error.localizedDescription
         }
+    }
+
+    private func recordFirstLogIfNeeded(for drinkProfile: DrinkProfile) throws {
+        guard let choice = form.firstLogChoice else { return }
+
+        switch choice {
+        case .drink:
+            _ = try persistence.logDrink(drinkProfile, date: Date())
+        case .noDrink:
+            _ = try persistence.logNoDrink(drinkProfile, date: Date())
+        }
+
+        AppAnalytics.shared.track(
+            "drink_log_recorded",
+            properties: [
+                "kind": choice.analyticsValue,
+                "streak_days": "0",
+                "surface": "onboarding",
+            ])
+    }
+
+    private func trackOnboardingStepViewedIfNeeded() {
+        let stepID = workflow.currentStep.analyticsName
+        guard !viewedOnboardingStepIDs.contains(stepID) else { return }
+
+        viewedOnboardingStepIDs.insert(stepID)
+        AppAnalytics.shared.track("onboarding_step_viewed", properties: onboardingStepProperties())
+
+        if workflow.currentStep == .summary {
+            trackFirstLogPromptViewedIfNeeded()
+        }
+    }
+
+    func selectFirstLogChoice(_ choice: FirstLogChoice) {
+        form.firstLogChoice = choice
+
+        var properties = onboardingStepProperties()
+        properties["choice"] = choice.analyticsValue
+        properties["surface"] = "onboarding_summary"
+        AppAnalytics.shared.track("first_log_choice_selected", properties: properties)
+    }
+
+    private func trackFirstLogPromptViewedIfNeeded() {
+        guard !didTrackFirstLogPromptView else { return }
+
+        didTrackFirstLogPromptView = true
+        var properties = onboardingStepProperties()
+        properties["surface"] = "onboarding_summary"
+        AppAnalytics.shared.track("first_log_prompt_viewed", properties: properties)
+    }
+
+    private func trackOnboardingAbandonedIfNeeded() {
+        guard !didCompleteOnboarding else { return }
+
+        AppAnalytics.shared.track("onboarding_abandoned", properties: onboardingStepProperties())
+    }
+
+    private func onboardingStepProperties() -> [String: String] {
+        [
+            "step": workflow.currentStep.analyticsName,
+            "step_count": "\(OnboardingStep.allCases.count)",
+            "step_id": workflow.currentStep.analyticsName,
+            "step_index": "\(workflow.currentStep.rawValue)",
+        ]
+    }
+
+    private func onboardingCompletionProperties() -> [String: String] {
+        var properties = onboardingStepProperties()
+        properties["baseline_frequency"] = form.baselineFrequency?.rawValue ?? "unknown"
+        properties["drink_type"] = form.drinkType.rawValue
+        properties["goal"] = form.goal.rawValue
+        if let targetDrinksPerWeek = form.targetDrinksPerWeek {
+            properties["target_drinks_per_week"] = "\(targetDrinksPerWeek)"
+        }
+        properties["first_log_choice"] = form.firstLogChoice?.analyticsValue ?? "none"
+        return properties
     }
 
     private func applyDefaults(for type: DrinkType) {
@@ -266,7 +369,8 @@ struct OnboardingView: View {
         }
     }
 
-    private func persistProfile() throws {
+    @discardableResult
+    private func persistProfile() throws -> DrinkProfile {
         let profile = try fetchOrCreateProfile()
         profile.baselineDrinksPerDay = normalizedBaselinePerDay
         profile.targetDrinksPerWeek = normalizedTargetPerWeek
@@ -297,6 +401,7 @@ struct OnboardingView: View {
         }
 
         try modelContext.save()
+        return drinkProfile
     }
 
     private func fetchOrCreateProfile() throws -> UserProfile {
@@ -359,7 +464,7 @@ private struct FooterHeightKey: PreferenceKey {
         DrinkProfile.self,
         DrinkLog.self,
         UserSettings.self,
-        UserProfile.self
+        UserProfile.self,
     ])
     let configuration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
     let container = try! ModelContainer(for: schema, configurations: [configuration])

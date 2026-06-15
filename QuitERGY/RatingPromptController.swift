@@ -18,40 +18,17 @@ import UIKit
 @MainActor
 final class RatingPromptController: ObservableObject {
     private enum StorageKey: String {
-        case entryCount = "rating_prompt_entry_count"
-        case launchCount = "rating_prompt_launch_count"
+        case successfulLogCount = "rating_prompt_successful_log_count"
         case lastPromptTimestamp = "rating_prompt_last_shown"
-        case stage = "rating_prompt_stage"
+        case lastPromptMilestone = "rating_prompt_last_milestone"
     }
-
-    @Published var isPresentingPrompt: Bool = false
 
     private let defaults: UserDefaults
     private let appStoreURL: URL?
 
-    private enum Stage: Int {
-        case initial = 0
-        case recurring = 1
-
-        var threshold: Int {
-            switch self {
-            case .initial: return 3
-            case .recurring: return 10
-            }
-        }
-    }
-
-    private var stageRaw: Int {
-        get { defaults.integer(forKey: StorageKey.stage.rawValue) }
-        set { defaults.set(newValue, forKey: StorageKey.stage.rawValue) }
-    }
-
-    private var stage: Stage {
-        get { Stage(rawValue: stageRaw) ?? .initial }
-        set { stageRaw = newValue.rawValue }
-    }
-
-    private let cooldownInterval: TimeInterval = 14 * 24 * 60 * 60
+    private let successfulLogMilestones: Set<Int> = [3, 10, 25]
+    private let streakMilestones: Set<Int> = [3, 7, 14, 30, 60, 90]
+    private let cooldownInterval: TimeInterval = 90 * 24 * 60 * 60
 
     init(appStoreURL: URL? = nil, defaults: UserDefaults = .standard) {
         self.appStoreURL = appStoreURL
@@ -59,39 +36,47 @@ final class RatingPromptController: ObservableObject {
     }
 
     func recordAppOpen() {
-        guard !isPresentingPrompt else { return }
-        launchCount += 1
-        evaluateIfNeeded()
+        // Intentionally no-op: review prompts should follow a useful action, not launch.
     }
 
     func recordEntryCreated() {
-        guard !isPresentingPrompt else { return }
-        entryCount += 1
-        evaluateIfNeeded()
+        recordSuccessfulLog(isNoDrink: true, streakDays: 0)
+    }
+
+    func recordSuccessfulLog(isNoDrink: Bool, streakDays: Int) {
+        guard isNoDrink else { return }
+
+        successfulLogCount += 1
+        guard let milestoneKey = milestoneKey(logCount: successfulLogCount, streakDays: streakDays) else {
+            return
+        }
+
+        requestReviewIfEligible(for: milestoneKey)
     }
 
     func resetCounters() {
-        entryCount = 0
-        launchCount = 0
+        successfulLogCount = 0
     }
 
     func completePrompt() {
-        isPresentingPrompt = false
     }
 
     func handleRateNowAction() {
-        requestReviewIfPossible()
+        AppAnalytics.shared.track("review_write_link_opened", properties: [
+            "surface": "rating_prompt"
+        ])
+        openWriteReviewPage()
         completePrompt()
     }
 
-    private func evaluateIfNeeded() {
-        guard !isPresentingPrompt else { return }
-        guard cooldownSatisfied else { return }
-
-        let threshold = stage.threshold
-        if entryCount >= threshold || launchCount >= threshold {
-            triggerPrompt()
+    private func milestoneKey(logCount: Int, streakDays: Int) -> String? {
+        if streakMilestones.contains(streakDays) {
+            return "streak-\(streakDays)"
         }
+        if successfulLogMilestones.contains(logCount) {
+            return "successful-log-\(logCount)"
+        }
+        return nil
     }
 
     private var cooldownSatisfied: Bool {
@@ -99,24 +84,14 @@ final class RatingPromptController: ObservableObject {
         return Date().timeIntervalSince1970 - lastPromptTimestamp >= cooldownInterval
     }
 
-    private func triggerPrompt() {
-        isPresentingPrompt = true
-        lastPromptTimestamp = Date().timeIntervalSince1970
-        entryCount = 0
-        launchCount = 0
-        if stage == .initial {
-            stage = .recurring
-        }
+    private var successfulLogCount: Int {
+        get { defaults.integer(forKey: StorageKey.successfulLogCount.rawValue) }
+        set { defaults.set(newValue, forKey: StorageKey.successfulLogCount.rawValue) }
     }
 
-    private var entryCount: Int {
-        get { defaults.integer(forKey: StorageKey.entryCount.rawValue) }
-        set { defaults.set(newValue, forKey: StorageKey.entryCount.rawValue) }
-    }
-
-    private var launchCount: Int {
-        get { defaults.integer(forKey: StorageKey.launchCount.rawValue) }
-        set { defaults.set(newValue, forKey: StorageKey.launchCount.rawValue) }
+    private var lastPromptMilestone: String {
+        get { defaults.string(forKey: StorageKey.lastPromptMilestone.rawValue) ?? "" }
+        set { defaults.set(newValue, forKey: StorageKey.lastPromptMilestone.rawValue) }
     }
 
     private var lastPromptTimestamp: TimeInterval {
@@ -124,15 +99,53 @@ final class RatingPromptController: ObservableObject {
         set { defaults.set(newValue, forKey: StorageKey.lastPromptTimestamp.rawValue) }
     }
 
-    private func requestReviewIfPossible() {
+    private func requestReviewIfEligible(for milestoneKey: String) {
+        guard lastPromptMilestone != milestoneKey else {
+            AppAnalytics.shared.track("review_prompt_suppressed", properties: [
+                "milestone": milestoneKey,
+                "reason": "duplicate_milestone"
+            ])
+            return
+        }
+        guard cooldownSatisfied else {
+            AppAnalytics.shared.track("review_prompt_suppressed", properties: [
+                "milestone": milestoneKey,
+                "reason": "cooldown"
+            ])
+            return
+        }
+
 #if canImport(StoreKit) && os(iOS)
         if let windowScene = UIApplication.shared.connectedScenes
             .compactMap({ $0 as? UIWindowScene })
             .first(where: { $0.activationState == .foregroundActive }) {
-            SKStoreReviewController.requestReview(in: windowScene)
-            return
+            lastPromptMilestone = milestoneKey
+            lastPromptTimestamp = Date().timeIntervalSince1970
+            AppAnalytics.shared.track("review_prompt_eligible", properties: [
+                "milestone": milestoneKey
+            ])
+            AppAnalytics.shared.track("review_prompt_requested", properties: [
+                "milestone": milestoneKey,
+                "surface": "system_review_prompt"
+            ])
+
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
+                if #available(iOS 18.0, *) {
+                    AppStore.requestReview(in: windowScene)
+                } else {
+                    SKStoreReviewController.requestReview(in: windowScene)
+                }
+            }
+        } else {
+            AppAnalytics.shared.track("review_prompt_suppressed", properties: [
+                "milestone": milestoneKey,
+                "reason": "no_active_scene"
+            ])
         }
 #endif
+    }
+
+    private func openWriteReviewPage() {
 #if os(iOS)
         if let appStoreURL {
             UIApplication.shared.open(appStoreURL)

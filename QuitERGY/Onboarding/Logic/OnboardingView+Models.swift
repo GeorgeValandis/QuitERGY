@@ -11,11 +11,35 @@ extension OnboardingView {
     enum OnboardingStep: Int, CaseIterable, Identifiable {
         case baseline
         case drink
-        case composition
         case goal
         case summary
 
         var id: Int { rawValue }
+
+        var analyticsName: String {
+            switch self {
+            case .baseline:
+                return "baseline"
+            case .drink:
+                return "drink"
+            case .goal:
+                return "goal"
+            case .summary:
+                return "summary"
+            }
+        }
+    }
+
+    enum FirstLogChoice: String, CaseIterable {
+        case drink
+        case noDrink
+
+        var analyticsValue: String {
+            switch self {
+            case .drink: return "drink"
+            case .noDrink: return "no_drink"
+            }
+        }
     }
 
     enum BaselineFrequency: String, CaseIterable, Identifiable {
@@ -28,19 +52,19 @@ extension OnboardingView {
 
         var title: String {
             switch self {
-            case .onePerWeek: return "1 per week"
-            case .twoToThreePerWeek: return "2–3 per week"
-            case .onePerDay: return "1 per day"
-            case .twoOrMorePerDay: return "2 or more per day"
+            case .onePerWeek: return L10n.text("1 per week")
+            case .twoToThreePerWeek: return L10n.text("2–3 per week")
+            case .onePerDay: return L10n.text("1 per day")
+            case .twoOrMorePerDay: return L10n.text("2 or more per day")
             }
         }
 
         var subtitle: String {
             switch self {
-            case .onePerWeek: return "Mostly on weekends"
-            case .twoToThreePerWeek: return "Every other day habit"
-            case .onePerDay: return "Daily routine"
-            case .twoOrMorePerDay: return "Heavy usage"
+            case .onePerWeek: return L10n.text("Mostly on weekends")
+            case .twoToThreePerWeek: return L10n.text("Every other day habit")
+            case .onePerDay: return L10n.text("Daily routine")
+            case .twoOrMorePerDay: return L10n.text("Heavy usage")
             }
         }
 
@@ -80,7 +104,7 @@ extension OnboardingView {
             case .redBull: return "Red Bull"
             case .monster: return "Monster"
             case .rockstar: return "Rockstar"
-            case .other: return "Other drink"
+            case .other: return L10n.text("Other drink")
             }
         }
 
@@ -138,15 +162,15 @@ extension OnboardingView {
 
         var title: String {
             switch self {
-            case .quit: return "Quit completely"
-            case .reduce: return "Drink less"
+            case .quit: return L10n.text("Quit completely")
+            case .reduce: return L10n.text("Drink less")
             }
         }
 
         var subtitle: String {
             switch self {
-            case .quit: return "Zero energy drinks going forward"
-            case .reduce: return "Set a realistic target per week"
+            case .quit: return L10n.text("Zero energy drinks going forward")
+            case .reduce: return L10n.text("Set a realistic target per week")
             }
         }
 
@@ -170,6 +194,7 @@ extension OnboardingView {
         var hasCustomizedSugar = false
         var hasCustomizedCaffeine = false
         var startDate: Date = Date()
+        var firstLogChoice: FirstLogChoice?
     }
 
     struct SummarySnapshot: Equatable {

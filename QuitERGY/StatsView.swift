@@ -148,12 +148,17 @@ struct StatsView: View {
 
             // Statistik-Bereich
             VStack(alignment: .leading, spacing: 8) {
-                Text("\(totalDrinks) \(totalDrinks == 1 ? "Drink" : "Drinks")")
+                Text(totalDrinks == 1 ? L10n.format("%d Drink", totalDrinks) : L10n.format("%d Drinks", totalDrinks))
                     .font(.quitRounded(.bold, size: 32))
                     .foregroundStyle(QuitERGYTheme.textPrimary)
 
                 HStack(alignment: .firstTextBaseline, spacing: 16) {
-                    Label("\(drinksDifference) \(drinksDifference == 1 ? "drink" : "drinks") less than last month", systemImage: "clock")
+                    Label(
+                        drinksDifference == 1
+                            ? L10n.format("%d drink less than last month", drinksDifference)
+                            : L10n.format("%d drinks less than last month", drinksDifference),
+                        systemImage: "clock"
+                    )
                         .font(.quitRounded(.medium, size: 13))
                         .foregroundStyle(QuitERGYTheme.textSecondary)
 
@@ -307,6 +312,10 @@ struct StatsView: View {
                 
                 // Premium Banner (matching Settings design)
                 Button {
+                    AppAnalytics.shared.track("paywall_presented", properties: [
+                        "surface": "stats",
+                        "trigger": "stats_locked"
+                    ])
                     isPresentingPaywall = true
                 } label: {
                     HStack(spacing: 16) {
@@ -359,7 +368,7 @@ private struct MetricBarCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Label(metric.type.rawValue, systemImage: iconName)
+            Label(metric.type.displayName, systemImage: iconName)
                 .font(.quitRounded(.medium, size: 12))
                 .foregroundStyle(QuitERGYTheme.textSecondary)
                 .lineLimit(1)

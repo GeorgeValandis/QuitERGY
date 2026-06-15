@@ -1,0 +1,13 @@
+QuitERGY t’aide à suivre tes boissons énergisantes, comprendre ta consommation de caféine et construire une routine plus propre.
+
+Crée ton profil de boisson, note les jours avec ou sans boisson et suis tes séries, économies et sucre évité.
+
+Fonctions :
+- Journal des boissons énergisantes et de la caféine
+- Série clean et activité quotidienne
+- Statistiques d’économies, de sucre et de progrès
+- Rappel quotidien et badges
+- Plusieurs profils de boisson avec Premium
+- Aucun compte requis
+
+Terms of Use (EULA): https://georgevalandis.com/apps/quitergy/terms-and-conditions/

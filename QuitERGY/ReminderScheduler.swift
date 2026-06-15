@@ -20,7 +20,7 @@ enum ReminderSchedulerError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .permissionDenied:
-            return "Notifications are disabled. Enable them in Settings to receive reminders."
+            return L10n.text("Notifications are disabled. Enable them in Settings to receive reminders.")
         }
     }
 }
@@ -60,11 +60,11 @@ final class ReminderScheduler: ReminderScheduling {
         dateComponents.second = 0
 
         let content = UNMutableNotificationContent()
-        content.title = "Energy Check-in"
+        content.title = L10n.text("Energy Check-in")
         if let profileName, !profileName.isEmpty {
-            content.body = "Did you have your \(profileName) today?"
+            content.body = L10n.format("Did you have your %@ today?", profileName)
         } else {
-            content.body = "Did you have an energy drink today?"
+            content.body = L10n.text("Did you have an energy drink today?")
         }
         content.sound = UNNotificationSound.default
 

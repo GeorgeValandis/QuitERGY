@@ -1,0 +1,1 @@
+App-Oberfläche und App-Store-Metadaten für Deutsch lokalisiert.

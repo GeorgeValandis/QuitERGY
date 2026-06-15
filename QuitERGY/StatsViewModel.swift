@@ -13,6 +13,10 @@ struct StatsMetric: Identifiable {
         case money = "Money Saved"
         case sugar = "Sugar Avoided"
         case drinks = "Drinks Skipped"
+
+        var displayName: String {
+            L10n.text(rawValue)
+        }
     }
 
     let id = UUID()
@@ -173,11 +177,11 @@ final class StatsViewModel: ObservableObject {
     
     private func computeWeeklyProgress(using logs: [DrinkLog]) {
         let dayFormatter = DateFormatter()
-        dayFormatter.locale = Locale(identifier: "en_US")
+        dayFormatter.locale = Locale.current
         dayFormatter.dateFormat = "EEE"  // Mon, Tue, Wed
         
         let dateFormatter = DateFormatter()
-        dateFormatter.locale = Locale(identifier: "en_US")
+        dateFormatter.locale = Locale.current
         dateFormatter.dateFormat = "d"   // Day number
 
         let today = calendar.startOfDay(for: Date())
@@ -220,7 +224,7 @@ final class StatsViewModel: ObservableObject {
             if let day = calendar.date(byAdding: .day, value: offset, to: start) {
                 // Show week labels: Week 1, Week 2, etc.
                 let weekNumber = (offset / 7) + 1
-                let label = "W\(weekNumber)"  // W1, W2, W3, W4
+                let label = L10n.format("W%d", weekNumber)  // W1, W2, W3, W4
                 let value = Double(counts[day, default: 0])
                 points.append(ProgressPoint(label: label, sublabel: nil, value: value))
             }

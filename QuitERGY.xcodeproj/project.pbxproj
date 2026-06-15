@@ -7,8 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		29272702416B6EA522BFBB9A /* RemoteUpdateGate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53C9C1748093170E86031D13 /* RemoteUpdateGate.swift */; };
 		75CF28562F35085E00631EA1 /* RevenueCat in Frameworks */ = {isa = PBXBuildFile; productRef = 75CF28552F35085E00631EA1 /* RevenueCat */; };
 		75CF28582F35085E00631EA1 /* RevenueCatUI in Frameworks */ = {isa = PBXBuildFile; productRef = 75CF28572F35085E00631EA1 /* RevenueCatUI */; };
+		5F1D7E922F4A000100000001 /* TelemetryDeck in Frameworks */ = {isa = PBXBuildFile; productRef = 5F1D7E912F4A000100000001 /* TelemetryDeck */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -29,6 +31,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		53C9C1748093170E86031D13 /* RemoteUpdateGate.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = RemoteUpdateGate.swift; path = QuitERGY/RemoteUpdateGate.swift; sourceTree = "<group>"; };
 		75D59AE82EB3546A006FDFED /* QuitERGY.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = QuitERGY.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		75D59AF72EB3546B006FDFED /* QuitERGYTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = QuitERGYTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		75D59B012EB3546B006FDFED /* QuitERGYUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = QuitERGYUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -38,16 +41,22 @@
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		75D59AEA2EB3546A006FDFED /* QuitERGY */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
 			path = QuitERGY;
 			sourceTree = "<group>";
 		};
 		75D59AFA2EB3546B006FDFED /* QuitERGYTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
 			path = QuitERGYTests;
 			sourceTree = "<group>";
 		};
 		75D59B042EB3546B006FDFED /* QuitERGYUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
 			path = QuitERGYUITests;
 			sourceTree = "<group>";
 		};
@@ -58,6 +67,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5F1D7E922F4A000100000001 /* TelemetryDeck in Frameworks */,
 				75CF28582F35085E00631EA1 /* RevenueCatUI in Frameworks */,
 				75CF28562F35085E00631EA1 /* RevenueCat in Frameworks */,
 			);
@@ -88,6 +98,7 @@
 				75D59AFA2EB3546B006FDFED /* QuitERGYTests */,
 				75D59B042EB3546B006FDFED /* QuitERGYUITests */,
 				75D59AE92EB3546A006FDFED /* Products */,
+				53C9C1748093170E86031D13 /* RemoteUpdateGate.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -123,6 +134,7 @@
 			packageProductDependencies = (
 				75CF28552F35085E00631EA1 /* RevenueCat */,
 				75CF28572F35085E00631EA1 /* RevenueCatUI */,
+				5F1D7E912F4A000100000001 /* TelemetryDeck */,
 			);
 			productName = QuitERGY;
 			productReference = 75D59AE82EB3546A006FDFED /* QuitERGY.app */;
@@ -145,8 +157,6 @@
 				75D59AFA2EB3546B006FDFED /* QuitERGYTests */,
 			);
 			name = QuitERGYTests;
-			packageProductDependencies = (
-			);
 			productName = QuitERGYTests;
 			productReference = 75D59AF72EB3546B006FDFED /* QuitERGYTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
@@ -168,8 +178,6 @@
 				75D59B042EB3546B006FDFED /* QuitERGYUITests */,
 			);
 			name = QuitERGYUITests;
-			packageProductDependencies = (
-			);
 			productName = QuitERGYUITests;
 			productReference = 75D59B012EB3546B006FDFED /* QuitERGYUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
@@ -202,12 +210,16 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				de,
+				es,
+				fr,
 				Base,
 			);
 			mainGroup = 75D59ADF2EB3546A006FDFED;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				75CF28542F35085E00631EA1 /* XCRemoteSwiftPackageReference "purchases-ios-spm" */,
+				5F1D7E902F4A000100000001 /* XCRemoteSwiftPackageReference "SwiftSDK" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 75D59AE92EB3546A006FDFED /* Products */;
@@ -250,6 +262,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				29272702416B6EA522BFBB9A /* RemoteUpdateGate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -410,20 +423,21 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 23;
 				DEVELOPMENT_TEAM = LPPZFWPAN7;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.7;
 				PRODUCT_BUNDLE_IDENTIFIER = com.GA.QuitERGY;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -446,20 +460,21 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 23;
 				DEVELOPMENT_TEAM = LPPZFWPAN7;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.7;
 				PRODUCT_BUNDLE_IDENTIFIER = com.GA.QuitERGY;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -610,6 +625,14 @@
 				minimumVersion = 5.57.1;
 			};
 		};
+		5F1D7E902F4A000100000001 /* XCRemoteSwiftPackageReference "SwiftSDK" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/TelemetryDeck/SwiftSDK";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.14.1;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -622,6 +645,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 75CF28542F35085E00631EA1 /* XCRemoteSwiftPackageReference "purchases-ios-spm" */;
 			productName = RevenueCatUI;
+		};
+		5F1D7E912F4A000100000001 /* TelemetryDeck */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5F1D7E902F4A000100000001 /* XCRemoteSwiftPackageReference "SwiftSDK" */;
+			productName = TelemetryDeck;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

@@ -1,0 +1,81 @@
+{
+  "generatedAt": "2026-05-28",
+  "appStoreId": "6754967219",
+  "bundleId": "com.GA.QuitERGY",
+  "version": "1.0.4",
+  "supportUrl": "https://georgevalandis.com/apps/quitergy/",
+  "marketingUrl": "https://georgevalandis.com/apps/quitergy/",
+  "privacyPolicyUrl": "https://georgevalandis.com/apps/quitergy/privacy-statement/",
+  "termsOfUseUrl": "https://georgevalandis.com/apps/quitergy/terms-and-conditions/",
+  "localizations": {
+    "de-DE": {
+      "store": "de",
+      "xcodeLocale": "de",
+      "mainKeyword": "sucht tracker",
+      "mainKeywordMetrics": {
+        "popularity": 22,
+        "difficulty": 19
+      },
+      "secondaryKeyword": "drink counter",
+      "secondaryKeywordMetrics": {
+        "popularity": 6,
+        "difficulty": 37
+      },
+      "name": "Sucht Tracker: QuitERGY",
+      "subtitle": "Energy Drink & Koffein Log",
+      "keywords": "getränke,zähler,koffein,tagebuch,kaffee,cola,trinktagebuch,aufhören,reduzieren,gewohnheit,streak",
+      "promotionalText": "Tracke Energy-Drinks, Koffein und Clean-Streaks, damit du deinen Konsum bewusst reduzierst.",
+      "description": "QuitERGY hilft dir, Energy-Drinks bewusster zu tracken, deinen Konsum zu reduzieren und Fortschritt sichtbar zu machen.\n\nLege dein Lieblingsgetränk an, protokolliere Drink- oder No-Drink-Tage und sieh, wie sich deine Streak, Ersparnisse und vermiedener Zucker entwickeln.\n\nFunktionen:\n- Energy-Drink- und Koffein-Log\n- Clean-Streak und Tagesverlauf\n- Spar-, Zucker- und Fortschrittsstatistiken\n- Tägliche Erinnerung und Badges\n- Mehrere Drink-Profile mit Premium\n- Kein Account erforderlich\n\nTerms of Use (EULA): https://georgevalandis.com/apps/quitergy/terms-and-conditions/",
+      "whatsNew": "App-Oberfläche und App-Store-Metadaten für Deutsch lokalisiert."
+    },
+    "es-ES": {
+      "store": "es",
+      "xcodeLocale": "es",
+      "mainKeyword": "habit tracker",
+      "mainKeywordMetrics": {
+        "popularity": 58,
+        "difficulty": 41
+      },
+      "secondaryKeyword": "drink counter",
+      "secondaryKeywordMetrics": {
+        "popularity": 12,
+        "difficulty": 21
+      },
+      "name": "Habit Tracker: QuitERGY",
+      "subtitle": "Cafeína y Energy Drinks",
+      "keywords": "contador,bebidas,registro,energéticas,dejar,reducir,hábitos,rachas,diario,azúcar,seguimiento",
+      "promotionalText": "Registra bebidas energéticas, cafeína y rachas limpias para reducir tu hábito con claridad.",
+      "description": "QuitERGY te ayuda a registrar bebidas energéticas, entender tu consumo de cafeína y avanzar hacia una rutina más limpia.\n\nCrea tu perfil de bebida, registra días con bebida o sin bebida y sigue tus rachas, ahorros y azúcar evitado.\n\nFunciones:\n- Registro de bebidas energéticas y cafeína\n- Racha limpia y actividad diaria\n- Estadísticas de ahorro, azúcar y progreso\n- Recordatorio diario e insignias\n- Varios perfiles de bebida con Premium\n- Sin cuenta obligatoria\n\nTerms of Use (EULA): https://georgevalandis.com/apps/quitergy/terms-and-conditions/",
+      "whatsNew": "Interfaz de la app y metadatos del App Store localizados al español."
+    },
+    "fr-FR": {
+      "store": "fr",
+      "xcodeLocale": "fr",
+      "mainKeyword": "habit tracker",
+      "mainKeywordMetrics": {
+        "popularity": 60,
+        "difficulty": 44
+      },
+      "secondaryKeyword": "drink counter",
+      "secondaryKeywordMetrics": {
+        "popularity": 6,
+        "difficulty": 19
+      },
+      "name": "Habit Tracker: QuitERGY",
+      "subtitle": "Caféine & Energy Drinks",
+      "keywords": "suivi,habitudes,boissons,journal,arrêter,réduire,sucre,streak,objectif,quotidien,énergie",
+      "promotionalText": "Suis tes boissons énergisantes, ta caféine et tes séries clean pour réduire ton habitude.",
+      "description": "QuitERGY t’aide à suivre tes boissons énergisantes, comprendre ta consommation de caféine et construire une routine plus propre.\n\nCrée ton profil de boisson, note les jours avec ou sans boisson et suis tes séries, économies et sucre évité.\n\nFonctions :\n- Journal des boissons énergisantes et de la caféine\n- Série clean et activité quotidienne\n- Statistiques d’économies, de sucre et de progrès\n- Rappel quotidien et badges\n- Plusieurs profils de boisson avec Premium\n- Aucun compte requis\n\nTerms of Use (EULA): https://georgevalandis.com/apps/quitergy/terms-and-conditions/",
+      "whatsNew": "Interface de l’app et métadonnées App Store localisées en français."
+    }
+  },
+  "ascReadback": {
+    "checkedAt": "2026-05-28",
+    "appStoreVersionId": "49873289-d5a4-4919-ae02-5f7ab26efbbb",
+    "appStoreVersionState": "WAITING_FOR_REVIEW",
+    "liveVersion": "1.0.3",
+    "liveVersionState": "READY_FOR_SALE",
+    "uploadStatus": "prepared_not_uploaded",
+    "reason": "Current target version is waiting for review; do not mutate ASC metadata blindly while review is pending."
+  }
+}
