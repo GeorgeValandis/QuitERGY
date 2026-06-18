@@ -4,27 +4,77 @@
 
   ],
   "products" : [
-    {
-      "displayPrice" : "14.99",
-      "familyShareable" : false,
-      "internalID" : "QERG0002",
-      "localizations" : [
-        {
-          "description" : "Unlock all premium features permanently.",
-          "displayName" : "Lifetime Premium",
-          "locale" : "en_US"
-        }
-      ],
-      "productID" : "com.quitergy.premium.lifetime",
-      "referenceName" : "Lifetime Premium",
-      "type" : "NonConsumable"
-    }
+
   ],
   "settings" : {
 
   },
   "subscriptionGroups" : [
+    {
+      "id" : "21487501",
+      "localizations" : [
 
+      ],
+      "name" : "QuitERGY Premium",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "4.99",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "QERG1001",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Unlock unlimited logs, detailed statistics, reminders, and multiple drink profiles.",
+              "displayName" : "QuitERGY Premium Monthly",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "com.quitergy.premium.monthly",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "QuitERGY Premium Monthly",
+          "subscriptionGroupID" : "21487501",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
+        },
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "1.99",
+          "familyShareable" : false,
+          "groupNumber" : 2,
+          "internalID" : "QERG1002",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Unlock unlimited logs, detailed statistics, reminders, and multiple drink profiles.",
+              "displayName" : "QuitERGY Premium Weekly",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "com.quitergy.premium.weekly",
+          "recurringSubscriptionPeriod" : "P1W",
+          "referenceName" : "QuitERGY Premium Weekly",
+          "subscriptionGroupID" : "21487501",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
+        }
+      ]
+    }
   ],
   "version" : {
     "major" : 2,

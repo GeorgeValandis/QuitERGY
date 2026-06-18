@@ -28,6 +28,7 @@ final class QuitERGYUITests: XCTestCase {
         app.launchEnvironment["UITEST_SKIP_ONBOARDING"] = "1"
         app.launchEnvironment["SHOW_ONBOARDING_LAYOUT_DEBUG"] = "0"
         app.launchEnvironment["UITEST_SHOW_PAYWALL_ON_LAUNCH"] = "1"
+        app.launchEnvironment["UITEST_BYPASS_PURCHASES"] = "1"
 
         addUIInterruptionMonitor(withDescription: "StoreKit purchase confirmation") { alert in
             let prioritizedButtons = [

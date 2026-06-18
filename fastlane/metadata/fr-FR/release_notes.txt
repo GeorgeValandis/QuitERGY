@@ -1,1 +1,3 @@
-Interface de l’app et métadonnées App Store localisées en français.
+QuitERGY Premium est maintenant disponible avec un abonnement hebdomadaire ou mensuel.
+
+Cette mise à jour retire l’offre à vie de la paywall et prépare l’app pour la nouvelle structure Premium.

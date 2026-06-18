@@ -1,1 +1,3 @@
-App-Oberfläche und App-Store-Metadaten für Deutsch lokalisiert.
+QuitERGY Premium ist jetzt als wöchentliches oder monatliches Abo verfügbar.
+
+Dieses Update entfernt das Lifetime-Angebot aus der Paywall und bereitet die App für die neue Premium-Planstruktur vor.

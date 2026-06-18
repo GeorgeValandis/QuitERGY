@@ -390,7 +390,7 @@ struct SettingsView: View {
                         .foregroundStyle(QuitERGYTheme.textPrimary)
                     Text(
                         purchaseManager.isPremiumUnlocked
-                            ? L10n.text("Lifetime premium is active.")
+                            ? L10n.text("Premium is active.")
                             : L10n.text("Track unlimited streaks, insights & more")
                     )
                         .font(.quitRounded(.medium, size: 14))

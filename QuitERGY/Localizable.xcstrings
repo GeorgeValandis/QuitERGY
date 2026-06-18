@@ -221,6 +221,72 @@
         }
       }
     },
+    "Auto-renews. Cancel anytime in App Store settings.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verlängert sich automatisch. Jederzeit in den App-Store-Einstellungen kündbar."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Se renueva automáticamente. Puedes cancelar cuando quieras en los ajustes del App Store."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Renouvellement automatique. Annulable à tout moment dans les réglages de l’App Store."
+          }
+        }
+      }
+    },
+    "BEST VALUE": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "BESTER WERT"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "MEJOR VALOR"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "MEILLEURE OFFRE"
+          }
+        }
+      }
+    },
+    "Best for steady progress": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ideal für kontinuierlichen Fortschritt"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ideal para progresar de forma constante"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Idéal pour progresser régulièrement"
+          }
+        }
+      }
+    },
     "%d drink less than last month": {
       "localizations": {
         "de": {
@@ -1629,6 +1695,28 @@
         }
       }
     },
+    "Flexible weekly access": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Flexibler Wochenzugang"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Acceso semanal flexible"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Accès hebdomadaire flexible"
+          }
+        }
+      }
+    },
     "Log it as your first entry": {
       "localizations": {
         "de": {
@@ -2707,6 +2795,28 @@
         }
       }
     },
+    "Monthly Premium": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Premium monatlich"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Premium mensual"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Premium mensuel"
+          }
+        }
+      }
+    },
     "Monthly savings": {
       "localizations": {
         "de": {
@@ -3341,6 +3451,28 @@
           "stringUnit": {
             "state": "translated",
             "value": "Premium actif"
+          }
+        }
+      }
+    },
+    "Premium is active.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Premium ist aktiv."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Premium está activo."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Premium est actif."
           }
         }
       }
@@ -4885,6 +5017,28 @@
         }
       }
     },
+    "Weekly Premium": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Premium wöchentlich"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Premium semanal"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Premium hebdomadaire"
+          }
+        }
+      }
+    },
     "Weekly baseline": {
       "localizations": {
         "de": {
@@ -5255,6 +5409,50 @@
           "stringUnit": {
             "state": "translated",
             "value": "Zéro boisson énergisante à partir de maintenant"
+          }
+        }
+      }
+    },
+    "per month": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "pro Monat"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "al mes"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "par mois"
+          }
+        }
+      }
+    },
+    "per week": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "pro Woche"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "a la semana"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "par semaine"
           }
         }
       }

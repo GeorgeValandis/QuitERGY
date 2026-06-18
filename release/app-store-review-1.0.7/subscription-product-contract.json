@@ -1,0 +1,92 @@
+{
+  "app": {
+    "name": "QuitERGY",
+    "appStoreName": "Drink Counter: QuitERGY",
+    "appStoreId": "6754967219",
+    "bundleId": "com.GA.QuitERGY",
+    "platform": "ios",
+    "version": "1.0.7",
+    "build": "24"
+  },
+  "businessDecision": {
+    "model": "weekly_monthly_subscriptions",
+    "removeLifetimeFromPaywall": true,
+    "recommendedDefaultPlan": "monthly",
+    "pricingRationale": "Habit tracking has repeated value, but QuitERGY is a lightweight utility without ongoing AI/backend unit cost. Monthly should be the primary conversion plan; weekly is a flexible higher-ARPU fallback."
+  },
+  "revenueCat": {
+    "project": "QuitERGY",
+    "offeringIdentifier": "default",
+    "entitlementIdentifier": "QuitERGYPremium",
+    "packages": [
+      {
+        "alias": "$rc_monthly",
+        "productId": "com.quitergy.premium.monthly",
+        "productType": "auto_renewable_subscription",
+        "period": "P1M",
+        "draftPriceUSD": "4.99",
+        "paywallDefault": true
+      },
+      {
+        "alias": "$rc_weekly",
+        "productId": "com.quitergy.premium.weekly",
+        "productType": "auto_renewable_subscription",
+        "period": "P1W",
+        "draftPriceUSD": "1.99",
+        "paywallDefault": false
+      }
+    ],
+    "legacyUnlockProductIds": [
+      "com.quitergy.premium.lifetime",
+      "quitergy_lifetime"
+    ]
+  },
+  "appStoreConnect": {
+    "subscriptionGroupReferenceName": "QuitERGY Premium",
+    "products": [
+      {
+        "referenceName": "QuitERGY Premium Monthly",
+        "productId": "com.quitergy.premium.monthly",
+        "displayName": "QuitERGY Premium Monthly",
+        "description": "Unlock unlimited logs, detailed statistics, reminders, and multiple drink profiles.",
+        "period": "P1M",
+        "draftPriceUSD": "4.99",
+        "requiredStatusBeforeSubmission": "Ready to Submit"
+      },
+      {
+        "referenceName": "QuitERGY Premium Weekly",
+        "productId": "com.quitergy.premium.weekly",
+        "displayName": "QuitERGY Premium Weekly",
+        "description": "Unlock unlimited logs, detailed statistics, reminders, and multiple drink profiles.",
+        "period": "P1W",
+        "draftPriceUSD": "1.99",
+        "requiredStatusBeforeSubmission": "Ready to Submit"
+      }
+    ],
+    "firstTimeSubscriptionReviewRequirement": "Attach both subscriptions to app version 1.0.7 before submitting for review if App Store Connect requires first-time IAP review."
+  },
+  "localImplementation": {
+    "purchaseCode": "QuitERGY/Paywall/PaywallView.swift",
+    "storeKitConfiguration": "QuitERGY.storekit",
+    "fastlaneSubmitLaneVersion": "1.0.7",
+    "archivePath": "build/QuitERGY-1.0.7-24.xcarchive",
+    "exportedIpaPath": "build/export-1.0.7-24/QuitERGY.ipa",
+    "paywallOfferedPlans": [
+      "$rc_monthly",
+      "$rc_weekly"
+    ],
+    "legacyLifetimeBehavior": "No longer offered. Existing lifetime purchases still unlock Premium if RevenueCat reports the legacy product identifier."
+  },
+  "verificationGates": {
+    "localBuild": "passed_xcodebuild_build_run_sim_2026-06-18",
+    "unitTests": "passed_xcodebuild_QuitERGYTests_2026-06-18",
+    "paywallUiTest": "passed_xcodebuild_QuitERGYUITests_testExample_with_test_purchase_bypass_2026-06-18",
+    "archive": "passed_build/QuitERGY-1.0.7-24.xcarchive",
+    "ipaExport": "passed_build/export-1.0.7-24/QuitERGY.ipa",
+    "exportedIpaSigning": "passed_iPhone_Distribution_LPPZFWPAN7",
+    "appStoreConnectProductsVerified": "pending_dashboard",
+    "revenueCatOfferingVerified": "pending_dashboard",
+    "testFlightSandboxPurchaseEvidence": "pending_real_device",
+    "appReviewSubmission": "pending"
+  }
+}
