@@ -28,6 +28,7 @@ The original `com.quitergy.premium.weekly` ASC product is not used because its o
 - App version `1.0.7` is already `READY_FOR_SALE`; build 24 must therefore ship as version `1.0.8`.
 - App version `1.0.8` is created in ASC as `PREPARE_FOR_SUBMISSION` (`8cdfd3f2-71f3-4d0a-803f-338492d588b8`) with manual release.
 - Build `24` is uploaded, processed as `VALID`, `APP_STORE_ELIGIBLE`, and attached to version `1.0.8` (`79695de0-89b8-4090-bccf-016ea4263c43`).
+- Internal TestFlight group `QuitERGY Internal Review Test 1.0.8` is created and linked to build `24` (`48ee200b-ef02-4576-bcb6-cb72cf06a07b`).
 - en-US release notes and App Review notes are updated for weekly/monthly subscriptions.
 - Subscription group: `Premium Access` (`21880624`).
 - Weekly v2 subscription: `6781658331`, product ID `com.quitergy.premium.weekly.v2`, price USA `$1.99`, state `READY_TO_SUBMIT`.
@@ -60,6 +61,7 @@ Purchases and restores are handled through Apple In-App Purchase and RevenueCat 
 - Done: validate IPA with `altool`.
 - Done: upload build `24` to App Store Connect.
 - Done: attach build `24` to ASC version `1.0.8`.
+- Done: create internal TestFlight group for build `24`.
 - Done: configure RevenueCat offering `Default`.
 - Done: upload subscription App Review screenshot for both new subscriptions.
 - Blocked: run real-device TestFlight Sandbox purchase for monthly, weekly, and restore, then document the result.

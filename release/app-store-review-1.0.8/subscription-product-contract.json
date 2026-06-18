@@ -47,6 +47,7 @@
   "appStoreConnect": {
     "appStoreVersionId": "8cdfd3f2-71f3-4d0a-803f-338492d588b8",
     "buildId": "79695de0-89b8-4090-bccf-016ea4263c43",
+    "internalTestFlightGroupId": "48ee200b-ef02-4576-bcb6-cb72cf06a07b",
     "appVersionState": "PREPARE_FOR_SUBMISSION",
     "subscriptionGroupReferenceName": "Premium Access",
     "subscriptionGroupId": "21880624",
