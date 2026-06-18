@@ -123,7 +123,7 @@ struct OnboardingView: View {
                     }
                 }
             } else {
-                contentStack(includeSpacer: true)
+                compactContent
             }
         }
         .onAppear {
@@ -158,29 +158,29 @@ struct OnboardingView: View {
         }
     }
 
-    private func contentStack(includeSpacer: Bool) -> some View {
-        VStack(spacing: 28) {
-            headerSection
+    private var compactContent: some View {
+        ScrollView {
+            VStack(spacing: 24) {
+                headerSection
 
-            stepCard
+                stepCard
 
-            if includeSpacer {
-                Spacer(minLength: 0)
+                if showValidationHint, let message = validationMessage {
+                    Text(message)
+                        .font(.quitRounded(.medium, size: 14))
+                        .foregroundStyle(Color.red.opacity(0.85))
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .transition(.opacity)
+                }
+
+                footerControls
             }
-
-            if showValidationHint, let message = validationMessage {
-                Text(message)
-                    .font(.quitRounded(.medium, size: 14))
-                    .foregroundStyle(Color.red.opacity(0.85))
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .transition(.opacity)
-            }
-
-            footerControls
+            .padding(.horizontal, 24)
+            .padding(.top, 28)
+            .padding(.bottom, 30)
+            .frame(maxWidth: .infinity, alignment: .top)
         }
-        .padding(.horizontal, 24)
-        .padding(.top, 36)
-        .padding(.bottom, 30)
+        .scrollIndicators(.hidden)
     }
 
     private var stepCard: some View {
