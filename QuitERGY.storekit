@@ -64,9 +64,9 @@
               "locale" : "en_US"
             }
           ],
-          "productID" : "com.quitergy.premium.weekly",
+          "productID" : "com.quitergy.premium.weekly.v2",
           "recurringSubscriptionPeriod" : "P1W",
-          "referenceName" : "QuitERGY Premium Weekly",
+          "referenceName" : "QuitERGY Weekly v2",
           "subscriptionGroupID" : "21487501",
           "type" : "RecurringSubscription",
           "winbackOffers" : [

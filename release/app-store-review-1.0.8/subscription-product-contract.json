@@ -1,0 +1,95 @@
+{
+  "app": {
+    "name": "QuitERGY",
+    "appStoreName": "Drink Counter: QuitERGY",
+    "appStoreId": "6754967219",
+    "bundleId": "com.GA.QuitERGY",
+    "platform": "ios",
+    "version": "1.0.8",
+    "build": "24"
+  },
+  "businessDecision": {
+    "model": "weekly_monthly_subscriptions",
+    "removeLifetimeFromPaywall": true,
+    "recommendedDefaultPlan": "monthly"
+  },
+  "revenueCat": {
+    "project": "QuitERGY",
+    "projectId": "66808b7f",
+    "offeringIdentifier": "Default",
+    "entitlementIdentifier": "Premium",
+    "packages": [
+      {
+        "alias": "$rc_monthly",
+        "productId": "com.quitergy.premium.monthly",
+        "productType": "auto_renewable_subscription",
+        "period": "P1M",
+        "draftPriceUSD": "4.99",
+        "paywallDefault": true
+      },
+      {
+        "alias": "$rc_weekly",
+        "productId": "com.quitergy.premium.weekly.v2",
+        "productType": "auto_renewable_subscription",
+        "period": "P1W",
+        "draftPriceUSD": "1.99",
+        "paywallDefault": false
+      }
+    ],
+    "legacyUnlockProductIds": [
+      "com.quitergy.premium.lifetime",
+      "quitergy_lifetime"
+    ],
+    "unusedBlockedProductIds": [
+      "com.quitergy.premium.weekly"
+    ]
+  },
+  "appStoreConnect": {
+    "appStoreVersionId": "8cdfd3f2-71f3-4d0a-803f-338492d588b8",
+    "buildId": "79695de0-89b8-4090-bccf-016ea4263c43",
+    "appVersionState": "PREPARE_FOR_SUBMISSION",
+    "subscriptionGroupReferenceName": "Premium Access",
+    "subscriptionGroupId": "21880624",
+    "products": [
+      {
+        "ascId": "6781659490",
+        "referenceName": "QuitERGY Monthly",
+        "productId": "com.quitergy.premium.monthly",
+        "displayName": "QuitERGY Premium Monthly",
+        "description": "Unlock logs, stats, reminders, and profiles.",
+        "period": "P1M",
+        "draftPriceUSD": "4.99",
+        "requiredStatusBeforeSubmission": "Ready to Submit"
+      },
+      {
+        "ascId": "6781658331",
+        "referenceName": "QuitERGY Weekly v2",
+        "productId": "com.quitergy.premium.weekly.v2",
+        "displayName": "QuitERGY Premium Weekly",
+        "description": "Unlock logs, stats, reminders, and profiles.",
+        "period": "P1W",
+        "draftPriceUSD": "1.99",
+        "requiredStatusBeforeSubmission": "Ready to Submit"
+      }
+    ]
+  },
+  "localImplementation": {
+    "purchaseCode": "QuitERGY/Paywall/PaywallView.swift",
+    "storeKitConfiguration": "QuitERGY.storekit",
+    "fastlaneSubmitLaneVersion": "1.0.8",
+    "archivePath": "build/QuitERGY-1.0.8-24.xcarchive",
+    "exportedIpaPath": "build/export-1.0.8-24/QuitERGY.ipa",
+    "paywallOfferedPlans": [
+      "$rc_monthly",
+      "$rc_weekly"
+    ]
+  },
+  "verificationGates": {
+    "appStoreConnectProductsVerified": "ready_to_submit",
+    "revenueCatOfferingVerified": "configured",
+    "ipaValidation": "passed",
+    "buildUpload": "uploaded_and_attached_to_1.0.8",
+    "testFlightSandboxPurchaseEvidence": "pending_real_device",
+    "appReviewSubmission": "blocked_until_real_device_purchase_restore_evidence"
+  }
+}

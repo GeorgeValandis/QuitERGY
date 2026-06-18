@@ -14,16 +14,16 @@ enum QuitERGYRevenueCat {
         return "appl_vUTgbYmXfbNOEkfgLkuMUdAsKTm"
     }
 
-    static let offeringIdentifier: String = "default"
+    static let offeringIdentifier: String = "Default"
     static let packageIdWeekly: String = "$rc_weekly"
     static let packageIdMonthly: String = "$rc_monthly"
 
-    static let productIdWeekly: String = "com.quitergy.premium.weekly"
+    static let productIdWeekly: String = "com.quitergy.premium.weekly.v2"
     static let productIdMonthly: String = "com.quitergy.premium.monthly"
     static let productIdLifetime: String = "com.quitergy.premium.lifetime"
     static let legacyProductIdLifetime: String = "quitergy_lifetime"
 
-    static let entitlementPremium: String = "QuitERGYPremium"
+    static let entitlementPremium: String = "Premium"
 }
 
 enum QuitERGYLegalLinks {
