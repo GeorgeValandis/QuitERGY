@@ -6,7 +6,7 @@
     "bundleId": "com.GA.QuitERGY",
     "platform": "ios",
     "version": "1.0.8",
-    "build": "24"
+    "build": "25"
   },
   "businessDecision": {
     "model": "weekly_monthly_subscriptions",
@@ -46,9 +46,9 @@
   },
   "appStoreConnect": {
     "appStoreVersionId": "8cdfd3f2-71f3-4d0a-803f-338492d588b8",
-    "buildId": "79695de0-89b8-4090-bccf-016ea4263c43",
+    "buildId": "f63a7bef-558d-4faa-ae0d-9a6a1d177695",
     "internalTestFlightGroupId": "48ee200b-ef02-4576-bcb6-cb72cf06a07b",
-    "appVersionState": "PREPARE_FOR_SUBMISSION",
+    "appVersionState": "WAITING_FOR_REVIEW",
     "subscriptionGroupReferenceName": "Premium Access",
     "subscriptionGroupId": "21880624",
     "products": [
@@ -60,7 +60,9 @@
         "description": "Unlock logs, stats, reminders, and profiles.",
         "period": "P1M",
         "draftPriceUSD": "4.99",
-        "requiredStatusBeforeSubmission": "Ready to Submit"
+        "requiredStatusBeforeSubmission": "Ready to Submit",
+        "submissionId": "bd479e4f-10b0-4594-8273-0692198ea6bb",
+        "verifiedStatusAfterSubmission": "WAITING_FOR_REVIEW"
       },
       {
         "ascId": "6781658331",
@@ -70,7 +72,9 @@
         "description": "Unlock logs, stats, reminders, and profiles.",
         "period": "P1W",
         "draftPriceUSD": "1.99",
-        "requiredStatusBeforeSubmission": "Ready to Submit"
+        "requiredStatusBeforeSubmission": "Ready to Submit",
+        "submissionId": "54c42f54-08da-47aa-997e-cd197de7487c",
+        "verifiedStatusAfterSubmission": "WAITING_FOR_REVIEW"
       }
     ]
   },
@@ -78,8 +82,8 @@
     "purchaseCode": "QuitERGY/Paywall/PaywallView.swift",
     "storeKitConfiguration": "QuitERGY.storekit",
     "fastlaneSubmitLaneVersion": "1.0.8",
-    "archivePath": "build/QuitERGY-1.0.8-24.xcarchive",
-    "exportedIpaPath": "build/export-1.0.8-24/QuitERGY.ipa",
+    "archivePath": "build/QuitERGY-1.0.8-25.xcarchive",
+    "exportedIpaPath": "build/export-1.0.8-25/QuitERGY.ipa",
     "paywallOfferedPlans": [
       "$rc_monthly",
       "$rc_weekly"
@@ -89,8 +93,8 @@
     "appStoreConnectProductsVerified": "ready_to_submit",
     "revenueCatOfferingVerified": "configured",
     "ipaValidation": "passed",
-    "buildUpload": "uploaded_and_attached_to_1.0.8",
-    "testFlightSandboxPurchaseEvidence": "pending_real_device",
-    "appReviewSubmission": "blocked_until_real_device_purchase_restore_evidence"
+    "buildUpload": "build_25_uploaded_valid_and_attached_to_1.0.8",
+    "testFlightSandboxPurchaseEvidence": "not_completed_for_build_25_before_submission",
+    "appReviewSubmission": "submitted_waiting_for_review_with_purchase_restore_risk_accepted"
   }
 }

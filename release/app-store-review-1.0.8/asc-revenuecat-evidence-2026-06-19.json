@@ -1,0 +1,92 @@
+{
+  "capturedAt": "2026-06-19T08:57:00+02:00",
+  "status": "submitted_for_review_with_purchase_restore_risk_accepted",
+  "appStoreConnect": {
+    "appStoreId": "6754967219",
+    "bundleId": "com.GA.QuitERGY",
+    "version": "1.0.8",
+    "appStoreVersionId": "8cdfd3f2-71f3-4d0a-803f-338492d588b8",
+    "appVersionState": "WAITING_FOR_REVIEW",
+    "releaseType": "MANUAL",
+    "attachedBuild": {
+      "id": "f63a7bef-558d-4faa-ae0d-9a6a1d177695",
+      "buildNumber": "25",
+      "processingState": "VALID",
+      "usesNonExemptEncryption": false,
+      "uploadedDate": "2026-06-18T23:54:04-07:00"
+    },
+    "previousBuild": {
+      "id": "79695de0-89b8-4090-bccf-016ea4263c43",
+      "buildNumber": "24",
+      "processingState": "VALID"
+    },
+    "internalTestFlightGroup": {
+      "id": "48ee200b-ef02-4576-bcb6-cb72cf06a07b",
+      "name": "QuitERGY Internal Review Test 1.0.8",
+      "linkedBuilds": ["25", "24"]
+    },
+    "subscriptions": [
+      {
+        "id": "6781659490",
+        "productId": "com.quitergy.premium.monthly",
+        "state": "WAITING_FOR_REVIEW",
+        "submissionId": "bd479e4f-10b0-4594-8273-0692198ea6bb",
+        "priceUSD": "4.99",
+        "reviewScreenshotPresent": true,
+        "localizationCount": 1
+      },
+      {
+        "id": "6781658331",
+        "productId": "com.quitergy.premium.weekly.v2",
+        "state": "WAITING_FOR_REVIEW",
+        "submissionId": "54c42f54-08da-47aa-997e-cd197de7487c",
+        "priceUSD": "1.99",
+        "reviewScreenshotPresent": true,
+        "localizationCount": 1
+      }
+    ]
+  },
+  "revenueCat": {
+    "projectId": "66808b7f",
+    "projectName": "QuitERGY",
+    "entitlementIdentifier": "Premium",
+    "offering": {
+      "id": "ofrnga8c48941a8",
+      "identifier": "Default",
+      "isCurrent": true,
+      "packages": [
+        {
+          "identifier": "$rc_monthly",
+          "productId": "com.quitergy.premium.monthly",
+          "productIdInEntitlement": "Premium"
+        },
+        {
+          "identifier": "$rc_weekly",
+          "productId": "com.quitergy.premium.weekly.v2",
+          "productIdInEntitlement": "Premium"
+        }
+      ]
+    },
+    "offeringExcludesLifetime": true
+  },
+  "localBuild": {
+    "archivePath": "build/QuitERGY-1.0.8-25.xcarchive",
+    "exportedIpaPath": "build/export-1.0.8-25/QuitERGY.ipa",
+    "ipaSha256": "7765b0bc3234c7619a4a2ac1f76feabc17c2ef95b6d5901b788a4cb5ced6da38",
+    "ipaValidation": "passed",
+    "upload": {
+      "status": "succeeded",
+      "deliveryUuid": "f63a7bef-558d-4faa-ae0d-9a6a1d177695"
+    },
+    "appReviewSubmission": {
+      "status": "succeeded",
+      "submittedAt": "2026-06-19T08:59:22+02:00",
+      "resultingAppVersionState": "WAITING_FOR_REVIEW"
+    }
+  },
+  "remainingGate": {
+    "name": "real_device_testflight_sandbox_purchase_restore",
+    "status": "not_completed_for_build_25_before_submission",
+    "note": "Build 24 was installed on a physical device and loaded the correct RevenueCat offering, but monthly purchase, weekly purchase, and restore were not successfully completed before build 25 upload."
+  }
+}

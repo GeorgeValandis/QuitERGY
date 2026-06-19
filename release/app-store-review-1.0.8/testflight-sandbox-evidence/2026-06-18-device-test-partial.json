@@ -1,0 +1,85 @@
+{
+  "status": "partial_blocked",
+  "environment": "real iPhone via TestFlight invite flow",
+  "testedAt": "2026-06-18T21:05:33+02:00",
+  "device": {
+    "model": "iPhone 17 Pro Max",
+    "osVersion": "26.5.1",
+    "identifier": "00008150-001535582638401C"
+  },
+  "app": {
+    "bundleId": "com.GA.QuitERGY",
+    "version": "1.0.8",
+    "build": "24",
+    "installedBuildVerifiedAt": "2026-06-18T20:57:12+02:00"
+  },
+  "testflight": {
+    "group": "QuitERGY Internal Review Test 1.0.8",
+    "groupId": "48ee200b-ef02-4576-bcb6-cb72cf06a07b",
+    "buildId": "79695de0-89b8-4090-bccf-016ea4263c43",
+    "testerState": "invited_or_recently_redeemed",
+    "notes": "Build 24 became installed on the physical device during the TestFlight invite/redeem flow. App Store Connect beta tester appDevices/builds had not yet reflected usage at the time of capture."
+  },
+  "revenueCat": {
+    "offeringId": "Default",
+    "packagesLoadedInAppCache": [
+      {
+        "packageId": "$rc_monthly",
+        "productId": "com.quitergy.premium.monthly"
+      },
+      {
+        "packageId": "$rc_weekly",
+        "productId": "com.quitergy.premium.weekly.v2"
+      }
+    ],
+    "premiumEntitlementMappingVerified": true,
+    "appUserIdSuffix": "883f10ca",
+    "customerInfoLastUpdated": "2026-06-18T19:01:37Z",
+    "activePremiumPurchaseObserved": false,
+    "observedSubscriptions": [
+      {
+        "productId": "com.quitergy.premium.yearly",
+        "expiresDate": "2026-02-06T05:28:49Z",
+        "state": "expired_legacy_test_purchase"
+      }
+    ]
+  },
+  "checks": [
+    {
+      "name": "physical_device_unlocked_and_reachable",
+      "result": "passed"
+    },
+    {
+      "name": "build_24_installed_on_device",
+      "result": "passed"
+    },
+    {
+      "name": "revenuecat_offering_loaded_monthly_weekly",
+      "result": "passed"
+    },
+    {
+      "name": "premium_entitlement_mapping_loaded",
+      "result": "passed"
+    },
+    {
+      "name": "monthly_sandbox_purchase",
+      "result": "blocked",
+      "reason": "Apple purchase confirmation must be completed on the physical iPhone; no active monthly subscription appeared in RevenueCat cache through 2026-06-18T21:05:33+02:00."
+    },
+    {
+      "name": "weekly_sandbox_purchase",
+      "result": "blocked",
+      "reason": "Apple purchase confirmation must be completed on the physical iPhone; no active weekly.v2 subscription appeared in RevenueCat cache through 2026-06-18T21:05:33+02:00."
+    },
+    {
+      "name": "restore_purchases",
+      "result": "blocked",
+      "reason": "No successful sandbox purchase was observed, so restore could not be validated."
+    },
+    {
+      "name": "app_review_submission",
+      "result": "not_submitted",
+      "reason": "Submission gate requires real-device sandbox purchase/restore evidence."
+    }
+  ]
+}

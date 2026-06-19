@@ -1,8 +1,8 @@
 # QuitERGY App Review Prep 1.0.8
 
-Date: 2026-06-18
+Date: 2026-06-19
 Version: 1.0.8
-Build: 24
+Build: 25
 Bundle ID: `com.GA.QuitERGY`
 App Store ID: `6754967219`
 
@@ -25,14 +25,15 @@ The original `com.quitergy.premium.weekly` ASC product is not used because its o
 
 ## ASC State
 
-- App version `1.0.7` is already `READY_FOR_SALE`; build 24 must therefore ship as version `1.0.8`.
-- App version `1.0.8` is created in ASC as `PREPARE_FOR_SUBMISSION` (`8cdfd3f2-71f3-4d0a-803f-338492d588b8`) with manual release.
-- Build `24` is uploaded, processed as `VALID`, `APP_STORE_ELIGIBLE`, and attached to version `1.0.8` (`79695de0-89b8-4090-bccf-016ea4263c43`).
-- Internal TestFlight group `QuitERGY Internal Review Test 1.0.8` is created and linked to build `24` (`48ee200b-ef02-4576-bcb6-cb72cf06a07b`).
+- App version `1.0.7` is already `READY_FOR_SALE`; the subscription-change build must therefore ship as version `1.0.8`.
+- App version `1.0.8` is submitted and `WAITING_FOR_REVIEW` (`8cdfd3f2-71f3-4d0a-803f-338492d588b8`) with manual release.
+- Build `25` is uploaded, processed as `VALID`, and attached to version `1.0.8` (`f63a7bef-558d-4faa-ae0d-9a6a1d177695`). See `asc-revenuecat-evidence-2026-06-19.json`.
+- Build `24` remains uploaded and valid as the previous 1.0.8 candidate (`79695de0-89b8-4090-bccf-016ea4263c43`).
+- Internal TestFlight group `QuitERGY Internal Review Test 1.0.8` is created and linked to builds `25` and `24` (`48ee200b-ef02-4576-bcb6-cb72cf06a07b`).
 - en-US release notes and App Review notes are updated for weekly/monthly subscriptions.
 - Subscription group: `Premium Access` (`21880624`).
-- Weekly v2 subscription: `6781658331`, product ID `com.quitergy.premium.weekly.v2`, price USA `$1.99`, state `READY_TO_SUBMIT`.
-- Monthly subscription: `6781659490`, product ID `com.quitergy.premium.monthly`, price USA `$4.99`, state `READY_TO_SUBMIT`.
+- Weekly v2 subscription: `6781658331`, product ID `com.quitergy.premium.weekly.v2`, price USA `$1.99`, state `WAITING_FOR_REVIEW`, submission `54c42f54-08da-47aa-997e-cd197de7487c`.
+- Monthly subscription: `6781659490`, product ID `com.quitergy.premium.monthly`, price USA `$4.99`, state `WAITING_FOR_REVIEW`, submission `bd479e4f-10b0-4594-8273-0692198ea6bb`.
 - Both new subscriptions have en-US localization, global equalized price points, global availability, review notes, and App Review screenshots configured.
 
 ## RevenueCat State
@@ -42,6 +43,7 @@ The original `com.quitergy.premium.weekly` ASC product is not used because its o
 - Package `$rc_monthly` points to `com.quitergy.premium.monthly`.
 - Package `$rc_weekly` points to `com.quitergy.premium.weekly.v2`.
 - `$rc_lifetime` is removed from the offering. Existing lifetime product IDs remain attached to `Premium` for legacy unlocks.
+- Live RevenueCat verification on 2026-06-19 confirmed the current offering contains only `$rc_monthly` and `$rc_weekly` for the App Store app.
 
 ## App Review Notes
 
@@ -57,12 +59,14 @@ Purchases and restores are handled through Apple In-App Purchase and RevenueCat 
 
 ## Submission Gates
 
-- Done: archive and export version `1.0.8` build `24`.
-- Done: validate IPA with `altool`.
-- Done: upload build `24` to App Store Connect.
-- Done: attach build `24` to ASC version `1.0.8`.
-- Done: create internal TestFlight group for build `24`.
+- Done: archive and export version `1.0.8` build `25`.
+- Done: validate build `25` IPA with `altool`.
+- Done: upload build `25` to App Store Connect.
+- Done: attach build `25` to ASC version `1.0.8`.
+- Done: create internal TestFlight group and link build `25`.
 - Done: configure RevenueCat offering `Default`.
 - Done: upload subscription App Review screenshot for both new subscriptions.
-- Blocked: run real-device TestFlight Sandbox purchase for monthly, weekly, and restore, then document the result.
-- Pending after real-device evidence: submit app version `1.0.8` and both first-time subscriptions for App Review.
+- Done: submit app version `1.0.8` with build `25` for App Review.
+- Done: submit Monthly and Weekly v2 first-time subscriptions for App Review.
+- Partial: build `24` was installed on a physical iPhone 17 Pro Max through the TestFlight invite/redeem flow, and the app loaded the RevenueCat `Default` offering with `$rc_monthly` and `$rc_weekly` mapped to `Premium`. See `testflight-sandbox-evidence/2026-06-18-device-test-partial.json`.
+- Risk accepted for this submission: real-device TestFlight Sandbox purchase for monthly, weekly, and restore was not successfully completed for build `25` before submission.
