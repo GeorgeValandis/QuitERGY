@@ -57,6 +57,7 @@ The original `com.quitergy.premium.weekly` ASC product is not used because its o
 - New subscription review submissions were created through the ASC API: monthly `e4caefc5-247e-4ea6-b46c-0f1583162ff9`, weekly `34804a96-a555-4f76-ac8f-44d2e3017c7e`.
 - Local app hardening now loads the explicit `Default` offering, hides unavailable packages, removes the direct product fallback, records RevenueCat cancellation separately from technical purchase failure, and shows functional EULA/Privacy links directly in the Paywall purchase area.
 - Simulator evidence for the legal-link fix is saved as `paywall-legal-links-simulator-2026-06-24.jpg`.
+- ASC cleanup on 2026-06-24 cleared purchase history for the only sandbox tester and deleted redundant subscriptions `com.quitergy.premium.weekly` and `com.quitergy.premium.yearly`. A follow-up ASC API check confirmed the subscription group now contains only `com.quitergy.premium.monthly` and `com.quitergy.premium.weekly.v2`.
 
 ## App Review Notes
 

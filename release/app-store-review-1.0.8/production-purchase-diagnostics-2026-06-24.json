@@ -11,6 +11,37 @@
       "privacyPolicy": "HTTP/2 200 text/html"
     }
   },
+  "appStoreConnectCleanup": {
+    "checkedAt": "2026-06-24T17:07:12+02:00",
+    "sandboxPurchaseHistoryCleared": {
+      "sandboxTesterId": "c65b9e77-ac06-40b7-b3f8-419242f2c051",
+      "requestId": "23f0ea9c-1027-47bb-8e5e-2e5d1fa67f4f",
+      "statusCode": 201
+    },
+    "deletedRedundantSubscriptions": [
+      {
+        "id": "6757428384",
+        "productId": "com.quitergy.premium.weekly",
+        "statusCode": 204
+      },
+      {
+        "id": "6757428698",
+        "productId": "com.quitergy.premium.yearly",
+        "statusCode": 204
+      }
+    ],
+    "remainingSubscriptions": [
+      {
+        "id": "6781659490",
+        "productId": "com.quitergy.premium.monthly"
+      },
+      {
+        "id": "6781658331",
+        "productId": "com.quitergy.premium.weekly.v2"
+      }
+    ],
+    "deviceResetForRetest": "com.GA.QuitERGY was uninstalled, reinstalled, and launched on the physical iPhone 17 Pro Max after clearing sandbox purchase history."
+  },
   "appStoreConnect": {
     "app": {
       "bundleId": "com.GA.QuitERGY",
