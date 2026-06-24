@@ -1,0 +1,101 @@
+{
+  "app": {
+    "name": "QuitERGY",
+    "appStoreName": "Drink Counter: QuitERGY",
+    "appStoreId": "6754967219",
+    "bundleId": "com.GA.QuitERGY",
+    "platform": "ios",
+    "version": "1.0.9",
+    "build": "26"
+  },
+  "businessDecision": {
+    "model": "weekly_monthly_subscriptions",
+    "removeLifetimeFromPaywall": true,
+    "recommendedDefaultPlan": "monthly",
+    "notificationPolicy": "free_every_2_days_premium_daily"
+  },
+  "revenueCat": {
+    "project": "QuitERGY",
+    "projectId": "66808b7f",
+    "offeringIdentifier": "Default",
+    "entitlementIdentifier": "Premium",
+    "packages": [
+      {
+        "alias": "$rc_monthly",
+        "productId": "com.quitergy.premium.monthly",
+        "productType": "auto_renewable_subscription",
+        "period": "P1M",
+        "draftPriceUSD": "4.99",
+        "paywallDefault": true
+      },
+      {
+        "alias": "$rc_weekly",
+        "productId": "com.quitergy.premium.weekly.v2",
+        "productType": "auto_renewable_subscription",
+        "period": "P1W",
+        "draftPriceUSD": "1.99",
+        "paywallDefault": false
+      }
+    ],
+    "legacyUnlockProductIds": [
+      "com.quitergy.premium.lifetime",
+      "quitergy_lifetime"
+    ],
+    "unusedBlockedProductIds": [
+      "com.quitergy.premium.weekly"
+    ]
+  },
+  "appStoreConnect": {
+    "appStoreVersionId": "206a4c83-c457-4454-ae15-c532650e8fcc",
+    "buildId": "84a2c273-ded9-4cfd-9fa6-7528c7e193a7",
+    "appVersionStateAfterSubmission": "WAITING_FOR_REVIEW",
+    "subscriptionGroupReferenceName": "Premium Access",
+    "subscriptionGroupId": "21880624",
+    "products": [
+      {
+        "ascId": "6781659490",
+        "referenceName": "QuitERGY Monthly",
+        "productId": "com.quitergy.premium.monthly",
+        "displayName": "QuitERGY Premium Monthly",
+        "description": "Unlock unlimited logs, detailed statistics, daily check-ins, and multiple drink profiles.",
+        "period": "P1M",
+        "draftPriceUSD": "4.99",
+        "currentStatus": "DEVELOPER_ACTION_NEEDED",
+        "submissionId": "e6f2bd15-7677-40a7-9dd9-cfb94b7453e4"
+      },
+      {
+        "ascId": "6781658331",
+        "referenceName": "QuitERGY Weekly",
+        "productId": "com.quitergy.premium.weekly.v2",
+        "displayName": "QuitERGY Premium Weekly",
+        "description": "Unlock unlimited logs, detailed statistics, daily check-ins, and multiple drink profiles.",
+        "period": "P1W",
+        "draftPriceUSD": "1.99",
+        "currentStatus": "DEVELOPER_ACTION_NEEDED",
+        "submissionId": "2e9cb904-50e9-4d7e-b7c8-64da6795325f"
+      }
+    ]
+  },
+  "localImplementation": {
+    "purchaseCode": "QuitERGY/Paywall/PaywallView.swift",
+    "storeKitConfiguration": "QuitERGY.storekit",
+    "fastlaneSubmitLaneVersion": "1.0.9",
+    "archivePath": "build/QuitERGY-1.0.9-26.xcarchive",
+    "exportedIpaPath": "build/export-1.0.9-26/QuitERGY.ipa",
+    "paywallOfferedPlans": [
+      "$rc_monthly",
+      "$rc_weekly"
+    ],
+    "visibleLegalLinks": [
+      "Paywall footer: Terms of Use (EULA), Privacy Policy",
+      "Settings > Legal: Terms of Use (EULA), Privacy Policy"
+    ]
+  },
+  "verificationGates": {
+    "appStoreConnectProductsVerified": "developer_action_needed_on_2026-06-24",
+    "legalUrlReachability": "passed_http_200_on_2026-06-24",
+    "buildUpload": "uploaded_valid",
+    "appReviewSubmission": "submitted_waiting_for_review",
+    "subscriptionSubmissions": "created_but_product_state_readback_still_developer_action_needed"
+  }
+}
