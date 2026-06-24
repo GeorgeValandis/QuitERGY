@@ -15,6 +15,7 @@ enum QuitERGYRevenueCat {
     }
 
     static let offeringIdentifier: String = "Default"
+    static let legacyOfferingIdentifier: String = "default"
     static let packageIdWeekly: String = "$rc_weekly"
     static let packageIdMonthly: String = "$rc_monthly"
 
@@ -24,6 +25,21 @@ enum QuitERGYRevenueCat {
     static let legacyProductIdLifetime: String = "quitergy_lifetime"
 
     static let entitlementPremium: String = "Premium"
+
+    static let offeringLookupOrder: [String] = [
+        offeringIdentifier,
+        legacyOfferingIdentifier
+    ]
+
+    static let supportedPackageIds: [String] = [
+        packageIdMonthly,
+        packageIdWeekly
+    ]
+}
+
+enum QuitERGYPurchaseResult {
+    case completed
+    case cancelled
 }
 
 enum QuitERGYLegalLinks {
@@ -481,7 +497,18 @@ struct PlanSelectionSection: View {
         }
     }
 
+    private var availablePurchasePlans: [PremiumPlan] {
+        if purchaseManager.isUsingUITestPurchaseBypass {
+            return PremiumPlan.allCases
+        }
+        return PremiumPlan.allCases.filter { package(for: $0) != nil }
+    }
+
     var body: some View {
+        let visiblePlans = availablePurchasePlans
+        let selectedPackage = package(for: selectedPlan)
+        let canPurchaseSelectedPlan = selectedPackage != nil || purchaseManager.isUsingUITestPurchaseBypass
+
         VStack(spacing: scaledValue(16, minimum: 12, maximum: 20)) {
             if purchaseManager.isPremiumUnlocked {
                 HStack(spacing: 10) {
@@ -501,9 +528,11 @@ struct PlanSelectionSection: View {
             } else if isLoading {
                 ProgressView("Loading offer...")
                     .foregroundStyle(QuitERGYTheme.textSecondary)
+            } else if visiblePlans.isEmpty {
+                EmptyView()
             } else {
                 VStack(spacing: scaledValue(10, minimum: 8, maximum: 12)) {
-                    ForEach(PremiumPlan.allCases) { plan in
+                    ForEach(visiblePlans) { plan in
                         planOfferCard(plan)
                     }
                 }
@@ -514,6 +543,10 @@ struct PlanSelectionSection: View {
                 .foregroundStyle(QuitERGYTheme.textSecondary)
                 .multilineTextAlignment(.leading)
                 .frame(maxWidth: .infinity, alignment: .leading)
+                .opacity(purchaseManager.isPremiumUnlocked || visiblePlans.isEmpty ? 0 : 1)
+                .accessibilityHidden(purchaseManager.isPremiumUnlocked || visiblePlans.isEmpty)
+
+            legalPurchaseLinks
                 .opacity(purchaseManager.isPremiumUnlocked ? 0 : 1)
                 .accessibilityHidden(purchaseManager.isPremiumUnlocked)
 
@@ -550,7 +583,7 @@ struct PlanSelectionSection: View {
                 )
                 .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
             }
-            .disabled(isProcessing || isLoading || purchaseManager.isPremiumUnlocked)
+            .disabled(isProcessing || isLoading || visiblePlans.isEmpty || !canPurchaseSelectedPlan || purchaseManager.isPremiumUnlocked)
 
             if let loadError {
                 VStack(alignment: .leading, spacing: 6) {
@@ -643,19 +676,57 @@ struct PlanSelectionSection: View {
         QuitERGYPaywallBrand.surface.opacity(0.95)
     }
 
+    private var legalPurchaseLinks: some View {
+        ViewThatFits(in: .horizontal) {
+            HStack(spacing: scaledValue(16, minimum: 12, maximum: 20)) {
+                purchaseLegalLink(title: "Terms of Use (EULA)", systemImage: "doc.text.fill", url: QuitERGYLegalLinks.termsOfUse)
+                purchaseLegalLink(title: "Privacy Policy", systemImage: "hand.raised.fill", url: QuitERGYLegalLinks.privacyPolicy)
+            }
+
+            VStack(alignment: .leading, spacing: scaledValue(6, minimum: 4, maximum: 8)) {
+                purchaseLegalLink(title: "Terms of Use (EULA)", systemImage: "doc.text.fill", url: QuitERGYLegalLinks.termsOfUse)
+                purchaseLegalLink(title: "Privacy Policy", systemImage: "hand.raised.fill", url: QuitERGYLegalLinks.privacyPolicy)
+            }
+        }
+        .font(.quitRounded(.semibold, size: scaledValue(13, minimum: 12, maximum: 15)))
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    private func purchaseLegalLink(title: String, systemImage: String, url: URL) -> some View {
+        Link(destination: url) {
+            HStack(spacing: 6) {
+                Image(systemName: systemImage)
+                    .font(.system(size: scaledValue(12, minimum: 11, maximum: 14), weight: .semibold))
+                Text(L10n.text(title))
+                    .underline()
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .foregroundStyle(planColor)
+        }
+        .accessibilityLabel(Text(L10n.text(title)))
+    }
+
     private func loadOfferings() async {
         isLoading = true
         loadError = nil
         let success = await purchaseManager.loadOfferings()
         isLoading = false
-        if !success || purchaseManager.packages.isEmpty {
+        let visiblePlans = availablePurchasePlans
+        if !success || visiblePlans.isEmpty {
             AppAnalytics.shared.track("offerings_load_failed", properties: [
+                "available_packages": loadedPackageSummary,
+                "offering": purchaseManager.loadedOfferingIdentifier ?? "missing",
                 "surface": "paywall"
             ])
             loadError = L10n.text("Could not load offers. Please check your connection.")
         } else {
+            if package(for: selectedPlan) == nil, let firstAvailablePlan = visiblePlans.first {
+                selectedPlan = firstAvailablePlan
+            }
             AppAnalytics.shared.track("offerings_loaded", properties: [
                 "package_count": "\(purchaseManager.packages.count)",
+                "available_packages": loadedPackageSummary,
+                "offering": purchaseManager.loadedOfferingIdentifier ?? "unknown",
                 "surface": "paywall"
             ])
         }
@@ -673,23 +744,39 @@ struct PlanSelectionSection: View {
         defer { isProcessing = false }
 
         do {
-            if let package = package(for: plan) {
-                try await purchaseManager.purchase(package: package)
-                await handlePostPurchase(plan: plan)
-            } else {
-                let _ = await purchaseManager.loadOfferings()
-                if let package = package(for: plan) {
-                    try await purchaseManager.purchase(package: package)
-                    await handlePostPurchase(plan: plan)
-                } else {
-                    AppAnalytics.shared.track("purchase_package_missing", properties: [
-                        "plan": plan.rawValue,
-                        "surface": "paywall"
-                    ])
-                    try await purchaseManager.purchase(productId: plan.productId)
-                    await handlePostPurchase(plan: plan)
-                }
+            if package(for: plan) == nil {
+                _ = await purchaseManager.loadOfferings()
             }
+
+            guard let package = package(for: plan) else {
+                if purchaseManager.isUsingUITestPurchaseBypass {
+                    _ = await purchaseManager.completePurchaseBypassForUITests()
+                    await handlePostPurchase(plan: plan)
+                    return
+                }
+
+                AppAnalytics.shared.track("purchase_package_missing", properties: [
+                    "available_packages": loadedPackageSummary,
+                    "expected_package": plan.packageId,
+                    "expected_product": plan.productId,
+                    "offering": purchaseManager.loadedOfferingIdentifier ?? "missing",
+                    "plan": plan.rawValue,
+                    "surface": "paywall"
+                ])
+                loadError = L10n.text("Could not load offers. Please check your connection.")
+                return
+            }
+
+            let result = try await purchaseManager.purchase(package: package)
+            guard result != .cancelled else {
+                AppAnalytics.shared.track("purchase_cancelled", properties: [
+                    "plan": plan.rawValue,
+                    "surface": "paywall"
+                ])
+                return
+            }
+
+            await handlePostPurchase(plan: plan)
         } catch {
             trackPurchaseException(error, plan: plan)
         }
@@ -745,6 +832,12 @@ struct PlanSelectionSection: View {
 
     private func isCancellationError(_ error: Error) -> Bool {
         error.localizedDescription.localizedCaseInsensitiveContains("cancel")
+    }
+
+    private var loadedPackageSummary: String {
+        purchaseManager.packages
+            .map { "\($0.identifier):\($0.storeProduct.productIdentifier)" }
+            .joined(separator: ",")
     }
 }
 
@@ -821,10 +914,15 @@ final class PurchaseManager: NSObject, ObservableObject, PurchasesDelegate {
     @Published private(set) var packages: [Package] = []
     @Published private(set) var customerInfo: CustomerInfo?
     @Published private(set) var isPremiumUnlocked: Bool = false
+    @Published private(set) var loadedOfferingIdentifier: String?
 
     private var hasPerformedInitialSync = false
     private var shouldBypassPurchasesForUITests: Bool {
         ProcessInfo.processInfo.environment["UITEST_BYPASS_PURCHASES"] == "1"
+    }
+
+    var isUsingUITestPurchaseBypass: Bool {
+        shouldBypassPurchasesForUITests
     }
 
     private override init() {
@@ -832,10 +930,11 @@ final class PurchaseManager: NSObject, ObservableObject, PurchasesDelegate {
         Purchases.shared.delegate = self
     }
 
-    static func configureIfNeeded(apiKey: String = QuitERGYRevenueCat.apiKey) {
-        guard !isSDKConfigured, !apiKey.isEmpty else { return }
-        let configuration = Configuration.Builder(withAPIKey: apiKey)
-            .with(usesStoreKit2IfAvailable: true)
+    static func configureIfNeeded(apiKey: String? = nil) {
+        let resolvedAPIKey = apiKey ?? QuitERGYRevenueCat.apiKey
+        guard !isSDKConfigured, !resolvedAPIKey.isEmpty else { return }
+        let configuration = Configuration.Builder(withAPIKey: resolvedAPIKey)
+            .with(storeKitVersion: .storeKit2)
             .build()
         Purchases.configure(with: configuration)
         Purchases.shared.delegate = shared
@@ -850,50 +949,54 @@ final class PurchaseManager: NSObject, ObservableObject, PurchasesDelegate {
     }
 
     func loadOfferings() async -> Bool {
+        if shouldBypassPurchasesForUITests {
+            packages = []
+            loadedOfferingIdentifier = "UITestBypass"
+            return true
+        }
+
         guard PurchaseManager.isSDKConfigured else { return false }
         do {
             let offerings = try await Purchases.shared.offerings()
-            guard let current = offerings.current else {
+            guard let offering = selectedOffering(from: offerings) else {
                 packages = []
+                loadedOfferingIdentifier = nil
                 return false
             }
 
-            let prioritizedIds = [
-                QuitERGYRevenueCat.packageIdMonthly,
-                QuitERGYRevenueCat.packageIdWeekly
-            ]
-            let prioritized = prioritizedIds.compactMap { current.package(identifier: $0) }
-            let remaining = current.availablePackages.filter { !prioritizedIds.contains($0.identifier) }
+            let prioritizedIds = QuitERGYRevenueCat.supportedPackageIds
+            let prioritized = prioritizedIds.compactMap { offering.package(identifier: $0) }
+            let remaining = offering.availablePackages.filter { !prioritizedIds.contains($0.identifier) }
             packages = prioritized + remaining
+            loadedOfferingIdentifier = offering.identifier
             return !packages.isEmpty
         } catch {
             packages = []
+            loadedOfferingIdentifier = nil
             return false
         }
     }
 
-    func purchase(package: Package) async throws {
+    func purchase(package: Package) async throws -> QuitERGYPurchaseResult {
         if shouldBypassPurchasesForUITests {
             isPremiumUnlocked = true
-            return
+            return .completed
         }
-        guard PurchaseManager.isSDKConfigured else { return }
+        guard PurchaseManager.isSDKConfigured else { return .completed }
         let result = try await Purchases.shared.purchase(package: package)
+        if result.userCancelled {
+            updateState(with: result.customerInfo)
+            return .cancelled
+        }
         updateState(with: result.customerInfo)
         await refreshCustomerInfo()
+        return .completed
     }
 
-    func purchase(productId: String) async throws {
-        if shouldBypassPurchasesForUITests {
-            isPremiumUnlocked = true
-            return
-        }
-        guard PurchaseManager.isSDKConfigured else { return }
-        let products = try await Purchases.shared.products([productId])
-        guard let product = products.first else { return }
-        let result = try await Purchases.shared.purchase(product: product)
-        updateState(with: result.customerInfo)
-        await refreshCustomerInfo()
+    func completePurchaseBypassForUITests() async -> QuitERGYPurchaseResult {
+        guard shouldBypassPurchasesForUITests else { return .cancelled }
+        isPremiumUnlocked = true
+        return .completed
     }
 
     func restorePurchases() async throws {
@@ -937,12 +1040,21 @@ final class PurchaseManager: NSObject, ObservableObject, PurchasesDelegate {
             hasAnyActiveSubscription ||
             hasKnownLifetimePurchase
     }
+
+    private func selectedOffering(from offerings: Offerings) -> Offering? {
+        let configuredOfferings = QuitERGYRevenueCat.offeringLookupOrder.compactMap {
+            offerings[$0]
+        }
+        let candidates = configuredOfferings + [offerings.current].compactMap { $0 }
+
+        return candidates.first(where: { !$0.availablePackages.isEmpty }) ?? candidates.first
+    }
 }
 #else
 @MainActor
 final class PurchaseManager: ObservableObject {
     static let shared = PurchaseManager()
-    static func configureIfNeeded() {}
+    static func configureIfNeeded(apiKey _: String? = nil) {}
 
     @Published private(set) var packages: [Package] = [
         .init(
@@ -953,16 +1065,21 @@ final class PurchaseManager: ObservableObject {
             storeProduct: .init(productIdentifier: QuitERGYRevenueCat.productIdWeekly, localizedPriceString: "$1.99"))
     ]
     @Published private(set) var isPremiumUnlocked: Bool = false
+    @Published private(set) var loadedOfferingIdentifier: String? = QuitERGYRevenueCat.offeringIdentifier
+    var isUsingUITestPurchaseBypass: Bool {
+        ProcessInfo.processInfo.environment["UITEST_BYPASS_PURCHASES"] == "1"
+    }
 
     func ensureInitialSync() {}
     func loadOfferings() async -> Bool { true }
-    func purchase(package: Package) async throws {
+    func purchase(package: Package) async throws -> QuitERGYPurchaseResult {
         try? await Task.sleep(nanoseconds: 300_000_000)
         isPremiumUnlocked = true
+        return .completed
     }
-    func purchase(productId: String) async throws {
-        let package = packages.first { $0.storeProduct.productIdentifier == productId } ?? packages.first!
-        try await purchase(package: package)
+    func completePurchaseBypassForUITests() async -> QuitERGYPurchaseResult {
+        isPremiumUnlocked = true
+        return .completed
     }
     func restorePurchases() async throws {
         try? await Task.sleep(nanoseconds: 300_000_000)

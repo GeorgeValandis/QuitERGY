@@ -45,6 +45,19 @@ The original `com.quitergy.premium.weekly` ASC product is not used because its o
 - `$rc_lifetime` is removed from the offering. Existing lifetime product IDs remain attached to `Premium` for legacy unlocks.
 - Live RevenueCat verification on 2026-06-19 confirmed the current offering contains only `$rc_monthly` and `$rc_weekly` for the App Store app.
 
+### Production Purchase Diagnostic - 2026-06-24
+
+- App Store Connect API check on 2026-06-24 confirmed app version `1.0.8` is now `READY_FOR_SALE`.
+- RevenueCat public offerings API check on 2026-06-24 confirmed current offering `Default` still maps `$rc_monthly` to `com.quitergy.premium.monthly` and `$rc_weekly` to `com.quitergy.premium.weekly.v2`.
+- App Store Connect subscription-group check on 2026-06-24 found the production blocker: both purchase products are still `DEVELOPER_ACTION_NEEDED`.
+- Monthly subscription `6781659490` has rejected en-US localization `73d6f2e1-3de9-4154-b555-6f4a89dfacec`.
+- Weekly v2 subscription `6781658331` has rejected en-US localization `af1dca83-7abc-4b26-8766-c2e0cc01117e`.
+- App Review notes show the rejection reason is Guideline 3.1.2: the reviewer could not find functional Terms of Use (EULA) and Privacy Policy links in the app binary.
+- ASC rejected localization edit attempts with `Cannot edit SubscriptionLocalization when it is in REJECTED state`.
+- New subscription review submissions were created through the ASC API: monthly `e4caefc5-247e-4ea6-b46c-0f1583162ff9`, weekly `34804a96-a555-4f76-ac8f-44d2e3017c7e`.
+- Local app hardening now loads the explicit `Default` offering, hides unavailable packages, removes the direct product fallback, records RevenueCat cancellation separately from technical purchase failure, and shows functional EULA/Privacy links directly in the Paywall purchase area.
+- Simulator evidence for the legal-link fix is saved as `paywall-legal-links-simulator-2026-06-24.jpg`.
+
 ## App Review Notes
 
 Suggested App Review notes:
@@ -53,6 +66,8 @@ Suggested App Review notes:
 QuitERGY is a local-first energy drink tracking app. Premium unlocks unlimited logging, detailed statistics, daily reminders, and multiple drink profiles.
 
 Premium is available through auto-renewable weekly and monthly subscriptions. No account is required. To find the purchase flow, open Settings and tap "Unlock Premium", or trigger a Premium-gated action such as adding more free logs after the free allowance is used.
+
+The Terms of Use (EULA) and Privacy Policy links are functional in the app binary. They appear directly on the Premium paywall, below the auto-renewal notice and above the Continue purchase button. They are also available in Settings > Legal.
 
 Purchases and restores are handled through Apple In-App Purchase and RevenueCat entitlement validation. Drink logs, notes, reminders, profiles, and progress data stay on device.
 ```

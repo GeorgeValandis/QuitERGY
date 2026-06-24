@@ -1,0 +1,86 @@
+{
+  "checkedAt": "2026-06-24T16:14:00+02:00",
+  "trigger": "production analytics showed purchase_started, purchase_failed, and purchase_package_missing",
+  "appReviewRejectionReason": {
+    "guideline": "3.1.2 - Business - Payments - Subscriptions",
+    "message": "Reviewer could not find functional Terms of Use (EULA) and Privacy Policy links in the app binary.",
+    "localFix": "Functional Terms of Use (EULA) and Privacy Policy links are now shown directly on the Premium paywall below the auto-renewal notice and above the Continue purchase button. They remain available in Settings > Legal.",
+    "simulatorEvidence": "release/app-store-review-1.0.8/paywall-legal-links-simulator-2026-06-24.jpg",
+    "urlReachability": {
+      "termsOfUse": "HTTP/2 200 text/html",
+      "privacyPolicy": "HTTP/2 200 text/html"
+    }
+  },
+  "appStoreConnect": {
+    "app": {
+      "bundleId": "com.GA.QuitERGY",
+      "appStoreId": "6754967219",
+      "liveVersion": "1.0.8",
+      "liveVersionState": "READY_FOR_SALE"
+    },
+    "subscriptionGroup": {
+      "id": "21880624",
+      "name": "Premium Access"
+    },
+    "subscriptions": [
+      {
+        "id": "6781659490",
+        "productId": "com.quitergy.premium.monthly",
+        "state": "DEVELOPER_ACTION_NEEDED",
+        "localization": {
+          "id": "73d6f2e1-3de9-4154-b555-6f4a89dfacec",
+          "locale": "en-US",
+          "state": "REJECTED",
+          "name": "QuitERGY Premium Monthly",
+          "description": "Unlock logs, stats, reminders, and profiles."
+        },
+        "reviewSubmissionCreated": "e4caefc5-247e-4ea6-b46c-0f1583162ff9"
+      },
+      {
+        "id": "6781658331",
+        "productId": "com.quitergy.premium.weekly.v2",
+        "state": "DEVELOPER_ACTION_NEEDED",
+        "localization": {
+          "id": "af1dca83-7abc-4b26-8766-c2e0cc01117e",
+          "locale": "en-US",
+          "state": "REJECTED",
+          "name": "QuitERGY Premium Weekly",
+          "description": "Unlock logs, stats, reminders, and profiles."
+        },
+        "reviewSubmissionCreated": "34804a96-a555-4f76-ac8f-44d2e3017c7e"
+      }
+    ],
+    "mutationAttempt": {
+      "localizationPatch": "blocked",
+      "error": "Cannot edit SubscriptionLocalization when it is in REJECTED state",
+      "subscriptionSubmissions": "created",
+      "replacementProductsCreated": false
+    }
+  },
+  "revenueCat": {
+    "currentOfferingId": "Default",
+    "packages": [
+      {
+        "alias": "$rc_monthly",
+        "productId": "com.quitergy.premium.monthly"
+      },
+      {
+        "alias": "$rc_weekly",
+        "productId": "com.quitergy.premium.weekly.v2"
+      }
+    ],
+    "mappingStatus": "matches_app_contract"
+  },
+  "localFix": {
+    "file": "QuitERGY/Paywall/PaywallView.swift",
+    "changes": [
+      "load explicit Default offering before falling back to legacy default/current",
+      "show only plans with RevenueCat packages available",
+      "remove direct product purchase fallback when package mapping is missing",
+      "track purchase_cancelled from RevenueCat userCancelled instead of purchase_failed",
+      "include offering and available package diagnostics in purchase_package_missing",
+      "show functional Terms of Use (EULA) and Privacy Policy links in the purchase area before the Continue button"
+    ]
+  },
+  "currentConclusion": "RevenueCat package mapping matches the app contract. The remaining App Store Connect blocker is subscription review state DEVELOPER_ACTION_NEEDED caused by missing legal links in the reviewed binary. A new build with visible functional EULA and Privacy links must be submitted and approved before production purchases can be considered fully fixed."
+}
