@@ -538,17 +538,9 @@ struct PlanSelectionSection: View {
                 }
             }
 
-            Text("Auto-renews. Cancel anytime in App Store settings.")
-                .font(.quitRounded(.medium, size: scaledValue(14, minimum: 12, maximum: 16)))
-                .foregroundStyle(QuitERGYTheme.textSecondary)
-                .multilineTextAlignment(.leading)
-                .frame(maxWidth: .infinity, alignment: .leading)
+            purchaseDisclosure
                 .opacity(purchaseManager.isPremiumUnlocked || visiblePlans.isEmpty ? 0 : 1)
                 .accessibilityHidden(purchaseManager.isPremiumUnlocked || visiblePlans.isEmpty)
-
-            legalPurchaseLinks
-                .opacity(purchaseManager.isPremiumUnlocked ? 0 : 1)
-                .accessibilityHidden(purchaseManager.isPremiumUnlocked)
 
             Button {
                 Task { await onPurchaseTapped() }
@@ -676,32 +668,34 @@ struct PlanSelectionSection: View {
         QuitERGYPaywallBrand.surface.opacity(0.95)
     }
 
-    private var legalPurchaseLinks: some View {
-        ViewThatFits(in: .horizontal) {
-            HStack(spacing: scaledValue(16, minimum: 12, maximum: 20)) {
-                purchaseLegalLink(title: "Terms of Use (EULA)", systemImage: "doc.text.fill", url: QuitERGYLegalLinks.termsOfUse)
-                purchaseLegalLink(title: "Privacy Policy", systemImage: "hand.raised.fill", url: QuitERGYLegalLinks.privacyPolicy)
-            }
+    private var purchaseDisclosure: some View {
+        VStack(spacing: scaledValue(5, minimum: 3, maximum: 6)) {
+            Text("Auto-renews. Cancel anytime in App Store settings.")
+                .font(.quitRounded(.medium, size: scaledValue(14, minimum: 12, maximum: 16)))
+                .foregroundStyle(QuitERGYTheme.textSecondary)
+                .multilineTextAlignment(.center)
+                .frame(maxWidth: .infinity, alignment: .center)
 
-            VStack(alignment: .leading, spacing: scaledValue(6, minimum: 4, maximum: 8)) {
-                purchaseLegalLink(title: "Terms of Use (EULA)", systemImage: "doc.text.fill", url: QuitERGYLegalLinks.termsOfUse)
-                purchaseLegalLink(title: "Privacy Policy", systemImage: "hand.raised.fill", url: QuitERGYLegalLinks.privacyPolicy)
-            }
+            legalPurchaseLinks
         }
-        .font(.quitRounded(.semibold, size: scaledValue(13, minimum: 12, maximum: 15)))
-        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
-    private func purchaseLegalLink(title: String, systemImage: String, url: URL) -> some View {
+    private var legalPurchaseLinks: some View {
+        HStack(spacing: scaledValue(14, minimum: 10, maximum: 16)) {
+            purchaseLegalLink(title: "Terms of Use (EULA)", url: QuitERGYLegalLinks.termsOfUse)
+            purchaseLegalLink(title: "Privacy Policy", url: QuitERGYLegalLinks.privacyPolicy)
+        }
+        .font(.quitRounded(.semibold, size: scaledValue(12, minimum: 11, maximum: 13)))
+        .lineLimit(1)
+        .minimumScaleFactor(0.82)
+        .frame(maxWidth: .infinity, alignment: .center)
+    }
+
+    private func purchaseLegalLink(title: String, url: URL) -> some View {
         Link(destination: url) {
-            HStack(spacing: 6) {
-                Image(systemName: systemImage)
-                    .font(.system(size: scaledValue(12, minimum: 11, maximum: 14), weight: .semibold))
-                Text(L10n.text(title))
-                    .underline()
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-            .foregroundStyle(planColor)
+            Text(L10n.text(title))
+                .underline()
+                .foregroundStyle(planColor)
         }
         .accessibilityLabel(Text(L10n.text(title)))
     }
