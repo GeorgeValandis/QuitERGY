@@ -11,6 +11,7 @@ import Testing
 
 @testable import QuitERGY
 
+@Suite(.serialized)
 struct QuitERGYTests {
 
     @MainActor
@@ -59,6 +60,32 @@ struct QuitERGYTests {
 
         #expect(FreeDrinkLogAllowance.usedFreeLogCount(defaults: defaults) == 3)
         #expect(!FreeDrinkLogAllowance.hasRemainingFreeLog(defaults: defaults))
+    }
+
+    @MainActor
+    @Test func freeCheckInReminderUsesEveryTwoDayCadence() async throws {
+        let fixture = try makeInMemoryPersistenceFixture()
+        let scheduler = CapturingReminderScheduler()
+        let viewModel = SettingsViewModel(service: fixture.service, reminderScheduler: scheduler)
+
+        await viewModel.handleReminderToggle(true, isPremiumUnlocked: false)
+
+        #expect(viewModel.reminderEnabled)
+        #expect(scheduler.scheduledCadence == .everyTwoDays)
+        #expect(viewModel.reminderStatusMessage?.contains("every 2 days") == true)
+    }
+
+    @MainActor
+    @Test func premiumCheckInReminderUsesDailyCadence() async throws {
+        let fixture = try makeInMemoryPersistenceFixture()
+        let scheduler = CapturingReminderScheduler()
+        let viewModel = SettingsViewModel(service: fixture.service, reminderScheduler: scheduler)
+
+        await viewModel.handleReminderToggle(true, isPremiumUnlocked: true)
+
+        #expect(viewModel.reminderEnabled)
+        #expect(scheduler.scheduledCadence == .daily)
+        #expect(viewModel.reminderStatusMessage?.contains("Daily check-in") == true)
     }
 
     @Test func onboardingHasFourStepsEndingInSummary() async throws {
@@ -127,6 +154,40 @@ struct QuitERGYTests {
 
         #expect(viewModel.lastDrinkDate == nil)
         #expect(viewModel.streakDays == 5)
+    }
+
+    @MainActor
+    private func makeInMemoryPersistenceFixture() throws -> InMemoryPersistenceFixture {
+        let schema = Schema([
+            DrinkProfile.self,
+            DrinkLog.self,
+            UserSettings.self,
+            UserProfile.self,
+        ])
+        let configuration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
+        let container = try ModelContainer(for: schema, configurations: [configuration])
+        return InMemoryPersistenceFixture(
+            container: container,
+            service: DrinkPersistenceService(modelContext: container.mainContext)
+        )
+    }
+
+    private struct InMemoryPersistenceFixture {
+        let container: ModelContainer
+        let service: DrinkPersistenceService
+    }
+
+    @MainActor
+    private final class CapturingReminderScheduler: ReminderScheduling {
+        var scheduledCadence: ReminderCadence?
+
+        func ensureAuthorization() async throws {}
+
+        func scheduleCheckInReminder(at time: Date, profileName: String?, cadence: ReminderCadence) async throws {
+            scheduledCadence = cadence
+        }
+
+        func cancelScheduledReminder() {}
     }
 
 }

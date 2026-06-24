@@ -139,9 +139,7 @@ final class SettingsViewModel: ObservableObject {
             let reminder = try persistence.loadReminderConfiguration()
             reminderEnabled = reminder.isEnabled
             reminderTime = reminder.reminderTime ?? defaultReminderTime
-            reminderStatusMessage = reminder.isEnabled
-                ? L10n.format("Daily reminder scheduled at %@.", formattedTime(reminderTime))
-                : nil
+            reminderStatusMessage = reminder.isEnabled ? reminderStatus(for: .everyTwoDays) : nil
             generalStatusMessage = nil
         } catch {
             errorMessage = error.localizedDescription
@@ -204,30 +202,30 @@ final class SettingsViewModel: ObservableObject {
         }
     }
 
-    func handleReminderToggle(_ isEnabled: Bool) async {
+    func handleReminderToggle(_ isEnabled: Bool, isPremiumUnlocked: Bool) async {
         if isEnabled {
-            // Request notification permission
-            await requestNotificationPermission()
+            await requestNotificationPermission(isPremiumUnlocked: isPremiumUnlocked)
             await MainActor.run {
                 reminderEnabled = true
             }
         } else {
-            // Disable reminder
-            await persistReminderConfiguration()
+            await persistReminderConfiguration(isPremiumUnlocked: isPremiumUnlocked)
         }
     }
     
-    private func requestNotificationPermission() async {
+    private func requestNotificationPermission(isPremiumUnlocked: Bool) async {
         do {
-            // Request permission first
-            try await reminderScheduler.scheduleDailyReminder(at: reminderTime, profileName: selectedProfile?.name)
+            let cadence = reminderCadence(isPremiumUnlocked: isPremiumUnlocked)
+            try await reminderScheduler.scheduleCheckInReminder(
+                at: reminderTime,
+                profileName: selectedProfile?.name,
+                cadence: cadence
+            )
             
-            // Update status message on main thread
             await MainActor.run {
-                reminderStatusMessage = L10n.format("Daily reminder scheduled at %@.", formattedTime(reminderTime))
+                reminderStatusMessage = reminderStatus(for: cadence)
             }
             
-            // Save configuration
             let config = ReminderConfiguration(
                 isEnabled: true,
                 reminderTime: reminderTime
@@ -255,32 +253,38 @@ final class SettingsViewModel: ObservableObject {
         applyPreset(preset)
     }
 
-    func updateReminderTime(_ time: Date) {
+    func updateReminderTime(_ time: Date, isPremiumUnlocked: Bool) {
         reminderTime = time
         if reminderEnabled {
-            // Update the scheduled reminder with new time
             Task {
-                await updateScheduledReminder()
+                await updateScheduledReminder(isPremiumUnlocked: isPremiumUnlocked)
             }
         }
     }
 
-    func confirmReminderSelection() {
-        // Just close the time picker, reminder is already scheduled
+    func confirmReminderSelection(isPremiumUnlocked: Bool) {
         if reminderEnabled {
-            reminderStatusMessage = L10n.format("Daily reminder scheduled at %@.", formattedTime(reminderTime))
+            reminderStatusMessage = reminderStatus(for: reminderCadence(isPremiumUnlocked: isPremiumUnlocked))
         }
     }
     
-    private func updateScheduledReminder() async {
+    func refreshReminderScheduleIfNeeded(isPremiumUnlocked: Bool) async {
+        guard reminderEnabled else { return }
+        await updateScheduledReminder(isPremiumUnlocked: isPremiumUnlocked)
+    }
+
+    private func updateScheduledReminder(isPremiumUnlocked: Bool) async {
         guard reminderEnabled else { return }
         
         do {
-            // Update the scheduled reminder with new time
-            try await reminderScheduler.scheduleDailyReminder(at: reminderTime, profileName: selectedProfile?.name)
-            reminderStatusMessage = L10n.format("Daily reminder scheduled at %@.", formattedTime(reminderTime))
+            let cadence = reminderCadence(isPremiumUnlocked: isPremiumUnlocked)
+            try await reminderScheduler.scheduleCheckInReminder(
+                at: reminderTime,
+                profileName: selectedProfile?.name,
+                cadence: cadence
+            )
+            reminderStatusMessage = reminderStatus(for: cadence)
             
-            // Save configuration
             let config = ReminderConfiguration(
                 isEnabled: true,
                 reminderTime: reminderTime
@@ -300,7 +304,7 @@ final class SettingsViewModel: ObservableObject {
         }
     }
 
-    private func persistReminderConfiguration() async {
+    private func persistReminderConfiguration(isPremiumUnlocked: Bool) async {
         let config = ReminderConfiguration(
             isEnabled: reminderEnabled,
             reminderTime: reminderEnabled ? reminderTime : nil
@@ -308,11 +312,16 @@ final class SettingsViewModel: ObservableObject {
 
         do {
             if reminderEnabled {
-                try await reminderScheduler.scheduleDailyReminder(at: reminderTime, profileName: selectedProfile?.name)
-                reminderStatusMessage = L10n.format("Daily reminder scheduled at %@.", formattedTime(reminderTime))
+                let cadence = reminderCadence(isPremiumUnlocked: isPremiumUnlocked)
+                try await reminderScheduler.scheduleCheckInReminder(
+                    at: reminderTime,
+                    profileName: selectedProfile?.name,
+                    cadence: cadence
+                )
+                reminderStatusMessage = reminderStatus(for: cadence)
             } else {
                 reminderScheduler.cancelScheduledReminder()
-                reminderStatusMessage = L10n.text("Daily reminder disabled.")
+                reminderStatusMessage = L10n.text("Check-in reminder disabled.")
             }
             try persistence.updateReminderConfiguration(config)
         } catch {
@@ -323,6 +332,19 @@ final class SettingsViewModel: ObservableObject {
                 // ignore persistence failure and surface original error below
             }
             errorMessage = error.localizedDescription
+        }
+    }
+
+    private func reminderCadence(isPremiumUnlocked: Bool) -> ReminderCadence {
+        isPremiumUnlocked ? .daily : .everyTwoDays
+    }
+
+    private func reminderStatus(for cadence: ReminderCadence) -> String {
+        switch cadence {
+        case .daily:
+            return L10n.format("Daily check-in scheduled at %@.", formattedTime(reminderTime))
+        case .everyTwoDays:
+            return L10n.format("Check-in scheduled every 2 days at %@.", formattedTime(reminderTime))
         }
     }
 

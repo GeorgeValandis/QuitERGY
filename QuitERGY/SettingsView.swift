@@ -128,10 +128,9 @@ struct SettingsView: View {
                 }
                 .listRowBackground(QuitERGYTheme.surface)
 
-                Section("Daily Reminder & Badges") {
-                    #if DEBUG
+                Section("Check-in Reminders & Badges") {
                     Toggle(isOn: $viewModel.reminderEnabled) {
-                        Label("Ask me once per day", systemImage: "alarm.fill")
+                        Label(reminderToggleTitle, systemImage: "alarm.fill")
                     }
                     .onChange(of: viewModel.reminderEnabled, initial: false) { oldValue, newValue in
                         guard hasInitializedReminder else { return }
@@ -145,51 +144,17 @@ struct SettingsView: View {
                         
                         // Handle permission request asynchronously without blocking UI
                         Task {
-                            await viewModel.handleReminderToggle(newValue)
+                            await viewModel.handleReminderToggle(
+                                newValue,
+                                isPremiumUnlocked: purchaseManager.isPremiumUnlocked
+                            )
                         }
                     }
-                    #else
-                    if purchaseManager.isPremiumUnlocked {
-                        Toggle(isOn: $viewModel.reminderEnabled) {
-                            Label("Ask me once per day", systemImage: "alarm.fill")
-                        }
-                        .onChange(of: viewModel.reminderEnabled, initial: false) { oldValue, newValue in
-                            guard hasInitializedReminder else { return }
-                            guard oldValue != newValue else { return }
-                            
-                            if !newValue {
-                                withAnimation {
-                                    isEditingReminderTime = false
-                                }
-                            }
-                            
-                            // Handle permission request asynchronously without blocking UI
-                            Task {
-                                await viewModel.handleReminderToggle(newValue)
-                            }
-                        }
-                    } else {
-                        Button {
-                            AppAnalytics.shared.track("paywall_presented", properties: [
-                                "surface": "settings",
-                                "trigger": "reminder_locked"
-                            ])
-                            isPresentingPaywall = true
-                        } label: {
-                            HStack {
-                                Label("Ask me once per day", systemImage: "alarm.fill")
-                                    .foregroundStyle(QuitERGYTheme.textPrimary)
-                                Spacer()
-                                Image(systemName: "lock.fill")
-                                    .font(.system(size: 10, weight: .semibold))
-                                    .foregroundStyle(.white)
-                                    .padding(4)
-                                    .background(Circle().fill(.red))
-                            }
-                        }
-                        .buttonStyle(.plain)
-                    }
-                    #endif
+
+                    Text(reminderFrequencyDescription)
+                        .font(.quitRounded(.medium, size: 12))
+                        .foregroundStyle(QuitERGYTheme.textSecondary)
+                        .padding(.top, 2)
 
                     if viewModel.reminderEnabled {
                         DisclosureGroup(isExpanded: $isEditingReminderTime) {
@@ -201,14 +166,19 @@ struct SettingsView: View {
                             .datePickerStyle(.wheel)
                             .labelsHidden()
                             .onChange(of: viewModel.reminderTime) { _, newValue in
-                                viewModel.updateReminderTime(newValue)
+                                viewModel.updateReminderTime(
+                                    newValue,
+                                    isPremiumUnlocked: purchaseManager.isPremiumUnlocked
+                                )
                             }
                             .padding(.vertical, 4)
 
                             HStack {
                                 Spacer()
                                 Button {
-                                    viewModel.confirmReminderSelection()
+                                    viewModel.confirmReminderSelection(
+                                        isPremiumUnlocked: purchaseManager.isPremiumUnlocked
+                                    )
                                     withAnimation {
                                         isEditingReminderTime = false
                                     }
@@ -359,6 +329,14 @@ struct SettingsView: View {
                 viewModel.loadData()
                 hasInitializedReminder = true
                 isEditingReminderTime = false
+                await viewModel.refreshReminderScheduleIfNeeded(
+                    isPremiumUnlocked: purchaseManager.isPremiumUnlocked
+                )
+            }
+            .onChange(of: purchaseManager.isPremiumUnlocked) { _, isPremiumUnlocked in
+                Task {
+                    await viewModel.refreshReminderScheduleIfNeeded(isPremiumUnlocked: isPremiumUnlocked)
+                }
             }
         }
         .onAppear {
@@ -414,6 +392,18 @@ struct SettingsView: View {
             .cardBackground()
         }
         .buttonStyle(.plain)
+    }
+
+    private var reminderToggleTitle: String {
+        purchaseManager.isPremiumUnlocked
+            ? L10n.text("Ask me once per day")
+            : L10n.text("Ask me every 2 days")
+    }
+
+    private var reminderFrequencyDescription: String {
+        purchaseManager.isPremiumUnlocked
+            ? L10n.text("Premium check-ins can run daily at your chosen time.")
+            : L10n.text("Free check-ins gently bring you back every 2 days.")
     }
 
     private var heroCard: some View {
@@ -773,7 +763,7 @@ private struct LegalDocumentView: View {
 
     struct PreviewReminderScheduler: ReminderScheduling {
         func ensureAuthorization() async throws {}
-        func scheduleDailyReminder(at time: Date, profileName: String?) async throws {}
+        func scheduleCheckInReminder(at time: Date, profileName: String?, cadence: ReminderCadence) async throws {}
         func cancelScheduledReminder() {}
     }
 

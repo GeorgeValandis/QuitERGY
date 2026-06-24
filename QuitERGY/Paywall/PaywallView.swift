@@ -384,8 +384,8 @@ private struct BenefitItem: Identifiable {
         ),
         BenefitItem(
             icon: "alarm.fill",
-            title: L10n.text("Daily Reminders"),
-            description: L10n.text("Get daily check-ins to stay accountable.")
+            title: L10n.text("Daily Check-in Schedule"),
+            description: L10n.text("Upgrade from every-2-day check-ins to daily reminders.")
         ),
         BenefitItem(
             icon: "person.2.fill",
