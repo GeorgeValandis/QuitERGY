@@ -55,7 +55,7 @@ The original `com.quitergy.premium.weekly` ASC product is not used because its o
 - App Review notes show the rejection reason is Guideline 3.1.2: the reviewer could not find functional Terms of Use (EULA) and Privacy Policy links in the app binary.
 - ASC rejected localization edit attempts with `Cannot edit SubscriptionLocalization when it is in REJECTED state`.
 - New subscription review submissions were created through the ASC API: monthly `e4caefc5-247e-4ea6-b46c-0f1583162ff9`, weekly `34804a96-a555-4f76-ac8f-44d2e3017c7e`.
-- Local app hardening now loads the explicit `Default` offering, hides unavailable packages, removes the direct product fallback, records RevenueCat cancellation separately from technical purchase failure, and shows functional EULA/Privacy links directly in the Paywall purchase area.
+- Local app hardening now loads the explicit `Default` offering, hides unavailable packages, removes the direct product fallback, and records RevenueCat cancellation separately from technical purchase failure.
 - Simulator evidence for the legal-link fix is saved as `paywall-legal-links-simulator-2026-06-24.jpg`.
 - ASC cleanup on 2026-06-24 cleared purchase history for the only sandbox tester and deleted redundant subscriptions `com.quitergy.premium.weekly` and `com.quitergy.premium.yearly`. A follow-up ASC API check confirmed the subscription group now contains only `com.quitergy.premium.monthly` and `com.quitergy.premium.weekly.v2`.
 
@@ -68,7 +68,7 @@ QuitERGY is a local-first energy drink tracking app. Premium unlocks unlimited l
 
 Premium is available through auto-renewable weekly and monthly subscriptions. No account is required. To find the purchase flow, open Settings and tap "Unlock Premium", or trigger a Premium-gated action such as adding more free logs after the free allowance is used.
 
-The Terms of Use (EULA) and Privacy Policy links are functional in the app binary. They appear directly on the Premium paywall, below the auto-renewal notice and above the Continue purchase button. They are also available in Settings > Legal.
+The Terms of Use (EULA) and Privacy Policy links are functional in the app binary. They appear in the Premium paywall footer next to Restore and are also available in Settings > Legal.
 
 Purchases and restores are handled through Apple In-App Purchase and RevenueCat entitlement validation. Drink logs, notes, reminders, profiles, and progress data stay on device.
 ```

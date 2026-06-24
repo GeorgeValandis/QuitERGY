@@ -4,7 +4,7 @@
   "appReviewRejectionReason": {
     "guideline": "3.1.2 - Business - Payments - Subscriptions",
     "message": "Reviewer could not find functional Terms of Use (EULA) and Privacy Policy links in the app binary.",
-    "localFix": "Functional Terms of Use (EULA) and Privacy Policy links are now shown directly on the Premium paywall below the auto-renewal notice and above the Continue purchase button. They remain available in Settings > Legal.",
+    "localFix": "Functional Terms of Use (EULA) and Privacy Policy links are available in the Premium paywall footer next to Restore and in Settings > Legal.",
     "simulatorEvidence": "release/app-store-review-1.0.8/paywall-legal-links-simulator-2026-06-24.jpg",
     "urlReachability": {
       "termsOfUse": "HTTP/2 200 text/html",
@@ -110,7 +110,7 @@
       "remove direct product purchase fallback when package mapping is missing",
       "track purchase_cancelled from RevenueCat userCancelled instead of purchase_failed",
       "include offering and available package diagnostics in purchase_package_missing",
-      "show functional Terms of Use (EULA) and Privacy Policy links in the purchase area before the Continue button"
+      "keep functional Terms of Use (EULA) and Privacy Policy links in the Paywall footer and Settings > Legal"
     ]
   },
   "currentConclusion": "RevenueCat package mapping matches the app contract. The remaining App Store Connect blocker is subscription review state DEVELOPER_ACTION_NEEDED caused by missing legal links in the reviewed binary. A new build with visible functional EULA and Privacy links must be submitted and approved before production purchases can be considered fully fixed."

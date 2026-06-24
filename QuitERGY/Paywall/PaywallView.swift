@@ -241,7 +241,7 @@ struct PaywallView: View {
 
     // MARK: Footer Links
     private func footerLinks(metrics: PaywallLayoutMetrics) -> some View {
-        VStack(spacing: metrics.scaledValue(10, minimum: 8, maximum: 12)) {
+        HStack(spacing: metrics.scaledValue(12, minimum: 8, maximum: 14)) {
             Button {
                 Task { await restorePurchasesTapped() }
             } label: {
@@ -249,17 +249,23 @@ struct PaywallView: View {
                     .underline()
             }
 
-            HStack(spacing: metrics.footerSpacing) {
-                Link("Terms of Use (EULA)", destination: QuitERGYLegalLinks.termsOfUse)
-                    .underline()
+            Text("·")
+                .accessibilityHidden(true)
 
-                Link("Privacy Policy", destination: QuitERGYLegalLinks.privacyPolicy)
-                    .underline()
-            }
+            Link("Terms of Use (EULA)", destination: QuitERGYLegalLinks.termsOfUse)
+                .underline()
+
+            Text("·")
+                .accessibilityHidden(true)
+
+            Link("Privacy Policy", destination: QuitERGYLegalLinks.privacyPolicy)
+                .underline()
         }
-        .font(.quitRounded(.medium, size: metrics.scaledValue(13, minimum: 11, maximum: 15)))
+        .font(.quitRounded(.medium, size: metrics.scaledValue(12, minimum: 10, maximum: 13)))
         .foregroundStyle(QuitERGYTheme.textSecondary)
         .frame(maxWidth: .infinity)
+        .lineLimit(1)
+        .minimumScaleFactor(0.76)
     }
 
     // MARK: Dismiss Button
@@ -538,7 +544,11 @@ struct PlanSelectionSection: View {
                 }
             }
 
-            purchaseDisclosure
+            Text("Auto-renews. Cancel anytime in App Store settings.")
+                .font(.quitRounded(.medium, size: scaledValue(14, minimum: 12, maximum: 16)))
+                .foregroundStyle(QuitERGYTheme.textSecondary)
+                .multilineTextAlignment(.leading)
+                .frame(maxWidth: .infinity, alignment: .leading)
                 .opacity(purchaseManager.isPremiumUnlocked || visiblePlans.isEmpty ? 0 : 1)
                 .accessibilityHidden(purchaseManager.isPremiumUnlocked || visiblePlans.isEmpty)
 
@@ -666,38 +676,6 @@ struct PlanSelectionSection: View {
 
     private func planRowBackground() -> Color {
         QuitERGYPaywallBrand.surface.opacity(0.95)
-    }
-
-    private var purchaseDisclosure: some View {
-        VStack(spacing: scaledValue(5, minimum: 3, maximum: 6)) {
-            Text("Auto-renews. Cancel anytime in App Store settings.")
-                .font(.quitRounded(.medium, size: scaledValue(14, minimum: 12, maximum: 16)))
-                .foregroundStyle(QuitERGYTheme.textSecondary)
-                .multilineTextAlignment(.center)
-                .frame(maxWidth: .infinity, alignment: .center)
-
-            legalPurchaseLinks
-        }
-    }
-
-    private var legalPurchaseLinks: some View {
-        HStack(spacing: scaledValue(14, minimum: 10, maximum: 16)) {
-            purchaseLegalLink(title: "Terms of Use (EULA)", url: QuitERGYLegalLinks.termsOfUse)
-            purchaseLegalLink(title: "Privacy Policy", url: QuitERGYLegalLinks.privacyPolicy)
-        }
-        .font(.quitRounded(.semibold, size: scaledValue(12, minimum: 11, maximum: 13)))
-        .lineLimit(1)
-        .minimumScaleFactor(0.82)
-        .frame(maxWidth: .infinity, alignment: .center)
-    }
-
-    private func purchaseLegalLink(title: String, url: URL) -> some View {
-        Link(destination: url) {
-            Text(L10n.text(title))
-                .underline()
-                .foregroundStyle(planColor)
-        }
-        .accessibilityLabel(Text(L10n.text(title)))
     }
 
     private func loadOfferings() async {
