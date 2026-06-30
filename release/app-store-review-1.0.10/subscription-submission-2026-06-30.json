@@ -1,0 +1,45 @@
+{
+  "date": "2026-06-30",
+  "appStoreConnect": {
+    "appId": "6754967219",
+    "bundleId": "com.GA.QuitERGY",
+    "appVersion": "1.0.10",
+    "appVersionId": "16bf7c6e-304b-40ad-848e-0f68fc72a581",
+    "appVersionState": "WAITING_FOR_REVIEW",
+    "build": "27",
+    "buildId": "08d537f4-3a91-436b-a696-3ee4b50e835c",
+    "buildProcessingState": "VALID",
+    "submissionResults": {
+      "subscriptionGroup": {
+        "id": "21880624",
+        "localizationId": "747cf521-2179-41fe-bf72-35cc5b7b1389",
+        "submissionId": "bd7ee9a1-0572-4e60-8c5b-eb59ba9893dd",
+        "httpStatus": 201
+      },
+      "monthly": {
+        "subscriptionId": "6781659490",
+        "productId": "com.quitergy.premium.monthly",
+        "localizationId": "0007ebbe-f675-4e1f-bda2-6f322e3119bf",
+        "reviewScreenshotId": "4d3b2207-708c-4bb0-bf82-398857b490be",
+        "submissionId": "28c6c276-091b-4109-b577-69957090f6c0",
+        "previousSubmissionId": "3fd75a32-22cc-41ad-ad73-664364d9e62d",
+        "httpStatus": 201
+      },
+      "weeklyV2": {
+        "subscriptionId": "6781658331",
+        "productId": "com.quitergy.premium.weekly.v2",
+        "localizationId": "723735ac-5818-431a-b3ed-262d913c60ac",
+        "reviewScreenshotId": "a1902845-d08f-46c7-8667-9fcc7dd8f442",
+        "submissionId": "dde2522e-c3c8-4afa-9182-2da47955f0db",
+        "previousSubmissionId": "9d28e21e-b77f-4dd1-ac97-6bc7d4762c32",
+        "httpStatus": 201
+      }
+    },
+    "immediateReadback": {
+      "monthlyState": "DEVELOPER_ACTION_NEEDED",
+      "weeklyV2State": "DEVELOPER_ACTION_NEEDED",
+      "groupLocalizationState": "REJECTED",
+      "note": "The API accepted new submission objects while product/localization readback still showed the previous returned state immediately after submission."
+    }
+  }
+}

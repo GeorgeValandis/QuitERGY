@@ -1,0 +1,86 @@
+{
+  "app": {
+    "name": "QuitERGY",
+    "appStoreName": "Drink Counter: QuitERGY",
+    "appStoreId": "6754967219",
+    "bundleId": "com.GA.QuitERGY",
+    "platform": "ios",
+    "version": "1.0.10",
+    "build": "27"
+  },
+  "reason": "Submit a fresh app binary together with first-time subscriptions after Apple returned the IAP products with Guideline 2.1(b): required binary was not submitted.",
+  "revenueCat": {
+    "project": "QuitERGY",
+    "projectId": "66808b7f",
+    "offeringIdentifier": "Default",
+    "entitlementIdentifier": "Premium",
+    "packages": [
+      {
+        "alias": "$rc_monthly",
+        "productId": "com.quitergy.premium.monthly",
+        "period": "P1M",
+        "priceUSD": "4.99",
+        "paywallDefault": true
+      },
+      {
+        "alias": "$rc_weekly",
+        "productId": "com.quitergy.premium.weekly.v2",
+        "period": "P1W",
+        "priceUSD": "1.99",
+        "paywallDefault": false
+      }
+    ]
+  },
+  "appStoreConnect": {
+    "appVersionId": "16bf7c6e-304b-40ad-848e-0f68fc72a581",
+    "appVersionStateAfterSubmission": "WAITING_FOR_REVIEW",
+    "buildId": "08d537f4-3a91-436b-a696-3ee4b50e835c",
+    "buildProcessingState": "VALID",
+    "subscriptionGroupReferenceName": "Premium Access",
+    "subscriptionGroupId": "21880624",
+    "subscriptionGroupSubmissionId": "bd7ee9a1-0572-4e60-8c5b-eb59ba9893dd",
+    "subscriptionGroupLocalization": {
+      "id": "747cf521-2179-41fe-bf72-35cc5b7b1389",
+      "locale": "en-US",
+      "displayName": "QuitERGY Premium",
+      "stateImmediatelyAfterSubmission": "REJECTED"
+    },
+    "products": [
+      {
+        "ascId": "6781659490",
+        "referenceName": "QuitERGY Monthly",
+        "productId": "com.quitergy.premium.monthly",
+        "displayName": "QuitERGY Premium Monthly",
+        "subscriptionSubmissionId": "28c6c276-091b-4109-b577-69957090f6c0",
+        "previousSubscriptionSubmissionId": "3fd75a32-22cc-41ad-ad73-664364d9e62d",
+        "stateImmediatelyAfterSubmission": "DEVELOPER_ACTION_NEEDED",
+        "localizationId": "0007ebbe-f675-4e1f-bda2-6f322e3119bf",
+        "reviewScreenshotId": "4d3b2207-708c-4bb0-bf82-398857b490be"
+      },
+      {
+        "ascId": "6781658331",
+        "referenceName": "QuitERGY Weekly",
+        "productId": "com.quitergy.premium.weekly.v2",
+        "displayName": "QuitERGY Premium Weekly",
+        "subscriptionSubmissionId": "dde2522e-c3c8-4afa-9182-2da47955f0db",
+        "previousSubscriptionSubmissionId": "9d28e21e-b77f-4dd1-ac97-6bc7d4762c32",
+        "stateImmediatelyAfterSubmission": "DEVELOPER_ACTION_NEEDED",
+        "localizationId": "723735ac-5818-431a-b3ed-262d913c60ac",
+        "reviewScreenshotId": "a1902845-d08f-46c7-8667-9fcc7dd8f442"
+      }
+    ]
+  },
+  "localImplementation": {
+    "purchaseCode": "QuitERGY/Paywall/PaywallView.swift",
+    "storeKitConfiguration": "QuitERGY.storekit",
+    "fastlaneSubmitLaneVersion": "1.0.10",
+    "archivePath": "build/QuitERGY-1.0.10-27.xcarchive",
+    "exportedIpaPath": "build/export-1.0.10-27/QuitERGY.ipa"
+  },
+  "verificationGates": {
+    "buildUpload": "passed",
+    "appReviewSubmission": "passed",
+    "subscriptionSubmissionsWithBinary": "passed",
+    "apiReadbackCaveat": "Subscription and group localization submissions returned 201 Created, but product/localization states still showed the prior returned state immediately after submission."
+  }
+}

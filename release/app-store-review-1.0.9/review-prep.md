@@ -84,5 +84,23 @@ Purchases and restores are handled through Apple In-App Purchase and RevenueCat 
 - Done: build/test/archive/export/upload build `26`.
 - Done: create App Store Connect version `1.0.9`, attach build `26`, add review notes, and submit.
 - Done: resubmit Monthly and Weekly v2 subscriptions after build `26` became available for App Review.
-- Follow-up: visually verify in App Store Connect that Monthly and Weekly v2 no longer require an additional manual action, because the product-state API still returned `DEVELOPER_ACTION_NEEDED` immediately after the accepted subscription submission calls.
+- Done: App Store Connect UI verification on 2026-06-29 shows Monthly, Weekly v2, and the `Premium Access` group localization are all `Waiting for Review`.
+- Follow-up: wait for Apple approval of the two subscriptions, then verify a fresh non-test purchase event.
 - Recommended: complete one TestFlight sandbox purchase/restore pass on a physical device before final submission if time allows.
+
+## Subscription Resubmission Follow-up 2026-06-29
+
+- App Store Connect API confirmed app version `1.0.9` build `26` is `READY_FOR_SALE`.
+- Immediate subscription readback still showed both products as `DEVELOPER_ACTION_NEEDED` with `REJECTED` en-US localizations.
+- Updated both subscription review notes to explicitly reference the live `1.0.9` legal-link fix and direct Terms/Privacy URLs.
+- Created new subscription submissions after `1.0.9` was live:
+  - Monthly submission `25b28708-cfa5-4955-8b8e-3d9657a7de91`
+  - Weekly v2 submission `b08d5597-2228-4b6d-bde8-dc215abd0807`
+- Apple still does not allow `GET` on `subscriptionSubmissions`; immediate product-state readback can still report `DEVELOPER_ACTION_NEEDED`.
+- App Store Connect UI showed the `Premium Access` subscription group localization `English (U.S.)` was also `Rejected`; created subscription group submission `1b9e6a0b-29c7-43a0-b658-5a7072991f05`.
+- App Store Connect UI still required manual localization saves: saved `Premium Access` group localization, then submitted it. Final group localization state: `Waiting for Review`.
+- Saved both subscription en-US localizations with description `Unlock logs, detailed stats, and profiles.`, then submitted both products in ASC UI. Final states:
+  - Monthly `com.quitergy.premium.monthly`: `Waiting for Review`
+  - Weekly v2 `com.quitergy.premium.weekly.v2`: `Waiting for Review`
+- App Store Connect API readback confirmed `WAITING_FOR_REVIEW` for Monthly, Weekly v2, and group localization after the ASC UI resubmits.
+- Evidence: `release/app-store-review-1.0.9/subscription-resubmission-2026-06-29.json`

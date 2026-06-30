@@ -47,7 +47,7 @@ platform :ios do
       api_key: api_key,
       app_identifier: ENV["APP_IDENTIFIER"] || "com.GA.QuitERGY",
       platform: "ios",
-      app_version: options[:app_version] || ENV["APP_VERSION"] || "1.0.9",
+      app_version: options[:app_version] || ENV["APP_VERSION"] || "1.0.10",
       skip_binary_upload: true,
       skip_screenshots: true,
       skip_metadata: true,

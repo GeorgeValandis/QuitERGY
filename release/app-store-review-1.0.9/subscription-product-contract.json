@@ -51,28 +51,39 @@
     "appVersionStateAfterSubmission": "WAITING_FOR_REVIEW",
     "subscriptionGroupReferenceName": "Premium Access",
     "subscriptionGroupId": "21880624",
+    "subscriptionGroupLocalizationId": "747cf521-2179-41fe-bf72-35cc5b7b1389",
+    "latestSubscriptionGroupSubmissionId": "1b9e6a0b-29c7-43a0-b658-5a7072991f05",
+    "latestSubscriptionGroupResubmittedAt": "2026-06-29T13:30:28Z",
+    "latestAscUiReadbackAt": "2026-06-29T13:30:28Z",
+    "subscriptionGroupLocalizationStatus": "WAITING_FOR_REVIEW",
     "products": [
       {
         "ascId": "6781659490",
         "referenceName": "QuitERGY Monthly",
         "productId": "com.quitergy.premium.monthly",
+        "localizationId": "0007ebbe-f675-4e1f-bda2-6f322e3119bf",
         "displayName": "QuitERGY Premium Monthly",
-        "description": "Unlock unlimited logs, detailed statistics, daily check-ins, and multiple drink profiles.",
+        "description": "Unlock logs, detailed stats, and profiles.",
         "period": "P1M",
         "draftPriceUSD": "4.99",
-        "currentStatus": "DEVELOPER_ACTION_NEEDED",
-        "submissionId": "e6f2bd15-7677-40a7-9dd9-cfb94b7453e4"
+        "currentStatus": "WAITING_FOR_REVIEW",
+        "localizationStatus": "WAITING_FOR_REVIEW",
+        "submissionId": "25b28708-cfa5-4955-8b8e-3d9657a7de91",
+        "resubmittedAt": "2026-06-29T13:30:28Z"
       },
       {
         "ascId": "6781658331",
         "referenceName": "QuitERGY Weekly",
         "productId": "com.quitergy.premium.weekly.v2",
+        "localizationId": "723735ac-5818-431a-b3ed-262d913c60ac",
         "displayName": "QuitERGY Premium Weekly",
-        "description": "Unlock unlimited logs, detailed statistics, daily check-ins, and multiple drink profiles.",
+        "description": "Unlock logs, detailed stats, and profiles.",
         "period": "P1W",
         "draftPriceUSD": "1.99",
-        "currentStatus": "DEVELOPER_ACTION_NEEDED",
-        "submissionId": "2e9cb904-50e9-4d7e-b7c8-64da6795325f"
+        "currentStatus": "WAITING_FOR_REVIEW",
+        "localizationStatus": "WAITING_FOR_REVIEW",
+        "submissionId": "b08d5597-2228-4b6d-bde8-dc215abd0807",
+        "resubmittedAt": "2026-06-29T13:30:28Z"
       }
     ]
   },
@@ -92,10 +103,12 @@
     ]
   },
   "verificationGates": {
-    "appStoreConnectProductsVerified": "developer_action_needed_on_2026-06-24",
+    "appStoreConnectProductsVerified": "waiting_for_review_on_2026-06-29_via_asc_ui",
     "legalUrlReachability": "passed_http_200_on_2026-06-24",
     "buildUpload": "uploaded_valid",
     "appReviewSubmission": "submitted_waiting_for_review",
-    "subscriptionSubmissions": "created_but_product_state_readback_still_developer_action_needed"
+    "subscriptionSubmissions": "created_again_on_2026-06-29_after_1.0.9_ready_for_sale; asc_ui_required_saving_product_localizations_then_monthly_and_weekly_moved_to_waiting_for_review",
+    "subscriptionGroupSubmission": "created_on_2026-06-29_after_asc_ui_showed_group_localization_rejected; asc_ui_save_and_submit_moved_group_localization_to_waiting_for_review",
+    "latestResubmissionEvidence": "release/app-store-review-1.0.9/subscription-resubmission-2026-06-29.json"
   }
 }
