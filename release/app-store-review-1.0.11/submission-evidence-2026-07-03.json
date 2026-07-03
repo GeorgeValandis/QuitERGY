@@ -1,0 +1,64 @@
+{
+  "date": "2026-07-03",
+  "checkedAt": "2026-07-03T11:36:58.137Z",
+  "app": {
+    "appStoreId": "6754967219",
+    "bundleId": "com.GA.QuitERGY",
+    "version": "1.0.11",
+    "build": "28"
+  },
+  "build": {
+    "id": "290920a1-a02f-4225-bf88-d2ff15c9c75a",
+    "processingState": "VALID",
+    "usesNonExemptEncryption": false,
+    "archivePath": "build/QuitERGY-1.0.11-28.xcarchive",
+    "ipaPath": "build/export-1.0.11-28/QuitERGY.ipa",
+    "ipaSha256": "eaa7d9002721dd27070bbf3a08d284e6b9b1e7595735202ce6634e66ab78afda"
+  },
+  "appStoreVersion": {
+    "id": "e40ba4d3-29cd-4905-9864-c1dc54d691dd",
+    "versionString": "1.0.11",
+    "state": "WAITING_FOR_REVIEW",
+    "whatsNew": "Resubmits Premium Access subscriptions with app version 1.0.11 build 28 for App Review."
+  },
+  "reviewSubmission": {
+    "id": "2be9f9b5-31a1-4044-8ad5-41ac216580b3",
+    "platform": "IOS",
+    "submittedDate": "2026-07-03T11:36:22.895Z",
+    "state": "WAITING_FOR_REVIEW",
+    "items": [
+      {
+        "id": "MmJlOWY5YjUtMzFhMS00MDQ0LThhZDUtNDFhYzIxNjU4MGIzfDZ8ODg3Nzg5Njc1",
+        "type": "reviewSubmissionItems",
+        "state": "READY_FOR_REVIEW",
+        "reviewableResource": "appStoreVersion:1.0.11"
+      }
+    ]
+  },
+  "iapSubmissions": {
+    "monthly": {
+      "subscriptionId": "6781659490",
+      "productId": "com.quitergy.premium.monthly",
+      "subscriptionSubmissionId": "96c4be4d-81f4-4b96-8103-bf9280f28282",
+      "stateReadback": "WAITING_FOR_REVIEW"
+    },
+    "weeklyV2": {
+      "subscriptionId": "6781658331",
+      "productId": "com.quitergy.premium.weekly.v2",
+      "subscriptionSubmissionId": "abc29a05-d451-4a6b-9b68-b1b3ec750a80",
+      "stateReadback": "WAITING_FOR_REVIEW"
+    },
+    "subscriptionGroup": {
+      "id": "21880624",
+      "name": "Premium Access",
+      "subscriptionGroupSubmissionId": "65b72d07-cc0e-4746-b6a0-7c6e256c43e5",
+      "localizationReadback": {
+        "id": "98dd8b21-7cd0-442a-b1b0-9e6ad9aaf3fb",
+        "locale": "en-US",
+        "name": "QuitERGY Premium",
+        "state": "WAITING_FOR_REVIEW"
+      }
+    }
+  },
+  "remainingGate": "Apple must approve the app version and subscriptions; production purchase blocker is only fully cleared after live RevenueCat/TelemetryDeck purchase_succeeded appears."
+}

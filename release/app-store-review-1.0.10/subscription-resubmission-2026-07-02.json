@@ -1,0 +1,69 @@
+{
+  "date": "2026-07-02",
+  "checkedAt": "2026-07-02T13:37:15.504Z",
+  "context": {
+    "appStoreConnectAppId": "6754967219",
+    "bundleId": "com.GA.QuitERGY",
+    "appVersion": "1.0.10",
+    "build": "27",
+    "appVersionStateAtFollowUp": "READY_FOR_SALE",
+    "subscriptionGroupId": "21880624",
+    "subscriptionGroupReferenceName": "Premium Access"
+  },
+  "reviewIssue": {
+    "guideline": "2.1(b)",
+    "title": "Performance - App Completeness",
+    "appReviewMessage": "We have returned the In-App Purchase products as the required binary was not submitted.",
+    "interpretation": "The app binary was already ready for distribution; the remaining action was to resave and resubmit the subscription artifacts in App Store Connect."
+  },
+  "uiActionsCompleted": [
+    {
+      "target": "Premium Access English (U.S.) group localization",
+      "action": "resaved and submitted for review"
+    },
+    {
+      "target": "QuitERGY Monthly",
+      "productId": "com.quitergy.premium.monthly",
+      "action": "resaved English (U.S.) localization and submitted for review",
+      "descriptionAfterSave": "Unlock logs, stats, and drink profiles."
+    },
+    {
+      "target": "QuitERGY Weekly",
+      "productId": "com.quitergy.premium.weekly.v2",
+      "action": "resaved English (U.S.) localization and submitted for review",
+      "descriptionAfterSave": "Unlock logs, stats, and drink profiles."
+    }
+  ],
+  "finalUiReadback": {
+    "monthly": "Waiting for Review",
+    "weeklyV2": "Waiting for Review",
+    "groupLocalizationEnUs": "Waiting for Review"
+  },
+  "finalApiReadback": {
+    "subscriptionGroupLocalization": {
+      "id": "98dd8b21-7cd0-442a-b1b0-9e6ad9aaf3fb",
+      "locale": "en-US",
+      "name": "QuitERGY Premium",
+      "state": "WAITING_FOR_REVIEW"
+    },
+    "subscriptions": [
+      {
+        "id": "6781659490",
+        "name": "QuitERGY Monthly",
+        "productId": "com.quitergy.premium.monthly",
+        "subscriptionPeriod": "ONE_MONTH",
+        "groupLevel": 1,
+        "state": "WAITING_FOR_REVIEW"
+      },
+      {
+        "id": "6781658331",
+        "name": "QuitERGY Weekly",
+        "productId": "com.quitergy.premium.weekly.v2",
+        "subscriptionPeriod": "ONE_WEEK",
+        "groupLevel": 1,
+        "state": "WAITING_FOR_REVIEW"
+      }
+    ]
+  },
+  "nextGate": "Wait for Apple to approve the subscriptions; production blocker is only fully gone after states become APPROVED/READY_FOR_SALE and live purchase_succeeded appears in TelemetryDeck/RevenueCat."
+}

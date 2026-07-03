@@ -63,3 +63,29 @@ Purchases and restores are handled through Apple In-App Purchase and RevenueCat 
 - Subscription group localization: submission accepted; localization readback still shows `REJECTED` immediately after submission.
 
 The accepted `subscriptionSubmissions` and `subscriptionGroupSubmission` are the important evidence for the previous Guideline 2.1(b) issue. The old visible product states can lag behind or remain returned until App Review processes the now-attached binary submission.
+
+## Resubmission Follow-Up 2026-07-02
+
+After app version `1.0.10` reached `READY_FOR_SALE`, App Store Connect still showed the `Premium Access` subscription group as requiring attention:
+
+- Monthly subscription `com.quitergy.premium.monthly`: `DEVELOPER_ACTION_NEEDED`
+- Weekly v2 subscription `com.quitergy.premium.weekly.v2`: `DEVELOPER_ACTION_NEEDED`
+- English (U.S.) subscription group localization: `REJECTED`
+
+App Review note visible in ASC: Guideline 2.1(b), "We have returned the In-App Purchase products as the required binary was not submitted." The app binary itself was already ready for distribution, so no new build was required for this follow-up. The fix was to resave and resubmit the subscription group localization and both subscription products from the ASC subscription UI.
+
+Actions completed in ASC UI on 2026-07-02:
+
+- Resaved and submitted `Premium Access` English (U.S.) group localization.
+- Resaved Monthly English (U.S.) subscription localization with description `Unlock logs, stats, and drink profiles.`
+- Submitted Monthly subscription for review.
+- Resaved Weekly English (U.S.) subscription localization with description `Unlock logs, stats, and drink profiles.`
+- Submitted Weekly v2 subscription for review.
+
+Final ASC UI and API readback after the follow-up:
+
+- Monthly subscription `com.quitergy.premium.monthly`: `WAITING_FOR_REVIEW`
+- Weekly v2 subscription `com.quitergy.premium.weekly.v2`: `WAITING_FOR_REVIEW`
+- English (U.S.) subscription group localization: `WAITING_FOR_REVIEW`
+
+Current blocker state: the developer-side `DEVELOPER_ACTION_NEEDED` state is cleared. Apple still needs to approve the subscription products before production purchases can succeed.
