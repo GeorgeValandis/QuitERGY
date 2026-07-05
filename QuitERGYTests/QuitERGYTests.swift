@@ -8,6 +8,9 @@
 import Foundation
 import SwiftData
 import Testing
+#if canImport(RevenueCat)
+import RevenueCat
+#endif
 
 @testable import QuitERGY
 
@@ -42,6 +45,57 @@ struct QuitERGYTests {
         #expect(longValue.count == 160)
         #expect(analytics.recentEvents.count == 1)
     }
+
+    #if canImport(RevenueCat)
+    @MainActor
+    @Test func revenueCatConfigAcceptsExpectedProductsWhenPackageAliasChanges() async throws {
+        let package = makeRevenueCatPackage(
+            identifier: "custom_weekly_alias",
+            packageType: .custom,
+            productId: QuitERGYRevenueCat.productIdWeekly,
+            price: "$1.99"
+        )
+
+        #expect(QuitERGYRevenueCat.isSupportedPurchasePackage(package))
+    }
+
+    @MainActor
+    @Test func revenueCatConfigPrioritizesConfiguredPackagesAndKnownProducts() async throws {
+        let unrelated = makeRevenueCatPackage(
+            identifier: "$rc_annual",
+            packageType: .annual,
+            productId: "com.quitergy.premium.annual",
+            price: "$29.99"
+        )
+        let customWeekly = makeRevenueCatPackage(
+            identifier: "custom_weekly_alias",
+            packageType: .custom,
+            productId: QuitERGYRevenueCat.productIdWeekly,
+            price: "$1.99"
+        )
+        let monthly = makeRevenueCatPackage(
+            identifier: QuitERGYRevenueCat.packageIdMonthly,
+            packageType: .monthly,
+            productId: QuitERGYRevenueCat.productIdMonthly,
+            price: "$4.99"
+        )
+        let offering = Offering(
+            identifier: "Experiment",
+            serverDescription: "Test offering",
+            availablePackages: [unrelated, customWeekly, monthly],
+            webCheckoutUrl: nil
+        )
+
+        let prioritized = QuitERGYRevenueCat.prioritizedPackages(in: offering)
+        let firstProductIds = prioritized.prefix(2).map(\.storeProduct.productIdentifier)
+
+        #expect(firstProductIds == [
+            QuitERGYRevenueCat.productIdMonthly,
+            QuitERGYRevenueCat.productIdWeekly
+        ])
+        #expect(prioritized.last?.storeProduct.productIdentifier == "com.quitergy.premium.annual")
+    }
+    #endif
 
     @Test func freeDrinkLogAllowanceAllowsExactlyThreeLogs() async throws {
         let suiteName = "free-drink-log-allowance-\(UUID().uuidString)"
@@ -191,3 +245,32 @@ struct QuitERGYTests {
     }
 
 }
+
+#if canImport(RevenueCat)
+private func makeRevenueCatPackage(
+    identifier: String,
+    packageType: PackageType,
+    productId: String,
+    price: String
+) -> Package {
+    let product = TestStoreProduct(
+        localizedTitle: productId,
+        price: 1.99,
+        currencyCode: "USD",
+        localizedPriceString: price,
+        productIdentifier: productId,
+        productType: .autoRenewableSubscription,
+        localizedDescription: "QuitERGY Premium",
+        subscriptionGroupIdentifier: "premium",
+        locale: Locale(identifier: "en_US")
+    )
+
+    return Package(
+        identifier: identifier,
+        packageType: packageType,
+        storeProduct: product.toStoreProduct(),
+        offeringIdentifier: "test",
+        webCheckoutUrl: nil
+    )
+}
+#endif

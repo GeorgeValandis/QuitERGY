@@ -35,7 +35,49 @@ enum QuitERGYRevenueCat {
         packageIdMonthly,
         packageIdWeekly
     ]
+
+    static let supportedProductIds: [String] = [
+        productIdMonthly,
+        productIdWeekly
+    ]
 }
+
+#if canImport(RevenueCat)
+extension QuitERGYRevenueCat {
+    static func isSupportedPurchasePackage(_ package: Package) -> Bool {
+        supportedPackageIds.contains(package.identifier) ||
+            supportedProductIds.contains(package.storeProduct.productIdentifier)
+    }
+
+    static func prioritizedPackages(in offering: Offering) -> [Package] {
+        var result: [Package] = []
+        var seenKeys = Set<String>()
+
+        func appendIfNeeded(_ package: Package?) {
+            guard let package else { return }
+            let key = "\(package.identifier)|\(package.storeProduct.productIdentifier)"
+            guard seenKeys.insert(key).inserted else { return }
+            result.append(package)
+        }
+
+        for packageId in supportedPackageIds {
+            appendIfNeeded(offering.package(identifier: packageId))
+        }
+
+        for productId in supportedProductIds {
+            appendIfNeeded(offering.availablePackages.first {
+                $0.storeProduct.productIdentifier == productId
+            })
+        }
+
+        for package in offering.availablePackages {
+            appendIfNeeded(package)
+        }
+
+        return result
+    }
+}
+#endif
 
 enum QuitERGYPurchaseResult {
     case completed
@@ -687,6 +729,7 @@ struct PlanSelectionSection: View {
         if !success || visiblePlans.isEmpty {
             AppAnalytics.shared.track("offerings_load_failed", properties: [
                 "available_packages": loadedPackageSummary,
+                "failure_reason": purchaseManager.lastOfferingsLoadFailureReason ?? "unknown",
                 "offering": purchaseManager.loadedOfferingIdentifier ?? "missing",
                 "surface": "paywall"
             ])
@@ -731,6 +774,7 @@ struct PlanSelectionSection: View {
                     "available_packages": loadedPackageSummary,
                     "expected_package": plan.packageId,
                     "expected_product": plan.productId,
+                    "failure_reason": purchaseManager.lastOfferingsLoadFailureReason ?? "package_not_found",
                     "offering": purchaseManager.loadedOfferingIdentifier ?? "missing",
                     "plan": plan.rawValue,
                     "surface": "paywall"
@@ -887,8 +931,10 @@ final class PurchaseManager: NSObject, ObservableObject, PurchasesDelegate {
     @Published private(set) var customerInfo: CustomerInfo?
     @Published private(set) var isPremiumUnlocked: Bool = false
     @Published private(set) var loadedOfferingIdentifier: String?
+    @Published private(set) var lastOfferingsLoadFailureReason: String?
 
     private var hasPerformedInitialSync = false
+    private var offeringsLoadTask: Task<Bool, Never>?
     private var shouldBypassPurchasesForUITests: Bool {
         ProcessInfo.processInfo.environment["UITEST_BYPASS_PURCHASES"] == "1"
     }
@@ -921,31 +967,47 @@ final class PurchaseManager: NSObject, ObservableObject, PurchasesDelegate {
     }
 
     func loadOfferings() async -> Bool {
+        if let offeringsLoadTask {
+            return await offeringsLoadTask.value
+        }
+
+        let task = Task { @MainActor [weak self] in
+            await self?.performLoadOfferings() ?? false
+        }
+        offeringsLoadTask = task
+        let result = await task.value
+        offeringsLoadTask = nil
+        return result
+    }
+
+    private func performLoadOfferings() async -> Bool {
         if shouldBypassPurchasesForUITests {
             packages = []
             loadedOfferingIdentifier = "UITestBypass"
+            lastOfferingsLoadFailureReason = nil
             return true
         }
 
-        guard PurchaseManager.isSDKConfigured else { return false }
+        guard PurchaseManager.isSDKConfigured else {
+            return handleOfferingsLoadFailure(reason: "sdk_not_configured")
+        }
+
         do {
             let offerings = try await Purchases.shared.offerings()
             guard let offering = selectedOffering(from: offerings) else {
-                packages = []
-                loadedOfferingIdentifier = nil
-                return false
+                return handleOfferingsLoadFailure(reason: "no_supported_offering")
             }
 
-            let prioritizedIds = QuitERGYRevenueCat.supportedPackageIds
-            let prioritized = prioritizedIds.compactMap { offering.package(identifier: $0) }
-            let remaining = offering.availablePackages.filter { !prioritizedIds.contains($0.identifier) }
-            packages = prioritized + remaining
+            packages = QuitERGYRevenueCat.prioritizedPackages(in: offering)
             loadedOfferingIdentifier = offering.identifier
-            return !packages.isEmpty
+            let hasSupportedPackage = packages.contains {
+                QuitERGYRevenueCat.isSupportedPurchasePackage($0)
+            }
+            lastOfferingsLoadFailureReason = hasSupportedPackage ? nil : "offering_missing_supported_products"
+            return hasSupportedPackage
         } catch {
-            packages = []
-            loadedOfferingIdentifier = nil
-            return false
+            let nsError = error as NSError
+            return handleOfferingsLoadFailure(reason: "exception_\(nsError.domain)_\(nsError.code)")
         }
     }
 
@@ -1014,12 +1076,40 @@ final class PurchaseManager: NSObject, ObservableObject, PurchasesDelegate {
     }
 
     private func selectedOffering(from offerings: Offerings) -> Offering? {
-        let configuredOfferings = QuitERGYRevenueCat.offeringLookupOrder.compactMap {
-            offerings[$0]
-        }
-        let candidates = configuredOfferings + [offerings.current].compactMap { $0 }
+        var candidates: [Offering] = []
+        var seenIdentifiers = Set<String>()
 
-        return candidates.first(where: { !$0.availablePackages.isEmpty }) ?? candidates.first
+        func appendIfNeeded(_ offering: Offering?) {
+            guard let offering else { return }
+            guard seenIdentifiers.insert(offering.identifier).inserted else { return }
+            candidates.append(offering)
+        }
+
+        for offeringId in QuitERGYRevenueCat.offeringLookupOrder {
+            appendIfNeeded(offerings[offeringId])
+        }
+        appendIfNeeded(offerings.current)
+        for offering in offerings.all.values.sorted(by: { $0.identifier < $1.identifier }) {
+            appendIfNeeded(offering)
+        }
+
+        return candidates.first(where: { offering in
+            offering.availablePackages.contains {
+                QuitERGYRevenueCat.isSupportedPurchasePackage($0)
+            }
+        }) ?? candidates.first(where: { !$0.availablePackages.isEmpty }) ?? candidates.first
+    }
+
+    private func handleOfferingsLoadFailure(reason: String) -> Bool {
+        lastOfferingsLoadFailureReason = reason
+
+        if packages.contains(where: QuitERGYRevenueCat.isSupportedPurchasePackage) {
+            return true
+        }
+
+        packages = []
+        loadedOfferingIdentifier = nil
+        return false
     }
 }
 #else
