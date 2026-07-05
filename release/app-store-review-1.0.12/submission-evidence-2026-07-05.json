@@ -1,0 +1,75 @@
+{
+  "date": "2026-07-05",
+  "checkedAt": "2026-07-05T16:21:05Z",
+  "app": {
+    "appStoreId": "6754967219",
+    "bundleId": "com.GA.QuitERGY",
+    "version": "1.0.12",
+    "build": "30"
+  },
+  "build": {
+    "id": "c1bb9c31-1198-4bdc-867b-cbc1a5db9401",
+    "deliveryUuid": "c1bb9c31-1198-4bdc-867b-cbc1a5db9401",
+    "processingState": "VALID",
+    "usesNonExemptEncryption": false,
+    "archivePath": "build/QuitERGY-1.0.12-30.xcarchive",
+    "ipaPath": "build/export-1.0.12-30/QuitERGY.ipa",
+    "ipaSha256": "6cce15e1915be2c099973e33b808aafa921fb762ca49d98434819232ef1e0534",
+    "uploadedDate": "2026-07-05T09:16:34-07:00"
+  },
+  "appStoreVersion": {
+    "id": "16b18a78-82a6-426c-ace5-8f846ce70c17",
+    "versionString": "1.0.12",
+    "state": "WAITING_FOR_REVIEW",
+    "releaseType": "MANUAL",
+    "whatsNew": "Improves Premium purchase handling and subscription offering reliability."
+  },
+  "reviewSubmission": {
+    "id": "db02f641-9f9c-4e39-a723-15386814e0b8",
+    "platform": "IOS",
+    "submittedDate": "2026-07-05T16:19:44.508Z",
+    "state": "WAITING_FOR_REVIEW",
+    "items": [
+      {
+        "id": "ZGIwMmY2NDEtOWY5Yy00ZTM5LWE3MjMtMTUzODY4MTRlMGI4fDZ8ODg3ODY1MjI4",
+        "type": "reviewSubmissionItems",
+        "state": "READY_FOR_REVIEW",
+        "reviewableResource": "appStoreVersion:1.0.12"
+      }
+    ]
+  },
+  "iapStateAfterAppSubmission": {
+    "monthly": {
+      "subscriptionId": "6781659490",
+      "productId": "com.quitergy.premium.monthly",
+      "stateReadback": "WAITING_FOR_REVIEW",
+      "localizationId": "7148defd-ffe0-4554-be75-b3eb7eedbfb4",
+      "localizationState": "WAITING_FOR_REVIEW",
+      "reviewScreenshotId": "4d3b2207-708c-4bb0-bf82-398857b490be",
+      "reviewScreenshotAssetState": "COMPLETE",
+      "reviewNotePatchedForVersion": "1.0.12 build 30"
+    },
+    "weeklyV2": {
+      "subscriptionId": "6781658331",
+      "productId": "com.quitergy.premium.weekly.v2",
+      "stateReadback": "WAITING_FOR_REVIEW",
+      "localizationId": "4bcb54af-3491-47f6-9e93-29a4cfcd819b",
+      "localizationState": "WAITING_FOR_REVIEW",
+      "reviewScreenshotId": "a1902845-d08f-46c7-8667-9fcc7dd8f442",
+      "reviewScreenshotAssetState": "COMPLETE",
+      "reviewNotePatchedForVersion": "1.0.12 build 30"
+    },
+    "subscriptionGroup": {
+      "id": "21880624",
+      "name": "Premium Access",
+      "localizationReadback": {
+        "id": "98dd8b21-7cd0-442a-b1b0-9e6ad9aaf3fb",
+        "locale": "en-US",
+        "name": "QuitERGY Premium",
+        "state": "WAITING_FOR_REVIEW"
+      }
+    }
+  },
+  "whySubscriptionsWereNotFinishedWithPreviousAppReview": "App Store Connect completed the 1.0.11 app-version review and moved the app to READY_FOR_SALE, but the first-time IAP products remained separate review resources in WAITING_FOR_REVIEW. They were not returned to DEVELOPER_ACTION_NEEDED, so no new product-level Submit for Review action was available. The 1.0.12 app review now provides an active binary submission while both IAP review notes reference build 30.",
+  "remainingGate": "Apple must approve the subscriptions and group localization; production purchase blocker is only fully cleared after approved IAPs and a fresh production purchase_succeeded appears."
+}
